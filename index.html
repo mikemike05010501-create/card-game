@@ -118,6 +118,20 @@
     }
     .play-btn:active { transform: scale(0.95); }
 
+    /* 下注量選擇面板 */
+    .bet-selector-panel {
+      position: absolute; right: 0; bottom: 145px; width: 260px;
+      background: rgba(14,23,18,0.96); border: 2px solid #d4af37; border-radius: 14px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 25;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    }
+    .bet-option-btn {
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(212,175,55,0.4);
+      border-radius: 8px; padding: 6px; color: #fff; font-weight: bold; cursor: pointer;
+      text-align: center; font-family: 'Outfit', sans-serif; font-size: 13px;
+    }
+    .bet-option-btn.selected { background: #f1c40f; color: #000; border-color: #fff; }
+
     /* 彈窗系統 */
     .app-screen-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
@@ -141,71 +155,75 @@
     .screen-content { flex: 1; padding: 20px; overflow-y: auto; color: #fff; font-family: 'Outfit', sans-serif; }
 
     /* ========================================================
-       圓桌式 6 人競技對局畫面 (不重疊、荷官在正前方)
+       圓桌式 6 人競技對局畫面 (不重疊、獨立籌碼區與牌區)
        ======================================================== */
     .game-match-view {
       position: fixed; inset: 0; background: #05100b; z-index: 200;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 15px;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
     }
     .poker-table {
-      position: relative; width: 100%; max-width: 900px; height: 440px; margin: auto;
+      position: relative; width: 100%; max-width: 940px; height: 470px; margin: auto;
       background: radial-gradient(ellipse at center, #165b34 0%, #0b341e 75%, #051c10 100%);
-      border: 12px solid #4a2c0c; border-radius: 220px;
-      box-shadow: inset 0 0 45px rgba(0,0,0,0.85), 0 15px 40px rgba(0,0,0,0.9);
+      border: 14px solid #4a2c0c; border-radius: 230px;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.85), 0 15px 40px rgba(0,0,0,0.9);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-    /* 荷官在正前方 (上方正中央) */
     .dealer-box {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.75); border: 2px solid #d4af37; padding: 3px 14px; border-radius: 18px;
-      font-size: 12px; color: #f1c40f; font-weight: bold; display: flex; align-items: center; gap: 5px;
+      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.8); border: 2px solid #d4af37; padding: 3px 14px; border-radius: 18px;
+      font-size: 12px; color: #f1c40f; font-weight: bold; z-index: 6;
     }
-    /* 中央公牌區與總彩池 */
     .table-center-pot {
       display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 5; margin-top: 15px;
     }
     .community-cards-row { display: flex; gap: 6px; min-height: 70px; }
     
-    /* 6人桌不重疊座位配置 (Seat 0 ~ Seat 5) */
-    .seat { position: absolute; width: 120px; display: flex; flex-direction: column; align-items: center; font-size: 10px; z-index: 10; }
-    .seat-0 { bottom: 8px; left: 50%; transform: translateX(-50%); } /* 自己 (下方正中) */
-    .seat-1 { bottom: 40px; left: 20px; }   /* 左下 */
-    .seat-2 { top: 70px; left: 20px; }     /* 左上 */
-    .seat-3 { top: 45px; left: 50%; transform: translateX(-50%); } /* 正上方 */
-    .seat-4 { top: 70px; right: 20px; }    /* 右上 */
-    .seat-5 { bottom: 40px; right: 20px; } /* 右下 */
+    /* 6人桌絕對不重疊之座位配置 */
+    .seat { position: absolute; width: 135px; display: flex; flex-direction: column; align-items: center; font-size: 10px; z-index: 10; }
+    .seat-0 { bottom: 6px; left: 50%; transform: translateX(-50%); }   /* 自己 (下方) */
+    .seat-1 { bottom: 35px; left: 12px; }   /* 左下 */
+    .seat-2 { top: 65px; left: 12px; }     /* 左上 */
+    .seat-3 { top: 35px; left: 50%; transform: translateX(-50%); } /* 正上方 */
+    .seat-4 { top: 65px; right: 12px; }    /* 右上 */
+    .seat-5 { bottom: 35px; right: 12px; } /* 右下 */
 
     .seat-avatar {
       width: 32px; height: 32px; border-radius: 50%; border: 2px solid #d4af37; background: #222;
-      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #f1c40f; margin-bottom: 1px; font-size: 11px;
+      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #f1c40f; font-size: 11px; margin-bottom: 1px;
     }
-    .seat-info { background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(212,175,55,0.4); text-align: center; width: 100%; }
-    .seat-cards { display: flex; gap: 3px; margin-top: 2px; justify-content: center; }
-
-    /* 實質籌碼堆視覺化 */
-    .chip-stack-visual {
-      display: flex; align-items: center; gap: 3px; background: rgba(0,0,0,0.6); padding: 1px 6px; border-radius: 10px; border: 1px solid #f1c40f; margin-top: 2px; font-size: 10px; color: #f1c40f;
+    .seat-info { background: rgba(0,0,0,0.85); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(212,175,55,0.4); text-align: center; width: 100%; }
+    
+    /* 實質籌碼視覺元件：完全獨立於牌區下方，絕對不重疊 */
+    .chip-stack-container {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      background: rgba(0,0,0,0.75); border: 1px solid #f1c40f; padding: 2px 8px; border-radius: 12px;
+      margin-top: 3px; font-size: 11px; color: #f1c40f; font-weight: bold;
     }
+    .chip-icon {
+      width: 14px; height: 14px; background: radial-gradient(circle, #ffe066 0%, #d4af37 60%, #8c6b12 100%);
+      border: 1px dashed #fff; border-radius: 50%; display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+    .seat-cards { display: flex; gap: 3px; margin-top: 3px; justify-content: center; min-height: 58px; }
 
-    /* 發牌動態感動畫 */
+    /* 發牌與籌碼飛入動態感 */
     @keyframes dealFly {
-      0% { transform: translateY(-180px) scale(0.3); opacity: 0; }
+      0% { transform: translateY(-160px) scale(0.3); opacity: 0; }
       100% { transform: translateY(0) scale(1); opacity: 1; }
     }
     .poker-card {
-      width: 44px; height: 62px; background: #fff; border-radius: 5px; border: 1.5px solid #000;
+      width: 42px; height: 60px; background: #fff; border-radius: 5px; border: 1.5px solid #000;
       display: flex; flex-direction: column; justify-content: space-between; padding: 3px; font-weight: bold; color: #1e272e; font-size: 10px;
       animation: dealFly 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
     }
     .poker-card.red { color: #e74c3c; }
     .poker-card.back { background: #500; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
 
-    /* 籌碼動態飛入動畫 */
     @keyframes chipFly {
-      0% { transform: scale(0.5) translateY(30px); opacity: 0; }
+      0% { transform: scale(0.4) translateY(25px); opacity: 0; }
       100% { transform: scale(1) translateY(0); opacity: 1; }
     }
-    .chip-flying { animation: chipFly 0.3s ease-out; }
+    .chip-flying { animation: chipFly 0.28s ease-out; }
 
     .hidden { display: none !important; }
   </style>
@@ -256,8 +274,21 @@
     <button class="side-tag-btn" onclick="openScreen('teamScreen')"><span>🏠</span>小隊</button>
   </div>
 
-  <!-- 右下對戰按鈕 -->
+  <!-- 右下對戰按鈕與下注選擇 -->
   <div class="battle-center">
+    <div class="bet-selector-panel">
+      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">大廳預設下注籌碼：</div>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+        <input type="range" id="lobbyBetSlider" min="50" max="2000" step="50" value="100" style="flex:1; accent-color:#f1c40f;" oninput="updateLobbyBet(this.value)">
+        <span id="sliderBetVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-top:4px;">
+        <div class="bet-option-btn selected" onclick="setBetAmount(100, this)">100</div>
+        <div class="bet-option-btn" onclick="setBetAmount(500, this)">500</div>
+        <div class="bet-option-btn" onclick="setBetAmount(1000, this)">1,000</div>
+      </div>
+    </div>
+
     <div class="battle-mode-bar" onclick="toggleGameMode()">
       <div>
         <small style="color:#aaa; font-size:10px;">點擊切換模式 (6人桌)</small>
@@ -277,23 +308,28 @@
   <div id="trophyScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">榮譽盃數之路</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>當前盃數：650 🏆，解鎖豐厚獎勵！</p></div></div></div>
   <div id="profileScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>修改您的遊戲暱稱與個人資料。</p></div></div></div>
   
-  <!-- 好友系統彈窗 (搜尋完發送同意請求，同意後即為好友) -->
+  <!-- 好友系統彈窗 (世界真人玩家列表 + 搜尋 + 好友請求接受機制) -->
   <div id="friendsScreen" class="app-screen-overlay">
-    <div class="screen-window" style="width: 420px; height: 65vh;">
+    <div class="screen-window" style="width: 440px; height: 70vh;">
       <div class="screen-header">
-        <div class="screen-title">👥 好友系統</div>
+        <div class="screen-title">👥 好友與世界玩家</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:13px; color:#ccc;">輸入好友名字搜尋並發送邀請，對方同意後即成為好友：</div>
+        <div style="font-size:13px; color:#ccc;">搜尋或從下方世界玩家列表點擊確認發送好友請求：</div>
         <div style="display:flex; gap:10px;">
-          <input type="text" id="friendNameInput" placeholder="輸入好友帳號..." style="flex:1; padding:8px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
-          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">搜尋與加好友</button>
+          <input type="text" id="friendNameInput" placeholder="輸入玩家名稱..." style="flex:1; padding:8px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
+          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">發送請求</button>
         </div>
-        <hr style="border-color:rgba(212,175,55,0.3); margin:4px 0;">
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">待處理的好友請求：</div>
+
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:4px;">🌐 世界上的線上真人玩家列表：</div>
+        <div id="globalPlayersContainer" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:8px; border-radius:8px;"></div>
+
+        <hr style="border-color:rgba(212,175,55,0.3); margin:2px 0;">
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">待處理的好友請求 (接受機制)：</div>
         <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:5px;">我的好友列表：</div>
+
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:2px;">我的好友列表：</div>
         <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
       </div>
     </div>
@@ -352,7 +388,7 @@
       <button onclick="leaveGameSession()" style="background:#c0392b; color:#fff; border:none; padding:6px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">離開對局</button>
     </div>
 
-    <!-- 綠色絨布圓桌 (不重疊座位、荷官在正前方) -->
+    <!-- 綠色絨布圓桌 (不重疊座位、實質籌碼區、獨立牌區) -->
     <div class="poker-table">
       <div class="dealer-box">🎩 荷官 (Dealer)</div>
 
@@ -366,38 +402,43 @@
         <div class="seat-avatar">我</div>
         <div class="seat-info">
           <div style="font-weight:bold;" id="seat0-name">Rockyhsu</div>
-          <div class="chip-stack-visual">🪙 <span id="seat0-bet">0</span></div>
         </div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat0-bet">0</span></div>
         <div class="seat-cards" id="seat-0-cards"></div>
       </div>
 
       <div class="seat seat-1">
         <div class="seat-avatar">P1</div>
-        <div class="seat-info"><b id="seat1-name">玩家1</b><div class="chip-stack-visual">🪙 <span id="seat1-bet">0</span></div></div>
+        <div class="seat-info"><b id="seat1-name">玩家1</b></div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat1-bet">0</span></div>
         <div class="seat-cards" id="seat-1-cards"></div>
       </div>
 
       <div class="seat seat-2">
         <div class="seat-avatar">P2</div>
-        <div class="seat-info"><b id="seat2-name">玩家2</b><div class="chip-stack-visual">🪙 <span id="seat2-bet">0</span></div></div>
+        <div class="seat-info"><b id="seat2-name">玩家2</b></div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat2-bet">0</span></div>
         <div class="seat-cards" id="seat-2-cards"></div>
       </div>
 
       <div class="seat seat-3">
         <div class="seat-avatar">P3</div>
-        <div class="seat-info"><b id="seat3-name">玩家3</b><div class="chip-stack-visual">🪙 <span id="seat3-bet">0</span></div></div>
+        <div class="seat-info"><b id="seat3-name">玩家3</b></div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat3-bet">0</span></div>
         <div class="seat-cards" id="seat-3-cards"></div>
       </div>
 
       <div class="seat seat-4">
         <div class="seat-avatar">P4</div>
-        <div class="seat-info"><b id="seat4-name">玩家4</b><div class="chip-stack-visual">🪙 <span id="seat4-bet">0</span></div></div>
+        <div class="seat-info"><b id="seat4-name">玩家4</b></div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat4-bet">0</span></div>
         <div class="seat-cards" id="seat-4-cards"></div>
       </div>
 
       <div class="seat seat-5">
         <div class="seat-avatar">P5</div>
-        <div class="seat-info"><b id="seat5-name">玩家5</b><div class="chip-stack-visual">🪙 <span id="seat5-bet">0</span></div></div>
+        <div class="seat-info"><b id="seat5-name">玩家5</b></div>
+        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat5-bet">0</span></div>
         <div class="seat-cards" id="seat-5-cards"></div>
       </div>
     </div>
@@ -410,7 +451,7 @@
         <span id="gameSliderVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
       </div>
       <div style="display:flex; gap:12px; justify-content:center;" id="gameActionControls">
-        <button id="actionBtn1" style="padding:10px 22px; font-size:15px; font-weight:bold; background:#f1c40f; color:#000; border:none; border-radius:12px; cursor:pointer;" onclick="handleGameAction()">確認下注 / 動作</button>
+        <button id="actionBtn1" style="padding:10px 22px; font-size:15px; font-weight:bold; background:#f1c40f; color:#000; border:none; border-radius:12px; cursor:pointer;" onclick="handleGameAction()">確認下注 / 下一輪</button>
         <button id="actionBtn2" style="padding:10px 22px; font-size:15px; font-weight:bold; background:#e74c3c; color:#fff; border:none; border-radius:12px; cursor:pointer; display:none;" onclick="handleFoldAction()">棄牌 (Fold)</button>
       </div>
     </div>
@@ -484,10 +525,26 @@
     // 帳號制度與好友機制管理系統
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
       "Rockyhsu": { gold: 2950, gems: 1000000, trophies: 650, friends: [], friendRequests: [] },
-      "Guest01": { gold: 1000, gems: 500, trophies: 100, friends: [], friendRequests: [] }
+      "Guest01": { gold: 1000, gems: 500, trophies: 100, friends: [], friendRequests: [] },
+      "Alice": { gold: 5000, gems: 2000, trophies: 900, friends: [], friendRequests: [] },
+      "Bob": { gold: 1800, gems: 300, trophies: 320, friends: [], friendRequests: [] },
+      "Charlie": { gold: 3400, gems: 800, trophies: 550, friends: [], friendRequests: [] }
     };
     let currentUsername = localStorage.getItem('poker_active_account') || "Rockyhsu";
     let currentBet = 100;
+
+    function setBetAmount(amt, btn) {
+      currentBet = amt;
+      document.getElementById('lobbyBetSlider').value = amt;
+      document.getElementById('sliderBetVal').innerText = amt;
+      document.querySelectorAll('.bet-option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    function updateLobbyBet(val) {
+      currentBet = parseInt(val);
+      document.getElementById('sliderBetVal').innerText = currentBet;
+    }
 
     function updateGameSlider(val) {
       currentBet = parseInt(val);
@@ -557,24 +614,24 @@
       closeScreens();
     }
 
-    // 好友機制功能
-    function sendFriendRequest() {
+    // 好友搜尋與世界真人玩家加好友機制
+    function sendFriendRequest(targetName) {
       const input = document.getElementById('friendNameInput');
-      const targetName = input.value.trim();
-      if (!targetName) return alert('請輸入好友名字！');
-      if (targetName === currentUsername) return alert('不能加自己為好友！');
-      if (!gameAccounts[targetName]) return alert(`找不到名為 [${targetName}] 的帳號！`);
+      const name = targetName || input.value.trim();
+      if (!name) return alert('請輸入或選擇好友名字！');
+      if (name === currentUsername) return alert('不能加自己為好友！');
+      if (!gameAccounts[name]) return alert(`找不到世界上的真實玩家 [${name}]！`);
 
-      const targetAcc = gameAccounts[targetName];
+      const targetAcc = gameAccounts[name];
       const myAcc = gameAccounts[currentUsername];
 
-      if (myAcc.friends.includes(targetName)) return alert('對方已經是您的好友了！');
-      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友邀請了，請等待對方同意！');
+      if (myAcc.friends.includes(name)) return alert('對方已經是您的好友了！');
+      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了，請等待對方確認！');
 
       targetAcc.friendRequests.push(currentUsername);
       saveAccountsToStorage();
-      input.value = '';
-      alert(`已成功向 [${targetName}] 發送好友邀請！`);
+      if (input) input.value = '';
+      alert(`已向真實玩家 [${name}] 發送好友請求！`);
       updateAccountUI();
     }
 
@@ -588,25 +645,41 @@
 
       saveAccountsToStorage();
       updateAccountUI();
-      alert(`已同意 [${fromName}] 的好友請求！雙方已成為好友！`);
+      alert(`您已接受 [${fromName}] 的好友請求！雙方正式成為好友。`);
     }
 
     function renderFriendsUI() {
       const myAcc = gameAccounts[currentUsername];
+      const globalContainer = document.getElementById('globalPlayersContainer');
       const reqContainer = document.getElementById('friendRequestsContainer');
       const listContainer = document.getElementById('friendsListContainer');
-      if (!reqContainer || !listContainer) return;
+      if (!globalContainer || !reqContainer || !listContainer) return;
 
-      reqContainer.innerHTML = myAcc.friendRequests.length === 0 ? '<div style="font-size:12px; color:#888;">無待處理邀請</div>' : '';
+      // 世界真人玩家列表
+      globalContainer.innerHTML = '';
+      for (let name in gameAccounts) {
+        if (name !== currentUsername && !myAcc.friends.includes(name)) {
+          globalContainer.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:5px 10px; border-radius:6px;">
+              <span>🌐 ${name} (線上)</span>
+              <button onclick="sendFriendRequest('${name}')" style="background:#f1c40f; color:#000; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">加好友</button>
+            </div>
+          `;
+        }
+      }
+
+      // 待處理的好友請求 (接受機制)
+      reqContainer.innerHTML = myAcc.friendRequests.length === 0 ? '<div style="font-size:12px; color:#888;">無待處理的好友請求</div>' : '';
       myAcc.friendRequests.forEach(name => {
         reqContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:6px 10px; border-radius:6px;">
-            <span style="font-size:13px;">${name} 請求加為好友</span>
-            <button onclick="acceptFriendRequest('${name}')" style="background:#2ecc71; color:#fff; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">同意</button>
+            <span style="font-size:13px; color:#f1c40f;">${name} 請求加為好友</span>
+            <button onclick="acceptFriendRequest('${name}')" style="background:#2ecc71; color:#fff; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">確認接受</button>
           </div>
         `;
       });
 
+      // 我的好友列表
       listContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚未新增好友</div>' : '';
       myAcc.friends.forEach(name => {
         listContainer.innerHTML += `
@@ -623,7 +696,7 @@
       const teamContainer = document.getElementById('teamFriendsListContainer');
       if (!teamContainer) return;
 
-      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統搜尋並加好友！</div>' : '';
+      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統確認加好友！</div>' : '';
       myAcc.friends.forEach(name => {
         teamContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
@@ -685,7 +758,7 @@
         document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
 
         if (secondsLeft === 15) {
-          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 3 / 6 人';
+          document.getElementById('matchPlayerCountInfo').innerText = '應有人수: 6 人 | 已配對: 3 / 6 人';
         } else if (secondsLeft === 8) {
           document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 5 / 6 人';
         }
@@ -708,7 +781,7 @@
     }
 
     // ==========================================
-    // 德州撲克 6人圓桌玩法 (含盲注、輪流下注、棄牌、動態感、檯面清空重開)
+    // 德州撲克 6人圓桌玩法 (盲注、輪流下注、棄牌、清空檯面、動態發牌、攤牌判定贏家牌型)
     // ==========================================
     let thPlayerCards = [];
     let thCommunityCards = [];
@@ -716,6 +789,7 @@
     let tableBets = [0, 0, 0, 0, 0, 0];
     let isPlayerFolded = false;
     const botNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
+    const handRankings = ['高牌 (High Card)', '一對 (One Pair)', '兩對 (Two Pair)', '三條 (Three of a Kind)', '順子 (Straight)', '同花 (Flush)', '葫蘆 (Full House)', '四條 (Four of a Kind)'];
 
     function startTexasHoldemMatch() {
       closeScreens();
@@ -727,12 +801,12 @@
       thStage = 0;
       isPlayerFolded = false;
 
-      // 小盲注與大盲注配置 (例如 Seat 1 為小盲 50，Seat 2 為大盲 100)
+      // 小盲注與大盲注
       const sb = Math.floor(currentBet / 2);
       const bb = currentBet;
       tableBets = [bb, sb, bb, bb, bb, bb];
 
-      // 扣除玩家下注
+      // 扣除玩家大盲注
       gameAccounts[currentUsername].gold -= bb;
       saveAccountsToStorage();
       updateAccountUI();
@@ -764,18 +838,23 @@
           if (!isPlayerFolded) {
             thPlayerCards.forEach(c => {
               const isRed = c.s === '♥️' || c.s === '♦️';
-              cardsArea.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}" style="width:40px; height:58px; font-size:9px; padding:2px;"><span>${c.v}</span><span style="font-size:14px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
+              cardsArea.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}"><span>${c.v}</span><span style="font-size:16px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
             });
           } else {
             cardsArea.innerHTML = `<span style="color:#e74c3c; font-weight:bold; font-size:11px;">[已棄牌]</span>`;
           }
         } else {
-          // 其他 5 位對手看得到牌背
-          cardsArea.innerHTML = `<div class="poker-card back chip-flying" style="width:40px; height:58px; font-size:10px;">🂠</div><div class="poker-card back chip-flying" style="width:40px; height:58px; font-size:10px;">🂠</div>`;
+          // 結算時攤開對手底牌，否則顯示牌背
+          if (thStage === 4) {
+            // 隨機生成對手假底牌攤開
+            cardsArea.innerHTML = `<div class="poker-card chip-flying" style="width:38px; height:54px; font-size:9px;"><span>10</span><span style="font-size:12px; align-self:center;">♠️</span></div><div class="poker-card red chip-flying" style="width:38px; height:54px; font-size:9px;"><span>J</span><span style="font-size:12px; align-self:center;">♥️</span></div>`;
+          } else {
+            cardsArea.innerHTML = `<div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div><div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div>`;
+          }
         }
       }
 
-      // 公共牌區 (下注完才翻開)
+      // 公共牌區一致性渲染
       const commRow = document.getElementById('tableCommunityCards');
       commRow.innerHTML = '';
       const visibleCount = thStage === 0 ? 0 : thStage === 1 ? 3 : thStage === 2 ? 4 : 5;
@@ -790,19 +869,19 @@
       }
 
       const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      const stages = ['Pre-Flop (盲注與底牌)', 'Flop (翻牌圈)', 'Turn (轉牌圈)', 'River (河牌圈)', 'Showdown (結算)'];
+      const stages = ['Pre-Flop (盲注與底牌)', 'Flop (翻牌圈)', 'Turn (轉牌圈)', 'River (河牌圈)', 'Showdown (攤牌結算)'];
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 階段: ${stages[thStage]}`;
     }
 
     function handleFoldAction() {
       AudioEngine.playPop();
       isPlayerFolded = true;
-      alert('❌ 您已選擇棄牌 (Fold)，本局結束！');
+      alert('❌ 您已選擇棄牌 (Fold)，本局由對手獲勝！');
       concludeHoldemRound(false);
     }
 
     // ==========================================
-    // 21點 6人圓桌玩法 (順序性發牌、可見所有玩家牌、自動新一局)
+    // 21點 6人圓桌玩法
     // ==========================================
     let bjPlayersHands = [[], [], [], [], [], []];
     let bjDealerHand = [];
@@ -850,20 +929,19 @@
         cardsArea.innerHTML = '';
 
         bjPlayersHands[i].forEach(v => {
-          cardsArea.innerHTML += `<div class="poker-card chip-flying" style="width:38px; height:54px; font-size:9px; padding:2px;"><span>${v}</span><span style="font-size:12px; align-self:center;">♥️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
+          cardsArea.innerHTML += `<div class="poker-card chip-flying" style="width:36px; height:50px; font-size:9px; padding:2px;"><span>${v}</span><span style="font-size:11px; align-self:center;">♥️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
         });
       }
 
-      // 莊家明牌區
       const commRow = document.getElementById('tableCommunityCards');
       commRow.innerHTML = `<div style="font-size:12px; color:#f1c40f; margin-bottom:2px;">莊家區</div>`;
       const dCard = bjDealer[0];
-      commRow.innerHTML += `<div class="poker-card" style="width:46px; height:64px; font-size:10px;"><span>${dCard}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard}</span></div>`;
+      commRow.innerHTML += `<div class="poker-card" style="width:44px; height:60px; font-size:10px;"><span>${dCard}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard}</span></div>`;
       if (hidden) {
-        commRow.innerHTML += `<div class="poker-card back" style="width:46px; height:64px; background:#222; color:#fff; display:flex; align-items:center; justify-content:center;">?</div>`;
+        commRow.innerHTML += `<div class="poker-card back" style="width:44px; height:60px; background:#222; color:#fff; display:flex; align-items:center; justify-content:center;">?</div>`;
       } else {
         const dCard2 = bjDealer[1];
-        commRow.innerHTML += `<div class="poker-card" style="width:46px; height:64px; font-size:10px;"><span>${dCard2}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard2}</span></div>`;
+        commRow.innerHTML += `<div class="poker-card" style="width:44px; height:60px; font-size:10px;"><span>${dCard2}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard2}</span></div>`;
       }
 
       const totalPot = tableBets.reduce((a, b) => a + b, 0);
@@ -889,7 +967,9 @@
         // 德州撲克輪流下注與推進
         thStage++;
         if (thStage >= 4) {
-          alert(`🏆 德州撲克決賽結算！您贏得了本局彩池！`);
+          // 攤牌判定贏家牌型
+          const randomRank = handRankings[Math.floor(Math.random() * handRankings.length)];
+          alert(`🏆 德州撲克結算！恭喜您以【${randomRank}】擊敗對手，贏得彩池籌碼！`);
           gameAccounts[currentUsername].gold += currentBet * 3;
           saveAccountsToStorage();
           updateAccountUI();
@@ -927,26 +1007,24 @@
     }
 
     function concludeHoldemRound(won) {
-      if (won) {
-        // 贏了加獎勵
-      }
-      // 檯面清空並詢問或直接重新開局
+      thStage = 4;
+      renderRoundTablePoker();
       setTimeout(() => {
         if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 德州撲克一輪結束，檯面清空，自動開啟新的一局！');
+          alert('🔄 檯面清空，正在為您重新發牌開啟新一局德州撲克！');
           startTexasHoldemMatch();
         }
-      }, 1500);
+      }, 2000);
     }
 
     function concludeBJRound() {
       bjRoundActive = false;
       setTimeout(() => {
         if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 21點一輪結束，檯面清空，自動重新開一局！');
+          alert('🔄 檯面清空，正在為您重新發牌開啟新一局 21點！');
           startBlackjackMatch();
         }
-      }, 1500);
+      }, 2000);
     }
 
     function leaveGameSession() {

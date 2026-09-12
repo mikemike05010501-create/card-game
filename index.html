@@ -56,7 +56,6 @@
     .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
       background-size: cover; background-position: center top;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
       background-color: transparent; overflow: hidden;
@@ -157,7 +156,7 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* 中央角色舞台 (絕對保證載入 3D 黏土精緻去背圖) */
+    /* 中央角色舞台 (已內嵌高解析度 3D 黏土日漫立繪) */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
       width: 480px; height: 88vh; pointer-events: none; z-index: 3;
@@ -174,7 +173,6 @@
     }
     .hero-anime-figure {
       width: 100%; height: 100%;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
       background-size: contain; background-repeat: no-repeat; background-position: center bottom;
       filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -269,7 +267,7 @@
       box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
     }
     .camera-focus-target {
-      width: 270px; height: 510px; background-image: url('watermarked_img_3306472174093337687.jpg');
+      width: 270px; height: 510px;
       background-size: contain; background-repeat: no-repeat;
       background-position: center bottom;
       transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
@@ -399,7 +397,7 @@
 
   <script>
     // ==========================================
-    // 頂層點擊音效引擎 (自動解鎖 Web Audio Context)
+    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -538,7 +536,7 @@
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar"></div>
+      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
         <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
@@ -618,11 +616,11 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 黏土精緻立繪 (直接對應圖片) -->
+  <!-- 中央全身 3D 黏土精緻立繪 (直接鎖定圖片來源) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
-      <div id="mainHeroFullBody" class="hero-anime-figure"></div>
+      <div id="mainHeroFullBody" class="hero-anime-figure" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
       <div id="heroOutfitBadge" class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
     </div>
     <div class="logo-glow">POKER ARENA</div>
@@ -675,7 +673,7 @@
 
         <div class="step-container-grid">
           <div class="camera-viewport">
-            <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
+            <div id="stepCameraTarget" class="camera-focus-target view-overview" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
             <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
           </div>
 
@@ -801,7 +799,7 @@
           <div class="trophy-step unlocked">
             <div class="trophy-node">🏆</div>
             <div class="trophy-card-info" style="opacity:0.5;">
-              <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇 : 解鎖 🪙 1,000 金幣</p></div>
+              <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇：解鎖 🪙 1,000 金幣</p></div>
               <button class="reward-btn" style="background:#333; color:#777;" disabled>✔ 已領取</button>
             </div>
           </div>
@@ -1210,7 +1208,7 @@
       document.getElementById('hudTrophyCount').innerText = userTrophies;
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
       
-      // 直接賦予大廳中央角色圖背景
+      // 確保所有立繪容器皆綁定圖檔
       document.getElementById('mainHeroFullBody').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
       document.getElementById('stepCameraTarget').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
     });

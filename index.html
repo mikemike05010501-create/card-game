@@ -157,15 +157,12 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* =========================================================
-       中央大廳舞台：完美還原寶可夢大集結式的正中央大型圓形草坪與角色配置
-       ========================================================= */
+    /* 中央大廳舞台：完美置中並附帶可愛皮卡丘夥伴與圓形草坪底座 */
     .center-visual {
       position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
       width: 520px; height: 85vh; pointer-events: none; z-index: 3;
       display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
     }
-    /* 大型圓形草坪舞台底座 */
     .hero-stage-podium {
       position: absolute; bottom: 25px; width: 380px; height: 90px;
       background: radial-gradient(ellipse at center, rgba(46,204,113,0.85) 0%, rgba(30,130,76,0.6) 55%, rgba(0,0,0,0.6) 80%, transparent 100%);
@@ -183,7 +180,6 @@
       filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    /* 陪伴在角色旁的小夥伴（皮卡丘風格裝飾） */
     .companion-pet {
       position: absolute; right: 45px; bottom: 35px; width: 75px; height: 75px;
       background: radial-gradient(circle, #f1c40f 0%, #e67e22 70%);
@@ -196,7 +192,6 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
-
     .hero-outfit-tag {
       position: absolute; bottom: 10px; background: rgba(0,0,0,0.85); border: 1.5px solid #d4af37;
       padding: 4px 14px; border-radius: 20px; font-size: 12px; color: #f1c40f; font-family: 'Outfit', sans-serif;
@@ -557,7 +552,7 @@
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div id="playerAvatar" class="avatar"></div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
         <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
@@ -637,12 +632,12 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央大廳舞台：完美置中並附帶可愛皮卡丘夥伴與圓形草坪底座 -->
+  <!-- 中央大廳舞台：完美置中並附帶皮卡丘小夥伴與圓形草坪底座 -->
   <div class="center-visual">
     <div class="logo-glow">POKER ARENA</div>
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
-      <div id="mainHeroFullBody" class="hero-anime-figure" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div id="mainHeroFullBody" class="hero-anime-figure"></div>
       <div class="companion-pet">⚡</div>
       <div id="heroOutfitBadge" class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
     </div>
@@ -695,7 +690,7 @@
 
         <div class="step-container-grid">
           <div class="camera-viewport">
-            <div id="stepCameraTarget" class="camera-focus-target view-overview" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+            <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
             <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
           </div>
 
@@ -1286,9 +1281,9 @@
             const cardEl = document.createElement('div');
             cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
             cardEl.innerHTML = `
-              <div style="font-size:18px;">$val</div>
+              <div style="font-size:18px;">${val}</div>
               <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-              <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">$val</div>
+              <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
             `;
             myCardsArea.appendChild(cardEl);
           });

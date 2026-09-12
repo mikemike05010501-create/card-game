@@ -67,20 +67,20 @@
     .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
     .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; }
 
-    .currencies { display: flex; gap: 16px; }
+    /* 右上角：寶石與金幣欄位 */
+    .currencies { display: flex; gap: 14px; }
     .currency-chip {
       background: rgba(10,20,15,0.85); border: 2px solid #d4af37;
-      padding: 3px 14px 3px 6px; border-radius: 20px; font-weight: 800; font-size: 15px;
+      padding: 4px 16px 4px 8px; border-radius: 22px; font-weight: 800; font-size: 16px;
       display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-3d);
       font-family: 'Bebas Neue', sans-serif; backdrop-filter: blur(8px);
     }
     .currency-chip .icon {
-      width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: #fff;
+      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff;
     }
-    .chip-purple .icon { background: #9b59b6; }
-    .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
-    .chip-green .icon { background: #2ecc71; }
+    .chip-gem .icon { background: linear-gradient(135deg, #00c6ff, #0072ff); border: 1.5px solid #fff; box-shadow: 0 0 8px rgba(0,198,255,0.6); }
+    .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; box-shadow: 0 0 8px rgba(241,196,15,0.6); }
 
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
@@ -238,10 +238,10 @@
       </div>
     </div>
     
+    <!-- 右上角：寶石與金幣 -->
     <div class="currencies">
-      <div class="currency-chip chip-purple"><div class="icon">💜</div><span>999</span></div>
+      <div class="currency-chip chip-gem"><div class="icon">💎</div><span>1,280</span></div>
       <div class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
-      <div class="currency-chip chip-green"><div class="icon">💚</div><span>1,000,000</span></div>
     </div>
   </div>
 
@@ -351,9 +351,7 @@
   </div>
 
   <script>
-    // ==========================================
-    // 水滴微泡泡破裂音效引擎 (Water Bubble Pop Engine)
-    // ==========================================
+    // 水滴微泡泡音效引擎
     const AudioEngine = {
       ctx: null,
       init() {
@@ -365,14 +363,12 @@
           this.ctx.resume();
         }
       },
-      // 點擊：彈性「啵」水泡破裂音 (急速上滑波形)
       playBubblePop() {
         this.init();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        // 隨機在 450Hz ~ 700Hz 起音，並向上彈射到高頻
         const startFreq = 480 + (Math.random() * 180);
         osc.type = 'sine';
         osc.frequency.setValueAtTime(startFreq, now);
@@ -387,7 +383,6 @@
         osc.start(now);
         osc.stop(now + 0.06);
       },
-      // 發牌：連續冒泡音效 (三顆小水泡連續躍出)
       playBubbleStream() {
         this.init();
         const pitches = [550, 780, 1050];

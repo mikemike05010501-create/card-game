@@ -438,11 +438,11 @@
 <body>
 
   <canvas id="particlesCanvas"></canvas>
-  <canvas id="clickCanvas"></canvas>
+  <canvas id="clickCanvas" style="pointer-events: none;"></canvas>
 
   <script>
     // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
+    // 頂層點擊音效引擎 (自動喚醒且具備安全防護)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -578,11 +578,15 @@
     };
 
     function playContextSound(target) {
-      if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
-      if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
-      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen') || target.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
-      if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
+      if (!target) return AudioEngine.playBubblePop();
+      let el = target.nodeType === 3 ? target.parentElement : target;
+      if (!el || typeof el.closest !== 'function') return AudioEngine.playBubblePop();
+
+      if (el.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
+      if (el.closest('#shopScreen')) return AudioEngine.playCoinClink();
+      if (el.closest('#taskScreen') || el.closest('#passScreen') || el.closest('#giftScreen') || el.closest('#trophyScreen')) return AudioEngine.playMagicChime();
+      if (el.closest('#friendsScreen') || el.closest('#teamScreen') || el.closest('#clanScreen') || el.closest('#profileScreen') || el.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
+      if (el.closest('#gameMatchView')) return AudioEngine.playFeltThud();
       AudioEngine.playBubblePop();
     }
 
@@ -724,7 +728,7 @@
         <span>🎲</span>
         <div>
           <h4>21點 (Blackjack)</h4>
-          <p>玩家匹配 / 100秒人機補位</p>
+          <p>真人匹配 / 100秒人機補位</p>
         </div>
       </div>
     </div>
@@ -740,7 +744,7 @@
 
     <!-- 主遊玩按鈕 -->
     <button id="matchBtn" class="play-btn" onclick="startCurrentGameSession()">
-      <span id="btnMainText">德州撲克</span>
+      <span id="btnMainText">開始對戰</span>
       <label id="btnSubLabel">ENTER MATCH</label>
     </button>
   </div>
@@ -940,7 +944,7 @@
   <!-- 配對彈窗 (支援人數顯示與100秒自動人機補位) -->
   <div id="matchingModal" class="app-screen-overlay">
     <div class="screen-window" style="width: 380px; height: 50vh; align-items:center; justify-content:center; text-align:center;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找德州撲克對手中...</h2>
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找遊戲對手中...</h2>
       <div style="font-size: 38px; margin: 15px 0;" id="matchPlayerCountInfo">應有人數: 2 人 | 已配對: 1 / 2 人</div>
       <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:10px;" id="matchTimerText">剩餘配對時間: 100 秒</div>
       <div style="font-size: 40px; margin: 10px 0;">♣️♥️♦️♠️</div>
@@ -948,7 +952,7 @@
     </div>
   </div>
 
-  <!-- 1v1 / 多人對戰畫面 (支援 德州撲克 與 21點 玩家匹配/人機) -->
+  <!-- 對戰畫面 (德州撲克 / 21點 玩家匹配/人機) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -1195,11 +1199,15 @@
     };
 
     function playContextSound(target) {
-      if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
-      if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
-      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen') || target.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
-      if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
+      if (!target) return AudioEngine.playBubblePop();
+      let el = target.nodeType === 3 ? target.parentElement : target;
+      if (!el || typeof el.closest !== 'function') return AudioEngine.playBubblePop();
+
+      if (el.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
+      if (el.closest('#shopScreen')) return AudioEngine.playCoinClink();
+      if (el.closest('#taskScreen') || el.closest('#passScreen') || el.closest('#giftScreen') || el.closest('#trophyScreen')) return AudioEngine.playMagicChime();
+      if (el.closest('#friendsScreen') || el.closest('#teamScreen') || el.closest('#clanScreen') || el.closest('#profileScreen') || el.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
+      if (el.closest('#gameMatchView')) return AudioEngine.playFeltThud();
       AudioEngine.playBubblePop();
     }
 
@@ -1268,7 +1276,6 @@
           matchSecondsLeft--;
           document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
           
-          // 模擬隨機在 85 秒時剛好配對到真人玩家
           if (matchSecondsLeft === 85) {
             document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 2 / 2 人 (配對成功！)';
           }
@@ -1278,7 +1285,7 @@
             document.getElementById('matchTimerText').innerText = '超時！已自動為您安排高級 AI 人機補位！';
             setTimeout(() => {
               closeScreens();
-              startBlackjackGame(true); // true 代表有人機參與
+              startBlackjackGame(true);
             }, 1200);
           } else if (matchSecondsLeft === 83) {
             clearInterval(matchTimerInterval);

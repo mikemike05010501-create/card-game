@@ -4,339 +4,419 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - 奢華黑金 VIP 賭城</title>
-  <!-- PWA 手遊全螢幕設定 -->
+  <!-- PWA 手遊全螢幕與狀態列 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- 載入奢華手遊字體與圖標 -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
+    :root {
+      --gold: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #8c6b12 100%);
+      --gold-border: linear-gradient(135deg, #ffffff 0%, #d4af37 50%, #5a4205 100%);
+      --green-felt: radial-gradient(circle at center, #1b4d3e 0%, #0d2c20 70%, #05140e 100%);
+      --dark-panel: linear-gradient(180deg, #2c3531 0%, #111a16 100%);
+      --shadow-3d: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.1);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
     
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--green-felt);
+      color: #fff; width: 100vw; height: 100vh; overflow: hidden;
+      display: flex; flex-direction: column; position: relative;
+    }
+
+    /* 頂部 HUD (手遊大廳標配) */
+    .hud-bar {
+      height: 65px; display: flex; justify-content: space-between; align-items: center;
+      padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+      z-index: 10; position: relative;
+    }
+    .player-profile {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(0,0,0,0.6); padding: 5px 20px 5px 6px;
+      border-radius: 40px; border: 2px solid #d4af37; box-shadow: var(--shadow-3d);
+    }
+    .avatar {
+      width: 44px; height: 44px; border-radius: 50%; border: 2px solid #d4af37;
+      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
+      box-shadow: 0 0 10px rgba(212,175,55,0.5);
+    }
+    .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
+    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 3px; font-weight: 600; }
+
+    .currencies { display: flex; gap: 16px; }
+    .currency-chip {
+      background: rgba(13,28,20,0.85); border: 2.5px solid #d4af37;
+      padding: 3px 14px 3px 6px; border-radius: 20px; font-weight: 800; font-size: 15px;
+      display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-3d);
+      font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.5px;
+    }
+    .currency-chip .icon {
+      width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: normal; color: #fff;
+    }
+    .chip-purple .icon { background: #9b59b6; }
+    .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
+    .chip-green .icon { background: #2ecc71; }
+
+    /* 左側邊欄（3D金屬感按鈕） */
+    .left-menu {
+      position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
+    }
+    .menu-btn {
+      width: 65px; height: 65px; border-radius: 14px;
+      background: linear-gradient(135deg, #2c3e50 0%, #0f171e 100%);
+      border: 2px solid #d4af37; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
+      box-shadow: var(--shadow-3d); position: relative;
+    }
+    .menu-btn:active { transform: scale(0.9); }
+    .menu-btn span { font-size: 26px; }
+    .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
+    .menu-badge {
+      position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white;
+      font-size: 10px; width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: bold;
+    }
+
+    /* 右側邊欄 */
+    .right-menu {
+      position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
+    }
+    .side-tag-btn {
+      width: 75px; height: 55px; background: linear-gradient(135deg, #1e272e, #2f3640);
+      border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; font-size: 12px; font-weight: bold;
+      color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d);
+    }
+    .side-tag-btn:active { transform: scale(0.92); }
+    .side-tag-btn span { font-size: 22px; }
+
+    /* 通行證 */
+    .pass-container {
+      position: absolute; left: 25px; bottom: 25px; z-index: 5;
+      background: linear-gradient(90deg, #101a14 0%, rgba(20,38,30,0.95) 100%);
+      border: 2.5px solid #d4af37; border-radius: 16px; width: 310px; height: 75px;
+      display: flex; align-items: center; padding: 0 16px; gap: 14px; box-shadow: var(--shadow-3d);
+      cursor: pointer;
+    }
+    .pass-badge { font-size: 34px; animation: breathe 4s ease-in-out infinite; }
+    .pass-progress { flex: 1; }
+    .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
+    .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
+
+    /* 賭城荷官 (3D插畫級角色) */
+    .center-visual {
+      position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+      width: 480px; height: 85vh; pointer-events: none; z-index: 2;
+      animation: breathe 5s ease-in-out infinite; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+    }
+    .dealer-suit { text-shadow: 0 15px 30px rgba(0,0,0,0.9); text-align: center; font-size: 210px; line-height: 0.8; }
+    .dealer-face { font-size: 180px; margin-top: -110px; line-height: 0.8; }
+    .logo-glow {
+      font-family: 'Cinzel', serif; font-weight: 900; font-size: 32px; letter-spacing: 4px;
+      background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #f39c12 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.6); margin-bottom: 120px; text-align: center;
+    }
+
+    /* 頂級黃金對戰按鈕 */
+    .battle-center {
+      position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
+    }
+    .battle-mode-bar {
+      width: 260px; background: rgba(0,0,0,0.8); border: 2px solid #d4af37;
+      padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
+      box-shadow: var(--shadow-3d);
+    }
+    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
+
+    .play-btn {
+      width: 260px; height: 80px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
+      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 30px; font-weight: 900;
+      letter-spacing: 4px; font-family: 'Cinzel', serif; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 10px 30px rgba(212,175,55,0.7), inset 0 2px 5px #fff; transition: 0.1s; position: relative;
+      overflow: hidden; animation: pulse-glow 2.5s infinite;
+    }
+    .play-btn::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      transform: skewX(-30deg); animation: gold-shine 3s ease-in-out infinite;
+    }
+    .play-btn:active { transform: scale(0.95) translateY(2px); box-shadow: 0 5px 15px rgba(212,175,55,0.4); }
+    .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; opacity: 0.9; color: #111; margin-top: 1px; }
+
+    /* 遊戲內建華麗彈窗（無 alert、無 webView 感） */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center;
+      align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.25s ease;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      background: var(--dark-panel); border-radius: 24px; padding: 30px; width: 480px; text-align: center;
+      border: 3px solid #d4af37; box-shadow: 0 0 50px rgba(212,175,55,0.4);
+      transform: scale(0.85); transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-overlay.active .modal-box { transform: scale(1); }
+    .modal-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; margin-bottom: 20px; text-shadow: 0 3px 6px rgba(0,0,0,0.8); }
+    
+    .list-item {
+      background: rgba(0,0,0,0.4); margin: 10px 0; padding: 14px 20px;
+      border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; border-left: 5px solid #d4af37; border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .list-item button {
+      background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; border: none; border-radius: 8px;
+      padding: 6px 14px; font-size: 13px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(212,175,55,0.3); transition: 0.1s;
+    }
+    .list-item button:active { transform: scale(0.9); }
+    .list-item button:disabled { background: #333; color: #777; box-shadow: none; cursor: not-allowed; }
+
+    .btn-close {
+      margin-top: 25px; background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%); border: 2.5px solid #fff;
+      color: #fff; padding: 8px 30px; border-radius: 30px; font-weight: 800; cursor: pointer; font-size: 14px; box-shadow: 0 5px 15px rgba(231,76,60,0.4);
+    }
+    .btn-close:active { transform: scale(0.95); }
+
+    /* 華麗對戰牌桌 1v1 */
+    .game-match-view {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: var(--green-felt); z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
+    }
+    .players-status { display: flex; justify-content: space-between; align-items: center; }
+    .battle-avatar-card {
+      background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 8px 18px; border-radius: 16px;
+      display: flex; align-items: center; gap: 12px; width: 220px; box-shadow: var(--shadow-3d);
+    }
+    .card-board {
+      border: 3px dashed rgba(212,175,55,0.35); border-radius: 20px; flex: 1; margin: 20px 0;
+      display: flex; flex-direction: column; justify-content: space-around; position: relative;
+      background: radial-gradient(circle, rgba(27,77,62,0.3) 0%, rgba(0,0,0,0.6) 100%);
+    }
+    .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
+    .poker-card {
+      width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: space-between;
+      padding: 8px; font-weight: bold; color: #1e272e; position: relative; animation: deal-card 0.4s ease-out;
+    }
+    .poker-card.red { color: #e74c3c; }
+    .poker-card .card-val { font-size: 20px; font-family: 'Cinzel', serif; }
+    .poker-card .suit-symbol { font-size: 30px; align-self: center; margin-bottom: 5px; }
+
+    .poker-card.back {
+      background: linear-gradient(135deg, #c0392b, #962d22); border: 3px solid #fff;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .deck-action-btn {
+      width: 160px; height: 52px; font-size: 18px; font-weight: 800; border-radius: 12px;
+      background: var(--gold); border: 2.5px solid #fff; color: #000; cursor: pointer;
+      box-shadow: 0 6px 20px rgba(212,175,55,0.6); font-family: 'Cinzel', serif;
+    }
+
+    /* 簽到成功特效 */
+    .particle-fly {
+      position: absolute; color: #f1c40f; font-size: 24px; pointer-events: none; z-index: 200;
+      animation: particleFly 1.2s ease-out forwards; font-weight: bold;
+    }
+
+    /* 動畫特效 */
     @keyframes pulse-glow {
-      0% { box-shadow: 0 0 15px rgba(212,175,55,0.4); }
-      50% { box-shadow: 0 0 28px rgba(212,175,55,0.85); }
-      100% { box-shadow: 0 0 15px rgba(212,175,55,0.4); }
+      0% { box-shadow: 0 0 15px rgba(212,175,55,0.5); }
+      50% { box-shadow: 0 0 35px rgba(212,175,55,0.9); }
+      100% { box-shadow: 0 0 15px rgba(212,175,55,0.5); }
     }
     @keyframes breathe {
       0% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-5px) scale(1.015); }
+      50% { transform: translateY(-4px) scale(1.012); }
       100% { transform: translateY(0) scale(1); }
     }
     @keyframes gold-shine {
       0% { left: -100%; }
+      50% { left: 100%; }
       100% { left: 100%; }
     }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
-      background: radial-gradient(circle at center, #113426 0%, #081611 60%, #030605 100%);
-      color: #fff;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+    @keyframes deal-card {
+      0% { transform: scale(0.2) translateY(100px) rotate(15deg); opacity: 0; }
+      100% { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
     }
-
-    /* 賭桌綠呢底紋與暗邊 */
-    body::before {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%);
-      pointer-events: none; z-index: 1;
+    @keyframes particleFly {
+      0% { transform: translateY(0) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-120px) scale(1.3); opacity: 0; }
     }
-
-    /* 1. 頂部 HUD */
-    .hud-bar {
-      height: 60px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 20px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 100%);
-      z-index: 10; border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    }
-    .player-profile {
-      display: flex; align-items: center; gap: 10px;
-      background: rgba(0, 0, 0, 0.6); padding: 4px 14px 4px 6px;
-      border-radius: 30px; border: 1px solid #d4af37;
-    }
-    .avatar {
-      width: 42px; height: 42px; border-radius: 50%; border: 2px solid #d4af37;
-      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover, #fff;
-    }
-    .player-name { font-weight: bold; color: #fff; font-size: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .player-trophy { font-size: 11px; color: #f1c40f; display: flex; align-items: center; gap: 4px; }
-
-    .currencies { display: flex; gap: 12px; }
-    .currency-chip {
-      background: rgba(0,0,0,0.65); border: 1.5px solid rgba(212,175,55,0.4);
-      padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 14px;
-      display: flex; align-items: center; gap: 6px; min-width: 90px;
-    }
-    .currency-chip.gems { color: #2ecc71; border-color: rgba(46,204,113,0.5); }
-    .currency-chip.coins { color: #f1c40f; border-color: rgba(241,196,15,0.5); }
-    .currency-chip.stars { color: #9b59b6; border-color: rgba(155,89,182,0.5); }
-
-    /* 2. 左側邊欄（功能按鈕） */
-    .left-menu {
-      position: absolute; left: 20px; top: 85px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
-    }
-    .menu-btn {
-      width: 58px; height: 58px; border-radius: 50%;
-      background: radial-gradient(circle, #2d3436 0%, #1a1a1a 100%);
-      border: 2px solid #d4af37; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.5); position: relative;
-    }
-    .menu-btn:active { transform: scale(0.9); }
-    .menu-btn span { font-size: 20px; margin-bottom: -2px; }
-    .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; }
-    .menu-badge {
-      position: absolute; top: -2px; right: -2px; background: #e74c3c; color: white;
-      font-size: 9px; width: 16px; height: 16px; border-radius: 50%; border: 1px solid #fff;
-      display: flex; align-items: center; justify-content: center; font-weight: bold;
-    }
-
-    /* 3. 中央 Croupier（魔術荷官） */
-    .center-visual {
-      position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-      width: 460px; height: 82vh; pointer-events: none; z-index: 2;
-      animation: breathe 5s ease-in-out infinite; background-size: contain; background-repeat: no-repeat; background-position: bottom center;
-    }
-    /* 為避免載入過慢，預設使用高度擬真的插畫圖示 */
-    .croupier-illustration {
-      width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-    }
-    .dealer-suit {
-      font-size: 160px; line-height: 1; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); text-align: center;
-    }
-
-    /* 4. 下方與右側社交按鈕 */
-    .right-menu {
-      position: absolute; right: 20px; top: 85px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
-    }
-    .side-tag-btn {
-      width: 75px; height: 50px; background: linear-gradient(135deg, #1e272e, #2f3640);
-      border: 1px solid rgba(212,175,55,0.4); border-radius: 8px; font-size: 12px; font-weight: bold;
-      color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 3px; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    }
-    .side-tag-btn span { font-size: 18px; }
-
-    /* 通行證 */
-    .pass-container {
-      position: absolute; left: 20px; bottom: 20px; z-index: 5;
-      background: linear-gradient(90deg, #1e272e 0%, rgba(47, 54, 64, 0.95) 100%);
-      border: 1px solid #d4af37; border-radius: 10px; width: 280px; height: 62px;
-      display: flex; align-items: center; padding: 0 12px; gap: 10px;
-    }
-    .pass-badge { font-size: 26px; }
-    .pass-progress { flex: 1; }
-    .pass-bar { height: 10px; background: #000; border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-    .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
-
-    /* 5. 巨大黃金對戰按鈕 */
-    .battle-center {
-      position: absolute; right: 20px; bottom: 20px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
-    }
-    .battle-mode-bar {
-      width: 250px; background: rgba(0,0,0,0.7); border: 1px solid rgba(212,175,55,0.3);
-      padding: 6px 12px; border-radius: 8px; text-align: center; color: #e1b12c; font-size: 11px; font-weight: bold;
-    }
-    .battle-mode-bar span { font-size: 14px; color: #fff; display: block; margin-bottom: 2px; }
-
-    .play-btn {
-      width: 250px; height: 75px; background: linear-gradient(135deg, #f1c40f, #d4af37, #9a7d0a);
-      border: 2px solid #fff; border-radius: 12px; color: #1e272e; font-size: 26px; font-weight: 900;
-      letter-spacing: 2px; text-shadow: 0 1px 2px rgba(255,255,255,0.8); cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 8px 25px rgba(212,175,55,0.5); transition: 0.2s; position: relative;
-      overflow: hidden; animation: pulse-glow 2s infinite;
-    }
-    .play-btn::after {
-      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      transform: skewX(-25deg); animation: gold-shine 3.5s ease-in-out infinite;
-    }
-    .play-btn:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(212,175,55,0.3); }
-    .play-btn label { font-size: 11px; font-weight: bold; opacity: 0.85; margin-top: 1px; color: #000; }
-
-    /* 6. 彈窗與牌桌 (Modals) */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
-      align-items: center; z-index: 100;
-    }
-    .modal-box {
-      background: radial-gradient(circle at center, #1c2620 0%, #0d120f 100%);
-      border-radius: 14px; padding: 25px; width: 440px; text-align: center;
-      border: 2.5px solid #d4af37; box-shadow: 0 0 30px rgba(212,175,55,0.3);
-    }
-    .modal-title { color: #f1c40f; font-size: 22px; margin-bottom: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    
-    .list-item {
-      background: rgba(255,255,255,0.06); margin: 8px 0; padding: 10px 14px;
-      border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
-      font-size: 14px; border-left: 3px solid #d4af37;
-    }
-    .list-item button {
-      background: #f1c40f; color: #000; border: none; border-radius: 4px;
-      padding: 3px 10px; font-size: 12px; font-weight: bold; cursor: pointer;
-    }
-    .list-item button:disabled { background: #555; color: #888; }
-
-    .game-match-view {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, #133a27 0%, #050d09 100%);
-      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 40px;
-    }
-    .poker-felt-grid {
-      border: 2px dashed rgba(212,175,55,0.35); border-radius: 12px; flex: 1; margin: 20px 0;
-      display: flex; flex-direction: column; justify-content: space-around; position: relative;
-    }
-    .deck-action-btn {
-      width: 150px; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold;
-      background: #f1c40f; border: none; color:#000; cursor:pointer; margin: 0 auto;
-    }
-
-    .hidden { display: none !important; }
   </style>
 </head>
-<body class="theme-casino-main">
+<body>
 
-  <!-- 1. 頂部 HUD 資訊列 -->
+  <!-- 1. 頂部 HUD (高水準手遊大廳標配) -->
   <div class="hud-bar">
-    <div class="player-profile">
+    <div class="player-profile" onclick="openProfile()">
       <div class="avatar"></div>
       <div>
         <div class="player-name">kato</div>
-        <div class="player-trophy">🏆 1,200 <span>等級 15</span></div>
+        <div class="trophy-badge">🏆 1,200 <span>等級 15</span></div>
       </div>
     </div>
     
     <div class="currencies">
-      <div class="currency-chip stars">💜 999</div>
-      <div id="coinCount" class="currency-chip coins">🪙 23,189</div>
-      <div class="currency-chip gems">💚 1,000,000</div>
+      <div class="currency-chip chip-purple"><div class="icon">💜</div><span>999</span></div>
+      <div id="coinCount" class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
+      <div class="currency-chip chip-green"><div class="icon">💚</div><span>1,000,000</span></div>
     </div>
   </div>
 
-  <!-- 2. 左側系統按鈕 -->
+  <!-- 2. 左側邊欄選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店: 卡牌皮膚、專屬特權籌碼上架中！')">
+    <div class="menu-btn" onclick="openCustomAlert('🛒 幸運商店', '黑金卡牌皮膚 & 專屬特權籌碼上架中！歡迎使用籌碼兌換。')">
       <span>🛒</span>
       <label>商店</label>
     </div>
-    <div class="menu-btn" onclick="alert('角色: 賭神 KATO 已就緒，技能「透視、幸運值 +20%」')">
+    <div class="menu-btn" onclick="openCustomAlert('🎴 角色資料', '目前出戰角色: 賭神 KATO<br><br>🎰 專屬天賦: 透視牌桌 / 幸運值 +20%')">
       <span>🎴</span>
       <label>角色</label>
     </div>
-    <div class="menu-btn" onclick="alert('最新公告：1v1 賭神巡迴賽已正式開跑！')">
+    <div class="menu-btn" onclick="openCustomAlert('📰 賭城新聞', '🔥 賭神1v1 巡迴大獎賽已拉開帷幕，首勝即可獲得 500 籌碼！快前往配對。')">
       <span>📰</span>
       <div class="menu-badge">!</div>
       <label>新聞</label>
     </div>
   </div>
 
-  <!-- 3. 左下角「賭金通行證」 -->
-  <div class="pass-container" onclick="alert('VIP 通行證: 再獲得 350 積分即可領取黃金寶箱！')">
+  <!-- 3. 左下角「賭金通行證」與功能鍵 -->
+  <div class="pass-container" onclick="openCustomAlert('🎫 賭金通行證', '通行證賽季階段：350 / 500 積分。<br>再獲得 150 積分，即可解鎖「黃金寶藏禮包」！')">
     <div class="pass-badge">🎫</div>
     <div class="pass-progress">
-      <div style="font-size: 11px; margin-bottom: 2px; color: #f1c40f; font-weight: bold;">賭金通行證 (VIP Pass)</div>
+      <div style="font-size: 12px; font-weight: 800; color: #ffe066;">賭金通行證 (VIP Pass)</div>
       <div class="pass-bar"><div class="pass-fill"></div></div>
     </div>
-    <div style="font-size: 10px; color: #999;">0 / 500</div>
-    <div style="font-size: 20px;">🎁</div>
+    <div style="font-size: 11px; color: #aaa; margin-left: 10px;">0 / 500</div>
+    <div style="font-size: 24px;">🎁</div>
   </div>
 
-  <!-- 4. 中央 Croupier 洗牌魔術師荷官 -->
+  <!-- 任務與每日禮物（左下上方） -->
+  <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
+    <button onclick="openTasks()" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-3d);">📋 每日任務</button>
+    <button id="giftBtn" onclick="claimDailyGift(event)" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow-3d);">🎁 每日禮物</button>
+  </div>
+
+  <!-- 4. 中央魔術荷官 (與高質感插畫視覺同級，3D 動態陰影) -->
   <div class="center-visual">
-    <div class="croupier-illustration">
-      <div class="dealer-suit" style="position:relative; top:20px;">🎩</div>
-      <div class="dealer-suit" style="font-size: 130px; margin-top:-70px;">🤵</div>
-      <div style="color: #f1c40f; text-shadow: 0 2px 5px rgba(0,0,0,0.5); font-weight: bold; font-size: 24px; position:absolute; bottom:140px;">🃏 POKER ARENA 🃏</div>
-    </div>
+    <div class="dealer-suit">🎩🤵</div>
+    <div class="logo-glow">POKER ARENA</div>
   </div>
 
   <!-- 5. 右側社交功能 -->
   <div class="right-menu">
-    <button class="side-tag-btn" onclick="alert('在線好友：3/54 人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊：未加入小隊')"><span>🏠</span>小隊</button>
-    <button class="side-tag-btn" onclick="alert('目前尚未加入任何戰隊')"><span>🏅</span>戰隊</button>
+    <button class="side-tag-btn" onclick="openCustomAlert('👥 好友名單', '在線好友：3 / 54 人<br>• 大老二阿神 (在線)<br>• VIP 德州神話 (局中)<br>• 賭城洗牌哥 (在線)')"><span>👥</span>好友</button>
+    <button class="side-tag-btn" onclick="openCustomAlert('🏠 小隊大廳', '你目前不在任何小隊中，是否建立或加入好友小隊？')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="openCustomAlert('🏅 戰隊俱樂部', '本週戰隊榮譽戰已啟動！加入戰隊即可爭奪 100萬 賽池！')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 任務與每日禮物（左下上方） -->
-  <div style="position: absolute; left: 110px; bottom: 20px; display: flex; gap: 10px; z-index: 5;">
-    <button onclick="openTasks()" style="background: rgba(0,0,0,0.6); border: 1.5px solid #d4af37; border-radius: 8px; color: #fff; padding: 6px 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;">📋 每日任務</button>
-    <button id="giftBtn" onclick="claimDailyGift()" style="background: rgba(0,0,0,0.6); border: 1.5px solid #d4af37; border-radius: 8px; color: #fff; padding: 6px 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;">🎁 每日禮物</button>
-  </div>
-
-  <!-- 6. 右下角對戰開始區域 -->
+  <!-- 6. 右下角對戰開始區域 (3D 發光黃金按鈕) -->
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
-      🏆 1v1 賭神賽
+      🏆 1v1 賭神巡迴賽
     </div>
     <button id="matchBtn" class="play-btn">
       對戰
-      <label>真人即時配對 (Match)</label>
+      <label>真人即時配對</label>
     </button>
   </div>
 
-  <!-- 【彈窗：任務中心】 -->
-  <div id="tasksModal" class="modal-overlay hidden">
+  <!-- 🔔 遊戲專屬手遊公告/訊息彈窗 (全客製、無 alert 網頁感) -->
+  <div id="alertModal" class="modal-overlay">
     <div class="modal-box">
-      <h2 class="modal-title">📋 今日每日任務</h2>
+      <h2 id="alertTitle" class="modal-title"></h2>
+      <p id="alertMsg" style="color: #ccc; line-height: 1.6; margin-bottom: 10px; font-size: 15px;"></p>
+      <button class="btn-close" onclick="closeModal('alertModal')">確認</button>
+    </div>
+  </div>
+
+  <!-- 📋 每日任務大廳 -->
+  <div id="tasksModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2 class="modal-title">今日每日任務</h2>
       <div id="taskItem1" class="list-item">
         <span>🎮 在 1v1 經典賽獲得 1 次勝利</span>
-        <button onclick="completeTask('taskItem1', 500)">領取 500 🪙</button>
+        <button onclick="completeTask('taskItem1', 500, event)">領取 500 🪙</button>
       </div>
       <div id="taskItem2" class="list-item">
-        <span>🎰 累計下注滿 5,000 籌碼</span>
-        <button onclick="completeTask('taskItem2', 300)">領取 300 🪙</button>
+        <span>🎰 累計在對局中完成 3 次抽牌</span>
+        <button onclick="completeTask('taskItem2', 300, event)">領取 300 🪙</button>
       </div>
       <div id="taskItem3" class="list-item">
-        <span>🃏 參與一次真人即時對戰</span>
+        <span>🃏 參與一場真人即時對戰</span>
         <button id="quickBattleBtn" disabled>未達成</button>
       </div>
-      <button onclick="closeModal('tasksModal')" style="margin-top: 15px; background: transparent; border: 1.5px solid #d4af37; color: #d4af37; padding: 6px 16px; border-radius: 6px; cursor: pointer;">關閉</button>
+      <button class="btn-close" onclick="closeModal('tasksModal')" style="background: transparent; border: 2px solid #d4af37; color:#d4af37; box-shadow: none;">關閉</button>
     </div>
   </div>
 
-  <!-- 【彈窗：排隊配對中】 -->
-  <div id="matchingModal" class="modal-overlay hidden">
-    <div class="modal-box" style="width: 360px;">
-      <h2 style="color:#f1c40f;">搜尋對手中...</h2>
-      <div style="font-size: 50px; margin: 20px 0; animation: breathe 1.5s infinite;">⏳</div>
-      <p id="matchStatus" style="color: #ccc; font-size: 14px;">正在全網搜尋線上牌手...</p>
-      <button id="cancelBtn" onclick="cancelMatch()" style="margin-top: 20px; background: #e74c3c; border: none; color: white; padding: 8px 20px; border-radius: 6px; cursor: pointer;">取消配對</button>
+  <!-- ⏳ 搜尋對手排隊中 (全螢幕手遊配對介面) -->
+  <div id="matchingModal" class="modal-overlay">
+    <div class="modal-box" style="width: 380px;">
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; font-size: 24px; letter-spacing:1px;">搜尋對手中...</h2>
+      <div style="font-size: 60px; margin: 25px 0; animation: breathe 1.5s infinite;">♣️♥️♦️♠️</div>
+      <p id="matchStatus" style="color: #ccc; font-size: 14px;">正在全網搜尋同等積分牌手...</p>
+      <button id="cancelBtn" onclick="cancelMatch()" style="margin-top: 25px; background: #e74c3c; border: none; color: white; padding: 10px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(231,76,60,0.5);">取消配對</button>
     </div>
   </div>
 
-  <!-- 【戰鬥牌桌視圖】 -->
+  <!-- 🃏 華麗對戰牌桌 1v1 -->
   <div id="gameMatchView" class="game-match-view hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2 id="roomTitle" style="color: #f1c40f;">🏆 賭神賽 room_xxxx</h2>
-      <div style="font-size: 14px; color: #ccc;">賭池: 10,000 🪙</div>
+    <div class="players-status">
+      <!-- 我方 -->
+      <div class="battle-avatar-card">
+        <div class="avatar" style="width:36px; height:36px;"></div>
+        <div>
+          <div style="font-weight: 800; font-size: 13px;">kato</div>
+          <div style="color:#4cd137; font-size:11px;">你的手牌</div>
+        </div>
+      </div>
+      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 賭神賽 room_xxxx</h2>
+      <!-- 對手 -->
+      <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
+        <div class="avatar" style="width:36px; height:36px; background-image: url('https://api.dicebear.com/7.x/adventurer/svg?seed=enemy');"></div>
+        <div>
+          <div style="font-weight: 800; font-size: 13px;">對手 (Opponent)</div>
+          <div style="color:#e74c3c; font-size:11px;">已就緒</div>
+        </div>
+      </div>
     </div>
 
     <!-- 牌桌 -->
-    <div class="poker-felt-grid">
-      <!-- 對手 -->
+    <div class="card-board">
+      <!-- 對手手牌區 -->
       <div style="text-align: center;">
-        <div style="color: #ea8685;">對手 (Opponent)</div>
-        <div id="opponentCards" style="font-size: 28px; letter-spacing: 4px; margin-top: 8px;">🂠 🂠 (2 張)</div>
+        <div id="opponentCards" class="hand-cards">
+          <div class="poker-card back">♣️</div>
+          <div class="poker-card back">♠️</div>
+        </div>
+        <div style="font-size: 11px; color:#aaa; margin-top:8px;">對手手牌區</div>
       </div>
 
-      <!-- 戰場提示 -->
-      <div id="boardTips" style="text-align: center; font-size: 14px; color: #f1c40f;"></div>
-
-      <!-- 我方 -->
+      <!-- 籌碼池 -->
       <div style="text-align: center;">
-        <div style="color: #2ecc71;">你的手牌 (Kato)</div>
-        <div id="myCards" style="font-size: 30px; letter-spacing: 3px; font-weight: bold; margin-top: 8px; color: #fff;">-</div>
+        <div style="display:inline-block; background:rgba(0,0,0,0.6); padding:4px 14px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;">🪙 賭池: 10,000</div>
+      </div>
+
+      <!-- 我方手牌區 -->
+      <div style="text-align: center;">
+        <div id="myCards" class="hand-cards">
+          <!-- 會由 JS 產生精緻 HTML 牌面，不使用 emoji 卡 -->
+        </div>
+        <div style="font-size: 11px; color:#aaa; margin-top:8px;">你的手牌區</div>
       </div>
     </div>
 
     <div style="display: flex; gap: 20px; justify-content: center;">
       <button id="drawBtn" class="deck-action-btn">抽一張牌</button>
-      <button onclick="leaveGame()" style="background: transparent; border: 1.5px solid #e74c3c; color: #e74c3c; font-size: 16px; padding: 12px 24px; border-radius: 8px; cursor: pointer;">認輸 / 離開</button>
+      <button onclick="leaveGame()" style="background: transparent; border: 2.5px solid #e74c3c; color: #e74c3c; font-size: 16px; padding: 12px 28px; border-radius: 12px; font-weight: 800; cursor: pointer;">認輸 / 離開</button>
     </div>
   </div>
 
@@ -348,97 +428,148 @@
     let activeRoomId = null;
     let coins = 23189;
 
-    function openTasks() { document.getElementById('tasksModal').classList.remove('hidden'); }
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    // 自訂手遊提示彈窗
+    function openCustomAlert(title, text) {
+      document.getElementById('alertTitle').innerHTML = title;
+      document.getElementById('alertMsg').innerHTML = text;
+      document.getElementById('alertModal').classList.add('active');
+    }
+
+    function openTasks() { document.getElementById('tasksModal').classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // 獲得金幣飛昇動畫
+    function createCoinParticle(x, y) {
+      const p = document.createElement('div');
+      p.className = 'particle-fly';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.innerText = '+500 🪙';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1200);
+    }
 
     // 每日禮物
-    function claimDailyGift() {
+    function claimDailyGift(e) {
       const btn = document.getElementById('giftBtn');
       if (btn.disabled) return;
+      
+      createCoinParticle(e.clientX, e.clientY);
       coins += 500;
-      document.getElementById('coinCount').innerText = `🪙 ${coins.toLocaleString()}`;
+      document.getElementById('coinCount').querySelector('span').innerText = coins.toLocaleString();
+      
       btn.disabled = true;
       btn.style.opacity = '0.5';
       btn.innerText = "🎁 已領取";
-      alert("領取每日禮物成功！獲得 500 金幣！");
     }
 
     // 完成任務
-    function completeTask(taskId, reward) {
+    function completeTask(taskId, reward, e) {
       const el = document.getElementById(taskId).querySelector('button');
       if (el.disabled) return;
+      
+      createCoinParticle(e.clientX, e.clientY);
       coins += reward;
-      document.getElementById('coinCount').innerText = `🪙 ${coins.toLocaleString()}`;
+      document.getElementById('coinCount').querySelector('span').innerText = coins.toLocaleString();
+      
       el.disabled = true;
       el.innerText = "已領取";
-      alert(`領取任務獎勵 ${reward} 金幣！`);
     }
 
     // 按下對戰開始排隊
     const matchBtn = document.getElementById('matchBtn');
     matchBtn.addEventListener('click', () => {
       socket.emit('start_match');
-      document.getElementById('matchingModal').classList.remove('hidden');
+      document.getElementById('matchingModal').classList.add('active');
     });
 
-    // 取消配對
+    // 取消排隊
     function cancelMatch() {
-      // 模擬取消，並關閉 Modal
-      document.getElementById('matchingModal').classList.add('hidden');
+      document.getElementById('matchingModal').classList.remove('active');
     }
 
     // 接收開局
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;
       
-      // 隱藏配對彈窗
-      document.getElementById('matchingModal').classList.add('hidden');
+      // 關閉排隊 Modal
+      document.getElementById('matchingModal').classList.remove('active');
       
-      // 切換至牌桌
+      // 切換至華麗牌桌
       document.getElementById('gameMatchView').classList.remove('hidden');
       document.getElementById('roomTitle').innerText = `🏆 賭神賽 (${activeRoomId})`;
       
-      // 將「參與真人對局」任務設為可領取
-      const task3 = document.getElementById('quickBattleBtn');
-      task3.disabled = false;
-      task3.innerText = "領取 400 🪙";
-      task3.onclick = () => {
+      // 觸發解鎖每日任務 3 禮包
+      const task3Btn = document.getElementById('quickBattleBtn');
+      task3Btn.disabled = false;
+      task3Btn.className = "";
+      task3Btn.style.background = "linear-gradient(135deg, #f1c40f, #d4af37)";
+      task3Btn.style.color = "#000";
+      task3Btn.innerText = "領取 400 🪙";
+      task3Btn.onclick = (e) => {
+        createCoinParticle(e.clientX, e.clientY);
         coins += 400;
-        document.getElementById('coinCount').innerText = `🪙 ${coins.toLocaleString()}`;
-        task3.disabled = true;
-        task3.innerText = "已領取";
+        document.getElementById('coinCount').querySelector('span').innerText = coins.toLocaleString();
+        task3Btn.disabled = true;
+        task3Btn.innerText = "已領取";
       };
 
       renderBoard(data.players);
     });
 
-    // 抽牌操作
+    // 抽牌
     const drawBtn = document.getElementById('drawBtn');
     drawBtn.addEventListener('click', () => {
       socket.emit('draw_card', { roomId: activeRoomId });
     });
 
-    // 更新牌局
+    // 更新
     socket.on('update_board', (data) => {
       renderBoard(data.players);
     });
 
+    // 渲染手牌，升級為手遊撲克牌 UI (不使用 web-emoji)
     function renderBoard(players) {
       const myId = socket.id;
+      const myCardsArea = document.getElementById('myCards');
+      const oppCardsArea = document.getElementById('opponentCards');
+      
+      myCardsArea.innerHTML = '';
+      oppCardsArea.innerHTML = '';
+
       for (const id in players) {
         if (id === myId) {
-          myCards.innerText = players[id].cards.join(' , ');
+          players[id].cards.forEach(val => {
+            const isRed = Math.random() > 0.5; // 隨機花色增加擬真度
+            const suit = isRed ? '♥️' : '♠️';
+            
+            const cardEl = document.createElement('div');
+            cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
+            cardEl.innerHTML = `
+              <div class="card-val">${val}</div>
+              <div class="suit-symbol">${suit}</div>
+              <div class="card-val" style="transform: rotate(180deg); align-self: flex-end;">${val}</div>
+            `;
+            myCardsArea.appendChild(cardEl);
+          });
         } else {
-          opponentCards.innerText = players[id].cards.map(() => '🂠').join(' ') + ` (${players[id].cards.length} 張)`;
+          // 對手只顯示精美的「背面」
+          players[id].cards.forEach(() => {
+            const cardBack = document.createElement('div');
+            cardBack.className = 'poker-card back';
+            cardBack.innerHTML = '👑';
+            oppCardsArea.appendChild(cardBack);
+          });
         }
       }
     }
 
     function leaveGame() {
-      if (confirm('確定要離開本次對局嗎？')) {
+      openCustomAlert('認輸對局', '你已選擇認輸，返回大廳。下一場比賽再贏回來吧！');
+      setTimeout(() => {
         document.getElementById('gameMatchView').classList.add('hidden');
         activeRoomId = null;
-      }
+      }, 1500);
     }
   </script>
 </body>

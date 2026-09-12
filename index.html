@@ -249,8 +249,43 @@
   <div id="stepCustomScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">角色外觀塑形</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>自訂您的專屬牌手外觀與風格！</p></div></div></div>
   <div id="trophyScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">榮譽盃數之路</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>當前盃數：650 🏆，解鎖豐厚獎勵！</p></div></div></div>
   <div id="profileScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>修改您的遊戲暱稱與個人資料。</p></div></div></div>
-  <div id="friendsScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">好友系統</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>查看在線好友與邀請組隊。</p></div></div></div>
-  <div id="teamScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">小隊大廳</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>與隊友一同準備進入競技場！</p></div></div></div>
+  
+  <!-- 好友系統彈窗 (支援輸入名字雙方同意加好友) -->
+  <div id="friendsScreen" class="app-screen-overlay">
+    <div class="screen-window" style="width: 420px; height: 65vh;">
+      <div class="screen-header">
+        <div class="screen-title">👥 好友系統</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:13px; color:#ccc;">輸入其他已建立的帳號名稱發送好友邀請：</div>
+        <div style="display:flex; gap:10px;">
+          <input type="text" id="friendNameInput" placeholder="輸入好友帳號..." style="flex:1; padding:8px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
+          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">加好友</button>
+        </div>
+        <hr style="border-color:rgba(212,175,55,0.3); margin:4px 0;">
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">待處理的好友邀請：</div>
+        <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:5px;">我的好友列表：</div>
+        <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 小隊大廳彈窗 (可從好友中邀請一同遊玩) -->
+  <div id="teamScreen" class="app-screen-overlay">
+    <div class="screen-window" style="width: 400px; height: 60vh;">
+      <div class="screen-header">
+        <div class="screen-title">🏠 小隊大廳 (邀請好友遊玩)</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:13px; color:#ccc;">您可以從好友列表中邀請線上好友加入小隊一同匹配對戰：</div>
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">在線好友可邀請：</div>
+        <div id="teamFriendsListContainer" style="display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1;"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- 帳號切換彈窗 -->
   <div id="accountScreen" class="app-screen-overlay">
@@ -272,7 +307,7 @@
     </div>
   </div>
 
-  <!-- 100秒自動補位配對彈窗 (德州撲克與21點皆支援玩家匹配與人機補位) -->
+  <!-- 100秒自動補位配對彈窗 -->
   <div id="matchingModal" class="app-screen-overlay">
     <div class="screen-window" style="width: 390px; height: 48vh; align-items:center; justify-content:center; text-align:center;">
       <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:15px;" id="matchingTitleText">尋找對手中...</h2>
@@ -370,10 +405,10 @@
     }
     renderEffects();
 
-    // 帳號制度管理系統
+    // 帳號制度與好友機制管理系統
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
-      "Rockyhsu": { gold: 2950, gems: 1000000, trophies: 650 },
-      "Guest01": { gold: 1000, gems: 500, trophies: 100 }
+      "Rockyhsu": { gold: 2950, gems: 1000000, trophies: 650, friends: [], friendRequests: [] },
+      "Guest01": { gold: 1000, gems: 500, trophies: 100, friends: [], friendRequests: [] }
     };
     let currentUsername = localStorage.getItem('poker_active_account') || "Rockyhsu";
     let currentBet = 100;
@@ -391,7 +426,7 @@
 
     function updateAccountUI() {
       if (!gameAccounts[currentUsername]) {
-        gameAccounts[currentUsername] = { gold: 1500, gems: 100, trophies: 0 };
+        gameAccounts[currentUsername] = { gold: 1500, gems: 100, trophies: 0, friends: [], friendRequests: [] };
       }
       const acc = gameAccounts[currentUsername];
       document.getElementById('playerNameText').innerText = currentUsername;
@@ -400,20 +435,27 @@
       document.getElementById('hudTrophyCount').innerText = acc.trophies;
       document.getElementById('currentAccountDisplay').innerText = currentUsername;
 
+      // 渲染帳號列表
       const listContainer = document.getElementById('accountListContainer');
-      listContainer.innerHTML = '';
-      for (let name in gameAccounts) {
-        const isCurrent = name === currentUsername;
-        listContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid ${isCurrent?'#2ecc71':'rgba(212,175,55,0.3)'};">
-            <div>
-              <b style="color:${isCurrent?'#2ecc71':'#fff'}">${name}</b>
-              <div style="font-size:11px; color:#aaa;">🪙 ${gameAccounts[name].gold} | 🏆 ${gameAccounts[name].trophies}</div>
+      if (listContainer) {
+        listContainer.innerHTML = '';
+        for (let name in gameAccounts) {
+          const isCurrent = name === currentUsername;
+          listContainer.innerHTML += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid ${isCurrent?'#2ecc71':'rgba(212,175,55,0.3)'};">
+              <div>
+                <b style="color:${isCurrent?'#2ecc71':'#fff'}">${name}</b>
+                <div style="font-size:11px; color:#aaa;">🪙 ${gameAccounts[name].gold} | 🏆 ${gameAccounts[name].trophies}</div>
+              </div>
+              ${isCurrent ? '<span style="color:#2ecc71; font-size:12px; font-weight:bold;">使用中</span>' : `<button onclick="switchAccount('${name}')" style="background:#d4af37; color:#000; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">切換</button>`}
             </div>
-            ${isCurrent ? '<span style="color:#2ecc71; font-size:12px; font-weight:bold;">使用中</span>' : `<button onclick="switchAccount('${name}')" style="background:#d4af37; color:#000; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">切換</button>`}
-          </div>
-        `;
+          `;
+        }
       }
+
+      // 渲染好友與邀請 UI
+      renderFriendsUI();
+      renderTeamUI();
     }
 
     function switchAccount(name) {
@@ -431,7 +473,7 @@
       const name = input.value.trim();
       if (!name) return alert('帳號名稱不能為空！');
       if (!gameAccounts[name]) {
-        gameAccounts[name] = { gold: 2000, gems: 200, trophies: 50 };
+        gameAccounts[name] = { gold: 2000, gems: 200, trophies: 50, friends: [], friendRequests: [] };
       }
       currentUsername = name;
       input.value = '';
@@ -439,6 +481,92 @@
       updateAccountUI();
       alert(`已成功登入/新增帳號：${name}`);
       closeScreens();
+    }
+
+    // 好友機制功能
+    function sendFriendRequest() {
+      const input = document.getElementById('friendNameInput');
+      const targetName = input.value.trim();
+      if (!targetName) return alert('請輸入好友名字！');
+      if (targetName === currentUsername) return alert('不能加自己為好友！');
+      if (!gameAccounts[targetName]) return alert(`找不到名為 [${targetName}] 的帳號！`);
+
+      const targetAcc = gameAccounts[targetName];
+      const myAcc = gameAccounts[currentUsername];
+
+      if (myAcc.friends.includes(targetName)) return alert('對方已經是您的好友了！');
+      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友邀請了，請等待對方同意！');
+
+      targetAcc.friendRequests.push(currentUsername);
+      saveAccountsToStorage();
+      input.value = '';
+      alert(`已成功向 [${targetName}] 發送好友邀請！`);
+      updateAccountUI();
+    }
+
+    function acceptFriendRequest(fromName) {
+      const myAcc = gameAccounts[currentUsername];
+      const targetAcc = gameAccounts[fromName];
+
+      myAcc.friendRequests = myAcc.friendRequests.filter(n => n !== fromName);
+      if (!myAcc.friends.includes(fromName)) myAcc.friends.push(fromName);
+      if (targetAcc && !targetAcc.friends.includes(currentUsername)) targetAcc.friends.push(currentUsername);
+
+      saveAccountsToStorage();
+      updateAccountUI();
+      alert(`已同意 [${fromName}] 的好友邀請！`);
+    }
+
+    function renderFriendsUI() {
+      const myAcc = gameAccounts[currentUsername];
+      const reqContainer = document.getElementById('friendRequestsContainer');
+      const listContainer = document.getElementById('friendsListContainer');
+      if (!reqContainer || !listContainer) return;
+
+      reqContainer.innerHTML = myAcc.friendRequests.length === 0 ? '<div style="font-size:12px; color:#888;">無待處理邀請</div>' : '';
+      myAcc.friendRequests.forEach(name => {
+        reqContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:6px 10px; border-radius:6px;">
+            <span style="font-size:13px;">${name}</span>
+            <button onclick="acceptFriendRequest('${name}')" style="background:#2ecc71; color:#fff; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">同意</button>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚未新增好友</div>' : '';
+      myAcc.friends.forEach(name => {
+        listContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:6px 10px; border-radius:6px;">
+            <span style="font-size:13px; color:#f1c40f;">🟢 ${name} (線上)</span>
+            <span style="font-size:11px; color:#aaa;">已結為好友</span>
+          </div>
+        `;
+      });
+    }
+
+    function renderTeamUI() {
+      const myAcc = gameAccounts[currentUsername];
+      const teamContainer = document.getElementById('teamFriendsListContainer');
+      if (!teamContainer) return;
+
+      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統新增好友！</div>' : '';
+      myAcc.friends.forEach(name => {
+        teamContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
+            <div>
+              <b>${name}</b>
+              <div style="font-size:11px; color:#2ecc71;">線上準備中</div>
+            </div>
+            <button onclick="inviteFriendToPlay('${name}')" style="background:#f1c40f; color:#000; border:none; padding:5px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">邀請同玩</button>
+          </div>
+        `;
+      });
+    }
+
+    function inviteFriendToPlay(friendName) {
+      alert(`已向好友 [${friendName}] 發送組隊邀請！對方已接受，即將一同進入對局。`);
+      closeScreens();
+      startCurrentGameMode();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -550,12 +678,10 @@
       const oppC = document.getElementById('opponentCards');
       myC.innerHTML = ''; oppC.innerHTML = '';
 
-      // 對手底牌隱藏
       thOppCards.forEach(() => {
         oppC.innerHTML += `<div class="poker-card back" style="background:#500; color:#fff; display:flex; align-items:center; justify-content:center;">🂠</div>`;
       });
 
-      // 你的底牌 (牌面圖像在中間)
       let myCardsHTML = '<div style="display:flex; gap:12px; justify-content:center; align-items:center; margin-bottom:5px;">';
       thPlayerCards.forEach(c => {
         const isRed = c.s === '♥️' || c.s === '♦️';
@@ -564,7 +690,6 @@
       myCardsHTML += '</div>';
       myC.innerHTML = myCardsHTML;
 
-      // 公共牌區一致性渲染
       let commContainer = document.getElementById('communityCardsArea');
       if (!commContainer) {
         commContainer = document.createElement('div');

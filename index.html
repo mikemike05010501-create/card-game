@@ -56,7 +56,6 @@
     .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
       background-size: cover; background-position: center top;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
       background-color: transparent; overflow: hidden;
@@ -157,7 +156,7 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* 中央大廳舞台：完美置中並附帶可愛皮卡丘夥伴與圓形草坪底座 */
+    /* 中央大廳舞台：完美置中並附帶皮卡丘小夥伴與圓形草坪底座 */
     .center-visual {
       position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
       width: 520px; height: 85vh; pointer-events: none; z-index: 3;
@@ -209,11 +208,15 @@
     .battle-center {
       position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
     }
+    /* 遊戲模式切換面板 */
     .battle-mode-bar {
       width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #d4af37;
       padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
       box-shadow: var(--shadow-3d); backdrop-filter: blur(8px); font-family: 'Outfit', sans-serif;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     }
+    .battle-mode-bar:active { transform: scale(0.97); }
+    .battle-mode-bar div { text-align: left; }
     .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
 
     .play-btn {
@@ -374,7 +377,7 @@
                   url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
       z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
-    .players-status { display: flex; justify-content: space-between; align-items: center; }
+    .players-status { display: flx; justify-content: space-between; align-items: center; }
     .battle-avatar-card {
       background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 8px 18px; border-radius: 16px;
       display: flex; align-items: center; gap: 12px; width: 230px; box-shadow: var(--shadow-3d);
@@ -552,7 +555,7 @@
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar"></div>
+      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
         <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
@@ -637,7 +640,7 @@
     <div class="logo-glow">POKER ARENA</div>
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
-      <div id="mainHeroFullBody" class="hero-anime-figure"></div>
+      <div id="mainHeroFullBody" class="hero-anime-figure" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
       <div class="companion-pet">⚡</div>
       <div id="heroOutfitBadge" class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
     </div>
@@ -650,15 +653,18 @@
     <button class="side-tag-btn" onclick="openScreen('clanScreen')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 右下對戰按鈕 -->
+  <!-- 右下對戰按鈕 (已改為德州撲克，點擊上方模式可切換為21點) -->
   <div class="battle-center">
-    <div class="battle-mode-bar">
-      <span>單人荒野對決</span>
-      🏆 榮譽排位賽
+    <div class="battle-mode-bar" onclick="toggleGameMode()">
+      <div>
+        <span id="modeTitleText">德州撲克</span>
+        <small style="color:#aaa; font-size:10px;">點擊切換 21點</small>
+      </div>
+      <span style="font-size:18px;">🔄</span>
     </div>
-    <button id="matchBtn" class="play-btn">
-      對戰
-      <label>尋找大廳</label>
+    <button id="matchBtn" class="play-btn" onclick="startCurrentGameMode()">
+      開始遊戲
+      <label id="btnSubtitle">德州撲克大廳</label>
     </button>
   </div>
 
@@ -690,7 +696,7 @@
 
         <div class="step-container-grid">
           <div class="camera-viewport">
-            <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
+            <div id="stepCameraTarget" class="camera-focus-target view-overview" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
             <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
           </div>
 
@@ -857,28 +863,28 @@
   <!-- 配對彈窗 -->
   <div id="matchingModal" class="app-screen-overlay">
     <div class="screen-window" style="width: 360px; height: 45vh; align-items:center; justify-content:center; text-align:center;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;">尋找對手中...</h2>
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找德州撲克對手中...</h2>
       <div style="font-size: 50px; margin: 15px 0;">♣️♥️♦️♠️</div>
       <button onclick="closeScreens()" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 1v1 對戰畫面 -->
+  <!-- 1v1 對戰畫面 (德州撲克 / 21點 通用戰局) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
         <div id="battleMyAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
         <div>
           <div id="battleMyName" style="font-weight: 800; font-size: 14px;">我方</div>
-          <div style="color:#4cd137; font-size:11px;">你的手牌</div>
+          <div style="color:#4cd137; font-size:11px;" id="myScoreLabel">你的手牌</div>
         </div>
       </div>
-      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 荒野對決</h2>
+      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 德州撲克對決</h2>
       <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
         <div id="battleOppAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
         <div>
-          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">對手</div>
-          <div style="color:#e74c3c; font-size:11px;">在線牌手</div>
+          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">莊家 / 對手</div>
+          <div style="color:#e74c3c; font-size:11px;" id="oppScoreLabel">在線牌手</div>
         </div>
       </div>
     </div>
@@ -888,20 +894,20 @@
         <div id="opponentCards" class="hand-cards">
           <div class="poker-card back">👑</div>
         </div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;">對手手牌區</div>
+        <div style="font-size: 11px; color:#aaa; margin-top:8px;" id="oppAreaTitle">對手手牌區</div>
       </div>
       <div style="text-align: center;">
-        <div style="display:inline-block; background:rgba(0,0,0,0.7); padding:4px 16px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;">🪙 賭池: 10,000</div>
+        <div style="display:inline-block; background:rgba(0,0,0,0.7); padding:4px 16px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;" id="potLabel">🪙 賭池: 10,000</div>
       </div>
       <div style="text-align: center;">
         <div id="myCards" class="hand-cards"></div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;">你的手牌區</div>
+        <div style="font-size: 11px; color:#aaa; margin-top:8px;" id="myAreaTitle">你的手牌區</div>
       </div>
     </div>
 
-    <div style="display: flex; gap: 20px; justify-content: center;">
-      <button id="drawBtn" style="width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:var(--gold); border:2px solid #fff; cursor:pointer;">抽一張牌</button>
-      <button onclick="document.getElementById('gameMatchView').classList.add('hidden')" style="background:transparent; border:2px solid #e74c3c; color:#e74c3c; padding:10px 24px; border-radius:12px; font-weight:bold; cursor:pointer;">離開對局</button>
+    <div style="display: flex; gap: 20px; justify-content: center;" id="gameActionButtons">
+      <button id="drawBtn" style="width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:var(--gold); border:2px solid #fff; cursor:pointer;" onclick="handleGameAction()">抽一張牌</button>
+      <button onclick="leaveGameSession()" style="background:transparent; border:2px solid #e74c3c; color:#e74c3c; padding:10px 24px; border-radius:12px; font-weight:bold; cursor:pointer;">離開對局</button>
     </div>
   </div>
 
@@ -1002,6 +1008,188 @@
       requestAnimationFrame(renderClickEffects);
     }
     renderClickEffects();
+
+    // ==========================================
+    // 遊戲模式切換邏輯（德州撲克 ⇄ 21點）
+    // ==========================================
+    let currentGameMode = 'poker'; // 'poker' 或 'blackjack'
+
+    function toggleGameMode() {
+      AudioEngine.playMutedTap();
+      if (currentGameMode === 'poker') {
+        currentGameMode = 'blackjack';
+        document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
+        document.getElementById('btnSubtitle').innerText = '挑戰莊家 21點';
+      } else {
+        currentGameMode = 'poker';
+        document.getElementById('modeTitleText').innerText = '德州撲克';
+        document.getElementById('btnSubtitle').innerText = '德州撲克大廳';
+      }
+    }
+
+    const SERVER_URL = "https://game-server-mike.onrender.com";
+    const socket = io(SERVER_URL);
+    let activeRoomId = null;
+
+    function startCurrentGameMode() {
+      AudioEngine.playBubbleStream();
+      if (currentGameMode === 'poker') {
+        socket.emit('start_match', { playerName: currentUsername });
+        document.getElementById('matchingTitleText').innerText = '尋找德州撲克對手中...';
+        openScreen('matchingModal');
+      } else {
+        // 啟動本地 21點 單人挑戰模式
+        startBlackjackGame();
+      }
+    }
+
+    // 21點 遊戲狀態
+    let bjPlayerCards = [];
+    let bjDealerCards = [];
+
+    function startBlackjackGame() {
+      closeScreens();
+      document.getElementById('gameMatchView').classList.remove('hidden');
+      document.getElementById('roomTitle').innerText = '♠️ 21點 (Blackjack) 經典對決';
+      document.getElementById('oppAreaTitle').innerText = '莊家手牌區';
+      document.getElementById('myAreaTitle').innerText = '你的手牌區 (目標 21點)';
+      document.getElementById('battleOppName').innerText = 'Casino 莊家';
+      document.getElementById('potLabel').innerText = '🪙 21點 桌面';
+      document.getElementById('drawBtn').innerText = '要牌 (Hit)';
+      
+      // 加入停牌按鈕
+      const actionContainer = document.getElementById('gameActionButtons');
+      if (!document.getElementById('standBtn')) {
+        const standBtn = document.createElement('button');
+        standBtn.id = 'standBtn';
+        standBtn.style.cssText = 'width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:#e67e22; border:2px solid #fff; cursor:pointer; color:#fff;';
+        standBtn.innerText = '停牌 (Stand)';
+        standBtn.onclick = handleBlackjackStand;
+        actionContainer.insertBefore(standBtn, actionContainer.lastElementChild);
+      }
+
+      // 發牌初始化
+      bjPlayerCards = [getRandomCardVal(), getRandomCardVal()];
+      bjDealerCards = [getRandomCardVal(), getRandomCardVal()];
+      renderBlackjackBoard();
+    }
+
+    function getRandomCardVal() {
+      const vals = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+      return vals[Math.floor(Math.random() * vals.length)];
+    }
+
+    function getCardNumericValue(cards) {
+      let sum = 0;
+      let aces = 0;
+      cards.forEach(c => {
+        if (c === 'A') { aces += 1; sum += 11; }
+        else if (['K', 'Q', 'J', '10'].includes(c)) { sum += 10; }
+        else { sum += parseInt(c); }
+      });
+      while (sum > 21 && aces > 0) {
+        sum -= 10;
+        aces -= 1;
+      }
+      return sum;
+    }
+
+    function renderBlackjackBoard(dealerHidden = true) {
+      const myCardsArea = document.getElementById('myCards');
+      const oppCardsArea = document.getElementById('opponentCards');
+      myCardsArea.innerHTML = '';
+      oppCardsArea.innerHTML = '';
+
+      // 渲染玩家手牌
+      bjPlayerCards.forEach(val => {
+        const isRed = Math.random() > 0.5;
+        const cardEl = document.createElement('div');
+        cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
+        cardEl.innerHTML = `
+          <div style="font-size:18px;">${val}</div>
+          <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
+          <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
+        `;
+        myCardsArea.appendChild(cardEl);
+      });
+      document.getElementById('myScoreLabel').innerText = `點數: ${getCardNumericValue(bjPlayerCards)}`;
+
+      // 渲染莊家手牌
+      bjDealerCards.forEach((val, idx) => {
+        if (dealerHidden && idx === 1) {
+          const cardBack = document.createElement('div');
+          cardBack.className = 'poker-card back';
+          cardBack.innerHTML = '👑';
+          oppCardsArea.appendChild(cardBack);
+        } else {
+          const isRed = Math.random() > 0.5;
+          const cardEl = document.createElement('div');
+          cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
+          cardEl.innerHTML = `
+            <div style="font-size:18px;">${val}</div>
+            <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
+            <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
+          `;
+          oppCardsArea.appendChild(cardEl);
+        }
+      });
+      document.getElementById('oppScoreLabel').innerText = dealerHidden ? `明牌點數: ${getCardNumericValue([bjDealerCards[0]])}` : `總點數: ${getCardNumericValue(bjDealerCards)}`;
+    }
+
+    function handleGameAction() {
+      AudioEngine.playBubbleStream();
+      if (currentGameMode === 'blackjack') {
+        // 21點要牌
+        bjPlayerCards.push(getRandomCardVal());
+        renderBlackjackBoard(true);
+        const pScore = getCardNumericValue(bjPlayerCards);
+        if (pScore > 21) {
+          alert('💥 爆牌了 (Bust)！你輸掉了這一局。');
+          leaveGameSession();
+        } else if (pScore === 21) {
+          handleBlackjackStand();
+        }
+      } else {
+        // 德州撲克連線抽牌
+        socket.emit('draw_card', { roomId: activeRoomId });
+      }
+    }
+
+    function handleBlackjackStand() {
+      AudioEngine.playFeltThud();
+      // 莊家補牌邏輯：小於 17 點必須一直要牌
+      let dScore = getCardNumericValue(bjDealerCards);
+      while (dScore < 17) {
+        bjDealerCards.push(getRandomCardVal());
+        dScore = getCardNumericValue(bjDealerCards);
+      }
+      renderBlackjackBoard(false);
+
+      const pScore = getCardNumericValue(bjPlayerCards);
+      setTimeout(() => {
+        if (dScore > 21) {
+          alert(`🎉 莊家爆牌 (${dScore}點)！你贏了！`);
+          userGold += 2000;
+        } else if (pScore > dScore) {
+          alert(`🏆 恭喜獲勝！你的點數 (${pScore}) 大於莊家 (${dScore})！`);
+          userGold += 2000;
+        } else if (pScore === dScore) {
+          alert(`🤝 平手 (Push)！點數皆為 ${pScore}。`);
+          userGold += 500;
+        } else {
+          alert(`😢 莊家獲勝！莊家點數 (${dScore}) 大於你 (${pScore})。`);
+        }
+        document.getElementById('goldCountText').innerText = userGold;
+        leaveGameSession();
+      }, 300);
+    }
+
+    function leaveGameSession() {
+      document.getElementById('gameMatchView').classList.add('hidden');
+      const standBtn = document.getElementById('standBtn');
+      if (standBtn) standBtn.remove();
+      document.getElementById('drawBtn').innerText = '抽一張牌';
+    }
 
     // 狀態機與流程中樞
     let CharacterData = { gender: 'male', hairStyle: 'bucket', hairColor: 'black', outfitName: '👕 經典黑潮街頭短 T', outfitCode: 'default' };
@@ -1224,27 +1412,17 @@
       document.getElementById('battleMyName').innerText = currentUsername;
       document.getElementById('hudTrophyCount').innerText = userTrophies;
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
-      
-      // 確保所有立繪容器皆綁定圖檔
-      document.getElementById('mainHeroFullBody').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
-      document.getElementById('stepCameraTarget').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
     });
 
-    // 遊戲連線與對戰
-    const SERVER_URL = "https://game-server-mike.onrender.com";
-    const socket = io(SERVER_URL);
-    let activeRoomId = null;
-
-    document.getElementById('matchBtn').addEventListener('click', () => {
-      socket.emit('start_match', { playerName: currentUsername });
-      openScreen('matchingModal');
-    });
-
+    // 德州撲克連線對戰
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = `🏆 荒野對決 (${activeRoomId})`;
+      document.getElementById('roomTitle').innerText = `🏆 德州撲克對決 (${activeRoomId})`;
+      document.getElementById('oppAreaTitle').innerText = '對手手牌區';
+      document.getElementById('myAreaTitle').innerText = '你的手牌區';
+      document.getElementById('drawBtn').innerText = '抽一張牌';
 
       for (const id in data.players) {
         if (id !== socket.id) {
@@ -1255,11 +1433,6 @@
       }
       AudioEngine.playBubbleStream();
       renderBoard(data.players);
-    });
-
-    document.getElementById('drawBtn').addEventListener('click', () => {
-      AudioEngine.playBubbleStream();
-      socket.emit('draw_card', { roomId: activeRoomId });
     });
 
     socket.on('update_board', (data) => {

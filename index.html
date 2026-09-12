@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多人對戰自動配對</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body style="text-align: center; padding-top: 80px; font-family: sans-serif;">
+
+  <h1>真人對戰大廳</h1>
+  <button id="playBtn" style="font-size: 22px; padding: 12px 28px; cursor: pointer; border-radius: 8px;">開始配對</button>
+  <h2 id="status" style="margin-top: 30px; color: #555;">點擊按鈕尋找對手</h2>
+
+  <script>
+    const SERVER_URL = "https://game-server-mike.onrender.com";
+
+    const socket = io(SERVER_URL);
+    const playBtn = document.getElementById('playBtn');
+    const statusText = document.getElementById('status');
+
+    playBtn.addEventListener('click', () => {
+      socket.emit('start_match');
+      playBtn.disabled = true;
+      statusText.innerText = "配對中，正在搜尋線上玩家...";
+    });
+
+    socket.on('status', (msg) => {
+      statusText.innerText = msg;
+    });
+
+    socket.on('matched', (data) => {
+      statusText.style.color = "green";
+      statusText.innerText = `配對成功！已進入同一桌（房間號：${data.roomId}）`;
+    });
+  </script>
+</body>
+</html>

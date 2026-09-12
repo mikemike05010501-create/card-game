@@ -190,7 +190,7 @@
     </div>
     
     <div class="brawl-hud-right">
-      <div class="brawl-pill">🪙 <span id="goldCountText">2950</span></div>
+      <div class="brawl-pill">🪙 <span id="goldCountText">2950</span> 籌碼</div>
       <div class="brawl-pill">💎 <span id="gemCountText">1000000</span></div>
     </div>
   </div>
@@ -223,8 +223,12 @@
   <!-- 右下對戰按鈕與下注選擇 -->
   <div class="battle-center">
     <div class="bet-selector-panel">
-      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">選擇本局下注籌碼：</div>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">選擇本局下注量：</div>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+        <input type="range" id="ingameBetSlider" min="50" max="2000" step="50" value="100" style="flex:1; accent-color:#f1c40f;" oninput="updateBetSlider(this.value)">
+        <span id="sliderBetVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-top:4px;">
         <div class="bet-option-btn selected" onclick="setBetAmount(100, this)">100</div>
         <div class="bet-option-btn" onclick="setBetAmount(500, this)">500</div>
         <div class="bet-option-btn" onclick="setBetAmount(1000, this)">1,000</div>
@@ -233,7 +237,7 @@
 
     <div class="battle-mode-bar" onclick="toggleGameMode()">
       <div>
-        <small style="color:#aaa; font-size:10px;">點擊切換模式</small>
+        <small style="color:#aaa; font-size:10px;">點擊切換模式 (6人桌)</small>
         <span id="modeTitleText">德州撲克</span>
       </div>
       <span>🔄</span>
@@ -250,7 +254,7 @@
   <div id="trophyScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">榮譽盃數之路</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>當前盃數：650 🏆，解鎖豐厚獎勵！</p></div></div></div>
   <div id="profileScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>修改您的遊戲暱稱與個人資料。</p></div></div></div>
   
-  <!-- 好友系統彈窗 (支援輸入名字雙方同意加好友) -->
+  <!-- 好友系統彈窗 (搜尋完發送同意請求，同意後即為好友) -->
   <div id="friendsScreen" class="app-screen-overlay">
     <div class="screen-window" style="width: 420px; height: 65vh;">
       <div class="screen-header">
@@ -258,10 +262,10 @@
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:13px; color:#ccc;">輸入其他已建立的帳號名稱發送好友邀請：</div>
+        <div style="font-size:13px; color:#ccc;">輸入好友名字搜尋並發送邀請，對方同意後即成為好友：</div>
         <div style="display:flex; gap:10px;">
           <input type="text" id="friendNameInput" placeholder="輸入好友帳號..." style="flex:1; padding:8px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
-          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">加好友</button>
+          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">搜尋與加好友</button>
         </div>
         <hr style="border-color:rgba(212,175,55,0.3); margin:4px 0;">
         <div style="font-weight:bold; color:#f1c40f; font-size:13px;">待處理的好友邀請：</div>
@@ -276,12 +280,12 @@
   <div id="teamScreen" class="app-screen-overlay">
     <div class="screen-window" style="width: 400px; height: 60vh;">
       <div class="screen-header">
-        <div class="screen-title">🏠 小隊大廳 (邀請好友遊玩)</div>
+        <div class="screen-title">🏠 小隊大廳 (邀請好友組隊)</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:13px; color:#ccc;">您可以從好友列表中邀請線上好友加入小隊一同匹配對戰：</div>
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">在線好友可邀請：</div>
+        <div style="font-size:13px; color:#ccc;">您可以從好友列表中邀請線上好友加入小隊一同遊玩：</div>
+        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">在線好友列表：</div>
         <div id="teamFriendsListContainer" style="display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1;"></div>
       </div>
     </div>
@@ -307,26 +311,26 @@
     </div>
   </div>
 
-  <!-- 100秒自動補位配對彈窗 -->
+  <!-- 20秒自動補位配對彈窗 (6人桌配置) -->
   <div id="matchingModal" class="app-screen-overlay">
     <div class="screen-window" style="width: 390px; height: 48vh; align-items:center; justify-content:center; text-align:center;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:15px;" id="matchingTitleText">尋找對手中...</h2>
-      <div style="font-size: 22px; margin: 15px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 2 人 | 已配對: 1 / 2 人</div>
-      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:15px;" id="matchTimerText">剩餘配對時間: 100 秒</div>
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:15px;" id="matchingTitleText">尋找 6 人桌對手中...</h2>
+      <div style="font-size: 22px; margin: 15px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 6 人 | 已配對: 1 / 6 人</div>
+      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:15px;" id="matchTimerText">剩餘配對時間: 20 秒</div>
       <div style="font-size: 35px; margin: 5px 0;">♣️♥️♦️♠️</div>
       <button onclick="cancelMatchmaking()" style="margin-top:15px; background:#e74c3c; color:#fff; border:none; padding:8px 24px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 遊戲對局畫面 -->
+  <!-- 遊戲對戰畫面 (6人桌) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">競技對局</h3>
+      <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">6人競技對局</h3>
       <button onclick="leaveGameSession()" style="background:#c0392b; color:#fff; border:none; padding:6px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">離開對局</button>
     </div>
     <div class="card-board">
       <div>
-        <div id="oppAreaTitle" style="color:#aaa; margin-bottom:5px; text-align:center;">對手區</div>
+        <div id="oppAreaTitle" style="color:#aaa; margin-bottom:5px; text-align:center;">其他 5 位玩家 / 莊家區</div>
         <div id="opponentCards" class="hand-cards"></div>
       </div>
       <div style="font-size:16px; color:#f1c40f; font-weight:bold;" id="potLabel">🪙 桌面狀態</div>
@@ -415,8 +419,15 @@
 
     function setBetAmount(amt, btn) {
       currentBet = amt;
+      document.getElementById('ingameBetSlider').value = amt;
+      document.getElementById('sliderBetVal').innerText = amt;
       document.querySelectorAll('.bet-option-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
+    }
+
+    function updateBetSlider(val) {
+      currentBet = parseInt(val);
+      document.getElementById('sliderBetVal').innerText = currentBet;
     }
 
     function saveAccountsToStorage() {
@@ -435,7 +446,6 @@
       document.getElementById('hudTrophyCount').innerText = acc.trophies;
       document.getElementById('currentAccountDisplay').innerText = currentUsername;
 
-      // 渲染帳號列表
       const listContainer = document.getElementById('accountListContainer');
       if (listContainer) {
         listContainer.innerHTML = '';
@@ -445,7 +455,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid ${isCurrent?'#2ecc71':'rgba(212,175,55,0.3)'};">
               <div>
                 <b style="color:${isCurrent?'#2ecc71':'#fff'}">${name}</b>
-                <div style="font-size:11px; color:#aaa;">🪙 ${gameAccounts[name].gold} | 🏆 ${gameAccounts[name].trophies}</div>
+                <div style="font-size:11px; color:#aaa;">🪙 ${gameAccounts[name].gold} 籌碼 | 🏆 ${gameAccounts[name].trophies}</div>
               </div>
               ${isCurrent ? '<span style="color:#2ecc71; font-size:12px; font-weight:bold;">使用中</span>' : `<button onclick="switchAccount('${name}')" style="background:#d4af37; color:#000; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">切換</button>`}
             </div>
@@ -453,7 +463,6 @@
         }
       }
 
-      // 渲染好友與邀請 UI
       renderFriendsUI();
       renderTeamUI();
     }
@@ -514,7 +523,7 @@
 
       saveAccountsToStorage();
       updateAccountUI();
-      alert(`已同意 [${fromName}] 的好友邀請！`);
+      alert(`已同意 [${fromName}] 的好友邀請！雙方已成為好友！`);
     }
 
     function renderFriendsUI() {
@@ -527,7 +536,7 @@
       myAcc.friendRequests.forEach(name => {
         reqContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:6px 10px; border-radius:6px;">
-            <span style="font-size:13px;">${name}</span>
+            <span style="font-size:13px;">${name} 請求加為好友</span>
             <button onclick="acceptFriendRequest('${name}')" style="background:#2ecc71; color:#fff; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">同意</button>
           </div>
         `;
@@ -537,8 +546,8 @@
       myAcc.friends.forEach(name => {
         listContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:6px 10px; border-radius:6px;">
-            <span style="font-size:13px; color:#f1c40f;">🟢 ${name} (線上)</span>
-            <span style="font-size:11px; color:#aaa;">已結為好友</span>
+            <span style="font-size:13px; color:#f1c40f;">🟢 ${name} (好友)</span>
+            <span style="font-size:11px; color:#2ecc71; font-weight:bold;">互為好友</span>
           </div>
         `;
       });
@@ -549,7 +558,7 @@
       const teamContainer = document.getElementById('teamFriendsListContainer');
       if (!teamContainer) return;
 
-      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統新增好友！</div>' : '';
+      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統搜尋並加好友！</div>' : '';
       myAcc.friends.forEach(name => {
         teamContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
@@ -564,7 +573,7 @@
     }
 
     function inviteFriendToPlay(friendName) {
-      alert(`已向好友 [${friendName}] 發送組隊邀請！對方已接受，即將一同進入對局。`);
+      alert(`已成功邀請好友 [${friendName}] 進入小隊！即將開始 6 人桌配對。`);
       closeScreens();
       startCurrentGameMode();
     }
@@ -573,17 +582,17 @@
       updateAccountUI();
     });
 
-    // 遊戲模式與 100秒匹配 / 人機補位系統
+    // 遊戲模式與 20秒匹配 / 人機補位系統 (6人桌)
     let currentGameMode = 'poker';
     let matchTimer = null;
-    let secondsLeft = 100;
+    let secondsLeft = 20;
 
     function toggleGameMode() {
       if (currentGameMode === 'poker') {
         currentGameMode = 'blackjack';
         document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
         document.getElementById('btnMainText').innerText = '21點對決';
-        document.getElementById('btnSubLabel').innerText = '真人匹配 / 100秒人機';
+        document.getElementById('btnSubLabel').innerText = '6人匹配 / 20秒人機';
       } else {
         currentGameMode = 'poker';
         document.getElementById('modeTitleText').innerText = '德州撲克';
@@ -592,19 +601,17 @@
       }
     }
 
-    const socket = io("https://game-server-mike.onrender.com");
-
     function startCurrentGameMode() {
       if (gameAccounts[currentUsername].gold < currentBet) {
         return alert('❌ 您的籌碼不足以支付本局下注量！');
       }
 
-      secondsLeft = 100;
+      secondsLeft = 20;
       document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
       
       const modeName = currentGameMode === 'poker' ? '德州撲克' : '21點';
-      document.getElementById('matchingTitleText').innerText = `尋找 ${modeName} 對戰玩家...`;
-      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
+      document.getElementById('matchingTitleText').innerText = `尋找 6 人 ${modeName} 對戰玩家...`;
+      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 1 / 6 人';
       openScreen('matchingModal');
 
       if (matchTimer) clearInterval(matchTimer);
@@ -612,26 +619,20 @@
         secondsLeft--;
         document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
 
-        if (secondsLeft === 85) {
-          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 2 / 2 人 (配對成功！)';
+        if (secondsLeft === 15) {
+          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 3 / 6 人';
+        } else if (secondsLeft === 8) {
+          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 5 / 6 人';
         }
 
         if (secondsLeft <= 0) {
           clearInterval(matchTimer);
-          document.getElementById('matchTimerText').innerText = '超時！已自動安排 AI 高級人機補位！';
+          document.getElementById('matchTimerText').innerText = '超時！已自動安排 AI 高級人機補位 (6人桌)！';
           setTimeout(() => {
             closeScreens();
             if (currentGameMode === 'poker') startTexasHoldemMatch(true);
             else startBlackjackMatch(true);
           }, 1000);
-        } else if (secondsLeft === 83) {
-          clearInterval(matchTimer);
-          closeScreens();
-          if (currentGameMode === 'poker') {
-            socket.emit('start_match', { playerName: currentUsername });
-          } else {
-            startBlackjackMatch(false);
-          }
         }
       }, 1000);
     }
@@ -642,28 +643,28 @@
     }
 
     // ==========================================
-    // 德州撲克完整玩法與一致性公牌系統 (底牌與公牌圖像在中間)
+    // 德州撲克完整玩法與輪流下注機制 (下注完才翻牌)
     // ==========================================
     let thPlayerCards = [];
     let thOppCards = [];
     let thCommunityCards = [];
-    let thStage = 0;
+    let thStage = 0; // 0: 發完底牌等待下注, 1: 翻牌圈下注, 2: 轉牌圈下注, 3: 河牌圈下注, 4: 結算
 
-    socket.on('game_start', (data) => {
+    function startTexasHoldemMatch(isBot) {
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = `🏆 德州撲克線上對決 (${data.roomId})`;
-      document.getElementById('oppAreaTitle').innerText = '對手底牌區';
-      document.getElementById('myAreaTitle').innerText = '你的底牌與公牌區 (撲克牌圖像在中間)';
-      document.getElementById('actionBtn1').innerText = '跟注 / 下一輪 (Check/Call)';
+      document.getElementById('roomTitle').innerText = isBot ? '🏆 德州撲克 (6人桌人機對決)' : '🏆 德州撲克 (6人桌真人對決)';
+      document.getElementById('oppAreaTitle').innerText = '其他 5 位玩家區';
+      document.getElementById('myAreaTitle').innerText = '你的底牌與公牌區 (下注完才翻牌)';
+      document.getElementById('actionBtn1').innerText = '確認下注並翻牌 (Bet / Next)';
 
       thStage = 0;
       const deck = createDeck();
       thPlayerCards = [deck.pop(), deck.pop()];
-      thOppCards = [deck.pop(), deck.pop()];
+      thOppCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
       thCommunityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
       renderTexasHoldemBoard();
-    });
+    }
 
     function createDeck() {
       const suits = ['♠️', '♥️', '♦️', '♣️'];
@@ -678,10 +679,12 @@
       const oppC = document.getElementById('opponentCards');
       myC.innerHTML = ''; oppC.innerHTML = '';
 
-      thOppCards.forEach(() => {
-        oppC.innerHTML += `<div class="poker-card back" style="background:#500; color:#fff; display:flex; align-items:center; justify-content:center;">🂠</div>`;
-      });
+      // 6人桌中其他 5 位對手示意
+      for (let i = 1; i <= 5; i++) {
+        oppC.innerHTML += `<div class="poker-card back" style="width:45px; height:65px; background:#400; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px;">P${i}</div>`;
+      }
 
+      // 你的底牌 (圖像在中間)
       let myCardsHTML = '<div style="display:flex; gap:12px; justify-content:center; align-items:center; margin-bottom:5px;">';
       thPlayerCards.forEach(c => {
         const isRed = c.s === '♥️' || c.s === '♦️';
@@ -690,6 +693,7 @@
       myCardsHTML += '</div>';
       myC.innerHTML = myCardsHTML;
 
+      // 一致性公牌區 (下注完才翻牌)
       let commContainer = document.getElementById('communityCardsArea');
       if (!commContainer) {
         commContainer = document.createElement('div');
@@ -698,7 +702,7 @@
         const board = document.querySelector('.card-board');
         board.insertBefore(commContainer, board.children[1]);
       }
-      let commHTML = '<div style="color:#f1c40f; font-size:12px; margin-bottom:3px;">公共牌區 (Community Cards)</div><div style="display:flex; gap:6px; justify-content:center;">';
+      let commHTML = '<div style="color:#f1c40f; font-size:12px; margin-bottom:3px;">公共牌區 (下注完成後依序翻開)</div><div style="display:flex; gap:6px; justify-content:center;">';
       const visibleCount = thStage === 0 ? 0 : thStage === 1 ? 3 : thStage === 2 ? 4 : 5;
       for (let i = 0; i < 5; i++) {
         if (i < visibleCount) {
@@ -712,18 +716,22 @@
       commHTML += '</div>';
       commContainer.innerHTML = commHTML;
 
-      document.getElementById('potLabel').innerText = `🪙 下注量: ${currentBet} 籌碼 | 階段: ${thStage===0?'發牌圈':thStage===1?'翻牌圈(Flop)':thStage===2?'轉牌圈(Turn)':'河牌圈(River)'}`;
+      const stageNames = ['輪流下注 (發牌)', '翻牌圈 (Flop) 下注', '轉牌圈 (Turn) 下注', '河牌圈 (River) 最終下注', '決賽結算'];
+      document.getElementById('potLabel').innerText = `🪙 本局下注量: ${currentBet} 籌碼 | 階段: ${stageNames[thStage]}`;
     }
 
     // ==========================================
-    // 21點玩法
+    // 21點 6人桌玩法
     // ==========================================
+    let bjPlayer = [];
+    let bjDealer = [];
+
     function startBlackjackMatch(isBot) {
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = isBot ? '♠️ 21點 (人機補位賽)' : '♠️ 21點 (玩家匹配賽)';
-      document.getElementById('oppAreaTitle').innerText = isBot ? 'AI 莊家' : '對手莊家';
-      document.getElementById('myAreaTitle').innerText = '你的手牌 (目標 21點，圖像在中間)';
+      document.getElementById('roomTitle').innerText = isBot ? '♠️ 21點 (6人桌人機補位)' : '♠️ 21點 (6人桌真人匹配)';
+      document.getElementById('oppAreaTitle').innerText = '其他 5 位玩家 / 莊家區';
+      document.getElementById('myAreaTitle').innerText = '你的手牌 (目標 21點)';
       document.getElementById('actionBtn1').innerText = '要牌 (Hit)';
 
       const actionControls = document.getElementById('gameActionControls');
@@ -765,16 +773,12 @@
       const oppC = document.getElementById('opponentCards');
       myC.innerHTML = ''; oppC.innerHTML = '';
 
+      for (let i = 1; i <= 5; i++) {
+        oppC.innerHTML += `<div class="poker-card back" style="width:40px; height:56px; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px;">P${i}</div>`;
+      }
+
       bjPlayer.forEach(v => {
         myC.innerHTML += `<div class="poker-card"><span>${v}</span><span style="font-size:24px; align-self:center;">♥️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
-      });
-
-      bjDealer.forEach((v, idx) => {
-        if (hidden && idx === 1) {
-          oppC.innerHTML += `<div class="poker-card" style="background:#222; color:#fff; display:flex; align-items:center; justify-content:center;">?</div>`;
-        } else {
-          oppC.innerHTML += `<div class="poker-card"><span>${v}</span><span style="font-size:24px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
-        }
       });
       document.getElementById('potLabel').innerText = `🪙 下注量: ${currentBet} 籌碼 | 你的點數: ${calcBJ(bjPlayer)}`;
     }
@@ -792,9 +796,10 @@
           leaveGameSession();
         }
       } else {
+        // 德州撲克：輪流下注完成後才翻牌
         thStage++;
         if (thStage >= 4) {
-          alert(`🏆 德州撲克結算完畢！贏得 ${currentBet * 2} 籌碼！`);
+          alert(`🏆 德州撲克結算完畢！贏得下注量 ${currentBet * 2} 籌碼！`);
           gameAccounts[currentUsername].gold += currentBet;
           saveAccountsToStorage();
           updateAccountUI();
@@ -812,11 +817,10 @@
         bjDealer.push(getBJCard());
         dSum = calcBJ(bjDealer);
       }
-      renderBJBoard(false);
       const pSum = calcBJ(bjPlayer);
       setTimeout(() => {
         if (dSum > 21 || pSum > dSum) {
-          alert(`🎉 獲勝！你的點數 (${pSum}) 大於莊家 (${dSum})，贏得 ${currentBet} 籌碼！`);
+          alert(`🎉 21點獲勝！你的點數 (${pSum}) 大於莊家 (${dSum})，贏得 ${currentBet} 籌碼！`);
           gameAccounts[currentUsername].gold += currentBet;
         } else if (pSum === dSum) {
           alert(`🤝 平手！`);

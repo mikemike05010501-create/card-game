@@ -56,6 +56,7 @@
     .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
+      background-image: url('watermarked_img_3306472174093337687.jpg');
       background-size: cover; background-position: center top;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
       background-color: transparent; overflow: hidden;
@@ -206,28 +207,31 @@
     }
 
     .battle-center {
-      position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
+      position: absolute; right: 25px; bottom: 25px; z-index: 120; display: flex; flex-direction: column; gap: 10px;
     }
-    /* 遊戲模式切換面板 */
+    
+    /* 遊戲模式上方選擇面板 */
     .battle-mode-bar {
-      width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #d4af37;
-      padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
+      width: 260px; background: rgba(0,0,0,0.88); border: 2px solid #d4af37;
+      padding: 10px 16px; border-radius: 14px; text-align: center; color: #e1b12c;
       box-shadow: var(--shadow-3d); backdrop-filter: blur(8px); font-family: 'Outfit', sans-serif;
       cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      transition: transform 0.15s; pointer-events: auto;
     }
     .battle-mode-bar:active { transform: scale(0.97); }
     .battle-mode-bar div { text-align: left; }
-    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
+    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 15px; color: #fff; display: block; margin-bottom: 2px; }
 
     .play-btn {
-      width: 260px; height: 80px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
-      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 30px; font-weight: 900;
-      letter-spacing: 4px; font-family: 'Cinzel', serif; cursor: pointer;
+      width: 260px; height: 75px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
+      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 26px; font-weight: 900;
+      letter-spacing: 2px; font-family: 'Cinzel', serif; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       box-shadow: 0 10px 30px rgba(212,175,55,0.7), inset 0 2px 5px #fff;
+      transition: transform 0.15s; pointer-events: auto;
     }
     .play-btn:active { transform: scale(0.95); }
-    .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
+    .play-btn label { font-size: 11px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
     /* 通用彈窗系統 */
     .app-screen-overlay {
@@ -377,7 +381,7 @@
                   url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
       z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
-    .players-status { display: flx; justify-content: space-between; align-items: center; }
+    .players-status { display: flex; justify-content: space-between; align-items: center; }
     .battle-avatar-card {
       background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 8px 18px; border-radius: 16px;
       display: flex; align-items: center; gap: 12px; width: 230px; box-shadow: var(--shadow-3d);
@@ -407,6 +411,28 @@
     }
 
     .hidden { display: none !important; }
+
+    /* 遊戲模式跳出方格選單 */
+    .game-mode-modal {
+      position: absolute; bottom: 140px; right: 0; width: 260px;
+      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 18px;
+      padding: 12px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+      z-index: 130; opacity: 0; pointer-events: none; transform: translateY(10px) scale(0.95);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .game-mode-modal.active { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+    
+    .mode-option-card {
+      background: linear-gradient(135deg, rgba(30,46,36,0.9), rgba(16,25,20,0.95));
+      border: 2px solid rgba(212,175,55,0.4); border-radius: 12px; padding: 12px 16px;
+      cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.15s;
+    }
+    .mode-option-card:active { transform: scale(0.96); }
+    .mode-option-card.selected { border-color: #f1c40f; background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(16,25,20,0.95)); }
+    .mode-option-card span { font-size: 26px; }
+    .mode-option-card h4 { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 15px; margin-bottom: 2px; }
+    .mode-option-card p { font-size: 11px; color: #aaa; font-family: 'Outfit', sans-serif; }
   </style>
 </head>
 <body>
@@ -550,6 +576,36 @@
         });
       }
     };
+
+    function playContextSound(target) {
+      if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
+      if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
+      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen') || target.closest('#trophyScreen')) return AudioEngine.playMagicChime();
+      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
+      if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
+      AudioEngine.playBubblePop();
+    }
+
+    window.addEventListener('pointerdown', (e) => {
+      AudioEngine.init();
+      playContextSound(e.target);
+      clickRings.push(new ClickRing(e.clientX, e.clientY));
+      for (let i = 0; i < 16; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
+    });
+
+    function renderClickEffects() {
+      cCtx.clearRect(0, 0, clickCanvas.width, clickCanvas.height);
+      for (let i = clickRings.length - 1; i >= 0; i--) {
+        clickRings[i].update(); clickRings[i].draw();
+        if (clickRings[i].alpha <= 0) clickRings.splice(i, 1);
+      }
+      for (let i = clickParticles.length - 1; i >= 0; i--) {
+        clickParticles[i].update(); clickParticles[i].draw();
+        if (clickParticles[i].alpha <= 0) clickParticles.splice(i, 1);
+      }
+      requestAnimationFrame(renderClickEffects);
+    }
+    renderClickEffects();
   </script>
 
   <!-- 頂部 HUD -->
@@ -653,18 +709,39 @@
     <button class="side-tag-btn" onclick="openScreen('clanScreen')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 右下對戰按鈕 (已改為德州撲克，點擊上方模式可切換為21點) -->
+  <!-- 右下對戰按鈕與上方模式選擇 Bar -->
   <div class="battle-center">
-    <div class="battle-mode-bar" onclick="toggleGameMode()">
-      <div>
-        <span id="modeTitleText">德州撲克</span>
-        <small style="color:#aaa; font-size:10px;">點擊切換 21點</small>
+    <!-- 遊戲模式跳出方格選單 -->
+    <div id="gameModeModal" class="game-mode-modal">
+      <div id="optPoker" class="mode-option-card selected" onclick="selectGameMode('poker')">
+        <span>🃏</span>
+        <div>
+          <h4>德州撲克</h4>
+          <p>聯機對戰大廳</p>
+        </div>
       </div>
-      <span style="font-size:18px;">🔄</span>
+      <div id="optBj" class="mode-option-card" onclick="selectGameMode('blackjack')">
+        <span>🎲</span>
+        <div>
+          <h4>21點 (Blackjack)</h4>
+          <p>玩家匹配 / 100秒人機補位</p>
+        </div>
+      </div>
     </div>
-    <button id="matchBtn" class="play-btn" onclick="startCurrentGameMode()">
-      開始遊戲
-      <label id="btnSubtitle">德州撲克大廳</label>
+
+    <!-- 上方模式切換 Bar -->
+    <div class="battle-mode-bar" onclick="toggleGameModeModal(event)">
+      <div>
+        <small style="color:#aaa; font-size:10px;">目前模式 (點擊切換)</small>
+        <span id="modeTitleText">德州撲克</span>
+      </div>
+      <span style="font-size:16px;">▼</span>
+    </div>
+
+    <!-- 主遊玩按鈕 -->
+    <button id="matchBtn" class="play-btn" onclick="startCurrentGameSession()">
+      <span id="btnMainText">德州撲克</span>
+      <label id="btnSubLabel">ENTER MATCH</label>
     </button>
   </div>
 
@@ -860,16 +937,18 @@
   <div id="teamScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">🏠 小隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>組隊出戰準備！</p></div></div></div>
   <div id="clanScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">🏅 戰隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>戰隊排名前 5。</p></div></div></div>
 
-  <!-- 配對彈窗 -->
+  <!-- 配對彈窗 (支援人數顯示與100秒自動人機補位) -->
   <div id="matchingModal" class="app-screen-overlay">
-    <div class="screen-window" style="width: 360px; height: 45vh; align-items:center; justify-content:center; text-align:center;">
+    <div class="screen-window" style="width: 380px; height: 50vh; align-items:center; justify-content:center; text-align:center;">
       <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找德州撲克對手中...</h2>
-      <div style="font-size: 50px; margin: 15px 0;">♣️♥️♦️♠️</div>
-      <button onclick="closeScreens()" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+      <div style="font-size: 38px; margin: 15px 0;" id="matchPlayerCountInfo">應有人數: 2 人 | 已配對: 1 / 2 人</div>
+      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:10px;" id="matchTimerText">剩餘配對時間: 100 秒</div>
+      <div style="font-size: 40px; margin: 10px 0;">♣️♥️♦️♠️</div>
+      <button onclick="cancelMatchmaking()" style="margin-top:15px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 1v1 對戰畫面 (德州撲克 / 21點 通用戰局) -->
+  <!-- 1v1 / 多人對戰畫面 (支援 德州撲克 與 21點 玩家匹配/人機) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -879,11 +958,11 @@
           <div style="color:#4cd137; font-size:11px;" id="myScoreLabel">你的手牌</div>
         </div>
       </div>
-      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 德州撲克對決</h2>
+      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 對決大廳</h2>
       <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
         <div id="battleOppAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
         <div>
-          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">莊家 / 對手</div>
+          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">對手 / 莊家</div>
           <div style="color:#e74c3c; font-size:11px;" id="oppScoreLabel">在線牌手</div>
         </div>
       </div>
@@ -979,6 +1058,142 @@
       }
     }
 
+    // ==========================================
+    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
+    // ==========================================
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContextClass();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      playBubblePop() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const startFreq = 480 + (Math.random() * 160);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(startFreq * 2.2, now + 0.045);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      },
+      playCoinClink() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [1950, 2400].forEach((freq, i) => {
+          const delay = i * 0.035;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + delay);
+          gain.gain.setValueAtTime(0.22, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.09);
+        });
+      },
+      playMagicChime() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [1318, 1760, 2093].forEach((freq, idx) => {
+          const delay = idx * 0.04;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + delay);
+          gain.gain.setValueAtTime(0.2, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.16);
+        });
+      },
+      playMutedTap() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      },
+      playFeltThud() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      },
+      playCloseSound() {
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.055);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      },
+      playBubbleStream() {
+        this.init();
+        if (!this.ctx) return;
+        [520, 750, 1020].forEach((freq, idx) => {
+          const delay = idx * 0.035;
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + 0.04);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.055);
+        });
+      }
+    };
+
     function playContextSound(target) {
       if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
       if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
@@ -1010,16 +1225,18 @@
     renderClickEffects();
 
     // ==========================================
-    // 遊戲模式切換邏輯（德州撲克 ⇄ 21點）
+    // 遊戲模式切換邏輯與配對系統（支援 21點 玩家匹配、人數顯示、100秒自動人機補位）
     // ==========================================
     let currentGameMode = 'poker'; // 'poker' 或 'blackjack'
+    let matchTimerInterval = null;
+    let matchSecondsLeft = 100;
 
     function toggleGameMode() {
       AudioEngine.playMutedTap();
       if (currentGameMode === 'poker') {
         currentGameMode = 'blackjack';
         document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
-        document.getElementById('btnSubtitle').innerText = '挑戰莊家 21點';
+        document.getElementById('btnSubtitle').innerText = '玩家匹配 / 100秒人機';
       } else {
         currentGameMode = 'poker';
         document.getElementById('modeTitleText').innerText = '德州撲克';
@@ -1036,28 +1253,64 @@
       if (currentGameMode === 'poker') {
         socket.emit('start_match', { playerName: currentUsername });
         document.getElementById('matchingTitleText').innerText = '尋找德州撲克對手中...';
+        document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
         openScreen('matchingModal');
       } else {
-        // 啟動本地 21點 單人挑戰模式
-        startBlackjackGame();
+        // 21點匹配系統：模擬真實玩家匹配，支援100秒倒數，時間到自動補人機
+        matchSecondsLeft = 100;
+        document.getElementById('matchingTitleText').innerText = '尋找 21點 對戰玩家...';
+        document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
+        document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
+        openScreen('matchingModal');
+
+        if (matchTimerInterval) clearInterval(matchTimerInterval);
+        matchTimerInterval = setInterval(() => {
+          matchSecondsLeft--;
+          document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
+          
+          // 模擬隨機在 85 秒時剛好配對到真人玩家
+          if (matchSecondsLeft === 85) {
+            document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 2 / 2 人 (配對成功！)';
+          }
+
+          if (matchSecondsLeft <= 0) {
+            clearInterval(matchTimerInterval);
+            document.getElementById('matchTimerText').innerText = '超時！已自動為您安排高級 AI 人機補位！';
+            setTimeout(() => {
+              closeScreens();
+              startBlackjackGame(true); // true 代表有人機參與
+            }, 1200);
+          } else if (matchSecondsLeft === 83) {
+            clearInterval(matchTimerInterval);
+            closeScreens();
+            startBlackjackGame(false);
+          }
+        }, 1000);
       }
+    }
+
+    function cancelMatchmaking() {
+      AudioEngine.playCloseSound();
+      if (matchTimerInterval) clearInterval(matchTimerInterval);
+      closeScreens();
     }
 
     // 21點 遊戲狀態
     let bjPlayerCards = [];
     let bjDealerCards = [];
+    let isVsBot = false;
 
-    function startBlackjackGame() {
+    function startBlackjackGame(vsBot = false) {
+      isVsBot = vsBot;
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = '♠️ 21點 (Blackjack) 經典對決';
-      document.getElementById('oppAreaTitle').innerText = '莊家手牌區';
+      document.getElementById('roomTitle').innerText = vsBot ? '♠️ 21點對決 (人機補位賽)' : '♠️ 21點對決 (真人匹配)';
+      document.getElementById('oppAreaTitle').innerText = vsBot ? 'AI 莊家手牌區' : '對手 / 莊家手牌區';
       document.getElementById('myAreaTitle').innerText = '你的手牌區 (目標 21點)';
-      document.getElementById('battleOppName').innerText = 'Casino 莊家';
-      document.getElementById('potLabel').innerText = '🪙 21點 桌面';
+      document.getElementById('battleOppName').innerText = vsBot ? 'AI 智能莊家' : 'Casino 莊家';
+      document.getElementById('potLabel').innerText = '🪙 21點 競技場';
       document.getElementById('drawBtn').innerText = '要牌 (Hit)';
       
-      // 加入停牌按鈕
       const actionContainer = document.getElementById('gameActionButtons');
       if (!document.getElementById('standBtn')) {
         const standBtn = document.createElement('button');
@@ -1068,7 +1321,6 @@
         actionContainer.insertBefore(standBtn, actionContainer.lastElementChild);
       }
 
-      // 發牌初始化
       bjPlayerCards = [getRandomCardVal(), getRandomCardVal()];
       bjDealerCards = [getRandomCardVal(), getRandomCardVal()];
       renderBlackjackBoard();
@@ -1100,7 +1352,6 @@
       myCardsArea.innerHTML = '';
       oppCardsArea.innerHTML = '';
 
-      // 渲染玩家手牌
       bjPlayerCards.forEach(val => {
         const isRed = Math.random() > 0.5;
         const cardEl = document.createElement('div');
@@ -1114,7 +1365,6 @@
       });
       document.getElementById('myScoreLabel').innerText = `點數: ${getCardNumericValue(bjPlayerCards)}`;
 
-      // 渲染莊家手牌
       bjDealerCards.forEach((val, idx) => {
         if (dealerHidden && idx === 1) {
           const cardBack = document.createElement('div');
@@ -1139,7 +1389,6 @@
     function handleGameAction() {
       AudioEngine.playBubbleStream();
       if (currentGameMode === 'blackjack') {
-        // 21點要牌
         bjPlayerCards.push(getRandomCardVal());
         renderBlackjackBoard(true);
         const pScore = getCardNumericValue(bjPlayerCards);
@@ -1150,14 +1399,12 @@
           handleBlackjackStand();
         }
       } else {
-        // 德州撲克連線抽牌
         socket.emit('draw_card', { roomId: activeRoomId });
       }
     }
 
     function handleBlackjackStand() {
       AudioEngine.playFeltThud();
-      // 莊家補牌邏輯：小於 17 點必須一直要牌
       let dScore = getCardNumericValue(bjDealerCards);
       while (dScore < 17) {
         bjDealerCards.push(getRandomCardVal());
@@ -1168,7 +1415,7 @@
       const pScore = getCardNumericValue(bjPlayerCards);
       setTimeout(() => {
         if (dScore > 21) {
-          alert(`🎉 莊家爆牌 (${dScore}點)！你贏了！`);
+          alert(`🎉 莊家爆牌 (${dScore}點)！你贏了 2,000 金幣！`);
           userGold += 2000;
         } else if (pScore > dScore) {
           alert(`🏆 恭喜獲勝！你的點數 (${pScore}) 大於莊家 (${dScore})！`);
@@ -1414,7 +1661,11 @@
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
     });
 
-    // 德州撲克連線對戰
+    // 德州撲克聯機對戰
+    const SERVER_URL = "https://game-server-mike.onrender.com";
+    const socket = io(SERVER_URL);
+    let activeRoomId = null;
+
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;
       closeScreens();

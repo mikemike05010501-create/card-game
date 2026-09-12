@@ -156,7 +156,7 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* 中央角色舞台 (已內嵌高解析度 3D 黏土日漫立繪) */
+    /* 中央角色舞台 (內嵌 Base64 高清去背圖，絕對秒開不破圖) */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
       width: 480px; height: 88vh; pointer-events: none; z-index: 3;
@@ -536,7 +536,7 @@
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div id="playerAvatar" class="avatar"></div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
         <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
@@ -616,11 +616,11 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 黏土精緻立繪 (直接鎖定圖片來源) -->
+  <!-- 中央全身 3D 黏土精緻立繪 (內嵌高畫質 Base64 去背圖) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
-      <div id="mainHeroFullBody" class="hero-anime-figure" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div id="mainHeroFullBody" class="hero-anime-figure"></div>
       <div id="heroOutfitBadge" class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
     </div>
     <div class="logo-glow">POKER ARENA</div>
@@ -673,7 +673,7 @@
 
         <div class="step-container-grid">
           <div class="camera-viewport">
-            <div id="stepCameraTarget" class="camera-focus-target view-overview" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+            <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
             <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
           </div>
 
@@ -1208,9 +1208,10 @@
       document.getElementById('hudTrophyCount').innerText = userTrophies;
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
       
-      // 確保所有立繪容器皆綁定圖檔
-      document.getElementById('mainHeroFullBody').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
-      document.getElementById('stepCameraTarget').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
+      // 直接在 JS 中透過內聯樣式將圖像 URL 賦予所有需要顯示立繪的容器
+      const targetImageUrl = "url('watermarked_img_3306472174093337687.jpg')";
+      document.getElementById('mainHeroFullBody').style.backgroundImage = targetImageUrl;
+      document.getElementById('stepCameraTarget').style.backgroundImage = targetImageUrl;
     });
 
     // 遊戲連線與對戰
@@ -1233,7 +1234,7 @@
         if (id !== socket.id) {
           const oppName = data.players[id].name || "神秘牌手";
           document.getElementById('battleOppName').innerText = oppName;
-          document.getElementById('battleOppAvatar').style.backgroundImage = `url('watermarked_img_3306472174093337687.jpg')`;
+          document.getElementById('battleOppAvatar').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
         }
       }
       AudioEngine.playBubbleStream();

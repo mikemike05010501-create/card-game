@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - VIP CASINO</title>
 
-  <!-- 強制防快取標籤 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- PWA 手遊全螢幕 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -18,22 +16,22 @@
   <style>
     :root {
       --gold-primary: linear-gradient(135deg, #fce072 0%, #dfb746 50%, #9e791e 100%);
-      --gold-border: 1px solid rgba(245, 208, 97, 0.55);
-      --glass-dark: rgba(14, 20, 16, 0.72);
-      --shadow-luxury: 0 8px 24px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.25);
+      --gold-border: 1px solid rgba(245, 208, 97, 0.6);
+      --glass-dark: rgba(14, 20, 16, 0.75);
+      --shadow-luxury: 0 8px 24px rgba(0,0,0,0.75), inset 0 1px 1px rgba(255,255,255,0.2);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
     
     body {
       font-family: 'Outfit', -apple-system, sans-serif;
-      /* 優先讀取專案本機 bg.jpg，並提供高質感備用網址 */
-      background: #09130e url('bg.jpg') no-repeat center center / cover;
+      /* 直接載入賭桌實景高解析雲端圖片 */
+      background: #09130e url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* 頂部 HUD (半透明黑金奢華狀態列) */
+    /* 頂部 HUD */
     .hud-bar {
       height: 64px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -43,9 +41,8 @@
       display: flex; align-items: center; gap: 10px;
       background: var(--glass-dark); padding: 5px 18px 5px 6px;
       border-radius: 40px; border: var(--gold-border); box-shadow: var(--shadow-luxury);
-      cursor: pointer; backdrop-filter: blur(10px); transition: 0.2s;
+      cursor: pointer; backdrop-filter: blur(10px);
     }
-    .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 42px; height: 42px; border-radius: 50%; border: 2px solid #e5c158;
       background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
@@ -69,7 +66,7 @@
     .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #d35400); border: 1px solid #fff; }
     .chip-green .icon { background: #27ae60; }
 
-    /* 左側選單按鈕 (磨砂黑金質感) */
+    /* 左側選單 */
     .left-menu {
       position: absolute; left: 24px; top: 85px; display: flex; flex-direction: column; gap: 12px; z-index: 5;
     }
@@ -77,14 +74,14 @@
       width: 62px; height: 62px; border-radius: 16px;
       background: linear-gradient(145deg, rgba(32,44,38,0.85) 0%, rgba(10,16,13,0.95) 100%);
       border: var(--gold-border); display: flex; flex-direction: column;
-      align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
+      align-items: center; justify-content: center; cursor: pointer;
       box-shadow: var(--shadow-luxury); backdrop-filter: blur(8px);
     }
     .menu-btn:active { transform: scale(0.92); }
     .menu-btn span { font-size: 24px; }
     .menu-btn label { font-size: 10px; font-weight: 800; color: #f5d061; margin-top: 2px; }
 
-    /* 右側選單按鈕 */
+    /* 右側選單 */
     .right-menu {
       position: absolute; right: 24px; top: 85px; display: flex; flex-direction: column; gap: 12px; z-index: 5;
     }
@@ -98,7 +95,7 @@
     .side-tag-btn:active { transform: scale(0.92); }
     .side-tag-btn span { font-size: 20px; }
 
-    /* 通行證 (左下角) */
+    /* 通行證 */
     .pass-container {
       position: absolute; left: 24px; bottom: 24px; z-index: 5;
       background: linear-gradient(90deg, rgba(14,20,16,0.92) 0%, rgba(22,34,27,0.88) 100%);
@@ -111,7 +108,7 @@
     .pass-bar { height: 10px; background: rgba(0,0,0,0.6); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-top: 4px; }
     .pass-fill { width: 45%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
 
-    /* 中央精緻標題浮印 */
+    /* 中央標題印記 */
     .center-logo {
       position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none; z-index: 2;
@@ -127,7 +124,7 @@
       font-weight: 600; text-shadow: 0 2px 6px rgba(0,0,0,0.8); margin-top: 4px;
     }
 
-    /* 右下角大對戰按鈕 (3D 拋光金屬黃金鍵) */
+    /* 右下角對戰按鈕 */
     .battle-center {
       position: absolute; right: 24px; bottom: 24px; z-index: 6; display: flex; flex-direction: column; gap: 8px;
     }
@@ -144,12 +141,11 @@
       letter-spacing: 4px; font-family: 'Cinzel', serif; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       box-shadow: 0 10px 30px rgba(223, 183, 70, 0.55), inset 0 2px 4px #fff;
-      transition: 0.1s;
     }
-    .play-btn:active { transform: scale(0.95); box-shadow: 0 4px 12px rgba(223, 183, 70, 0.35); }
+    .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 11px; font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: 1px; color: #2c1e02; }
 
-    /* 彈窗 UI */
+    /* 彈窗 */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
       display: flex; justify-content: center; align-items: center; z-index: 100;
@@ -170,14 +166,12 @@
     .btn-gold {
       background: var(--gold-primary); color: #1c1505; border: none;
       border-radius: 24px; padding: 10px 32px; font-size: 15px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 4px 15px rgba(223, 183, 70, 0.4);
     }
-    .btn-gold:active { transform: scale(0.95); }
 
     /* 對戰牌桌 */
     .game-match-view {
       position: fixed; inset: 0;
-      background: #09130e url('bg.jpg') no-repeat center center / cover;
+      background: #09130e url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
       z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .battle-avatar-card {
@@ -225,14 +219,14 @@
     <div class="menu-btn" onclick="alert('賭城巡迴錦標賽開打中！')"><span>📰</span><label>新聞</label></div>
   </div>
 
-  <!-- 中央品牌奢華標題印記 -->
+  <!-- 中央品牌標題 -->
   <div class="center-logo">
     <h1>POKER ARENA</h1>
     <p>EXCLUSIVE HIGH-ROLLER TABLE</p>
   </div>
 
   <!-- 左下通行證 -->
-  <div class="pass-container" onclick="alert('VIP 通行證：即將解鎖黃金百萬賽池寶箱！')">
+  <div class="pass-container" onclick="alert('VIP 通行證：即將解鎖百萬賽池寶箱！')">
     <div class="pass-badge">🎫</div>
     <div class="pass-progress">
       <div style="font-size: 11px; font-weight: 800; color: #f5d061;">賭金通行證 (VIP PASS)</div>
@@ -248,13 +242,13 @@
     <button class="side-tag-btn" onclick="alert('戰隊排名本週第 5')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 每日任務與禮物快捷按鈕 -->
+  <!-- 每日任務與禮物 -->
   <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
-    <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: var(--glass-dark); border: var(--gold-border); border-radius: 20px; color: #fff; padding: 7px 16px; font-weight: bold; font-size: 12px; cursor: pointer; backdrop-filter: blur(8px); box-shadow: var(--shadow-luxury);">📋 每日任務</button>
-    <button onclick="alert('每日禮物已領取：獲得 500 金幣！')" style="background: var(--glass-dark); border: var(--gold-border); border-radius: 20px; color: #fff; padding: 7px 16px; font-weight: bold; font-size: 12px; cursor: pointer; backdrop-filter: blur(8px); box-shadow: var(--shadow-luxury);">🎁 每日禮物</button>
+    <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: var(--glass-dark); border: var(--gold-border); border-radius: 20px; color: #fff; padding: 7px 16px; font-weight: bold; font-size: 12px; cursor: pointer; backdrop-filter: blur(8px);">📋 每日任務</button>
+    <button onclick="alert('每日禮物已領取：獲得 500 金幣！')" style="background: var(--glass-dark); border: var(--gold-border); border-radius: 20px; color: #fff; padding: 7px 16px; font-weight: bold; font-size: 12px; cursor: pointer; backdrop-filter: blur(8px);">🎁 每日禮物</button>
   </div>
 
-  <!-- 右下角大對戰按鈕 -->
+  <!-- 右下角對戰按鈕 -->
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
@@ -266,7 +260,7 @@
     </button>
   </div>
 
-  <!-- 登入 / 改名彈窗 -->
+  <!-- 登入彈窗 -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="loginModalTitle" class="modal-title">牌手登入</h2>
@@ -288,7 +282,7 @@
     </div>
   </div>
 
-  <!-- 1v1 對戰牌桌 -->
+  <!-- 對戰牌桌 -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <div class="battle-avatar-card">
@@ -298,7 +292,7 @@
           <div style="color:#4cd137; font-size:11px;">你的手牌</div>
         </div>
       </div>
-      <h2 id="roomTitle" style="color: #f5d061; font-family:'Cinzel', serif; font-size: 20px; text-shadow:0 2px 8px rgba(0,0,0,0.8);">🏆 賭神錦標賽</h2>
+      <h2 id="roomTitle" style="color: #f5d061; font-family:'Cinzel', serif; font-size: 20px;">🏆 賭神錦標賽</h2>
       <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: rgba(231,76,60,0.6);">
         <div id="battleOppAvatar" class="avatar" style="width:36px; height:36px;"></div>
         <div>
@@ -308,7 +302,7 @@
       </div>
     </div>
 
-    <div style="flex:1; border:2px dashed rgba(245,208,97,0.4); border-radius:20px; margin:20px 0; display:flex; flex-direction:column; justify-content:space-around; align-items:center; background:rgba(0,0,0,0.4); backdrop-filter:blur(6px);">
+    <div style="flex:1; border:2px dashed rgba(245,208,97,0.4); border-radius:20px; margin:20px 0; display:flex; flex-direction:column; justify-content:space-around; align-items:center; background:rgba(0,0,0,0.45); backdrop-filter:blur(6px);">
       <div style="text-align:center;">
         <div id="opponentCards" class="hand-cards">
           <div class="poker-card back">👑</div>

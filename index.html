@@ -41,7 +41,7 @@
     #particlesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
     #clickCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
-    /* 頂部 HUD (左上角比照寶可夢大集結微調膠囊框) */
+    /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -58,7 +58,7 @@
       width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
       background-size: cover; background-position: top center;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
-      background-color: #2c3e50;
+      background-color: transparent;
     }
     .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; }
     
@@ -97,7 +97,7 @@
     .brawl-menu-btn:active { transform: scale(0.92); }
     .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
 
-    /* 飛行動畫小物件專用元素 */
+    /* 飛行動畫物件 */
     .flying-reward-particle {
       position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
       display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -157,32 +157,32 @@
     .daily-btn:active { transform: scale(0.94); }
 
     /* =========================================================
-       中央主角：日系 3D 全身動漫訓練家模型 (比照截圖立繪)
+       中央角色舞台：美式 3D 仿《Fortnite》九頭身半寫實立繪
        ========================================================= */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
-      width: 480px; height: 86vh; pointer-events: none; z-index: 3;
+      width: 480px; height: 88vh; pointer-events: none; z-index: 3;
       display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
     }
     .hero-stage-podium {
-      position: absolute; bottom: 60px; width: 280px; height: 45px;
-      background: radial-gradient(ellipse at center, rgba(46,204,113,0.6) 0%, rgba(20,50,30,0.3) 60%, transparent 80%);
-      border-radius: 50%; filter: blur(2px);
+      position: absolute; bottom: 65px; width: 260px; height: 32px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
+      border-radius: 50%; filter: blur(4px);
     }
     .hero-fullbody-wrapper {
-      position: relative; width: 320px; height: 520px; display: flex;
+      position: relative; width: 340px; height: 560px; display: flex;
       justify-content: center; align-items: flex-end;
     }
     .hero-anime-figure {
       width: 100%; height: 100%;
       background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.85));
+      filter: drop-shadow(0 18px 24px rgba(0,0,0,0.9));
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .hero-outfit-tag {
-      position: absolute; bottom: 30px; background: rgba(0,0,0,0.8); border: 1.5px solid #d4af37;
+      position: absolute; bottom: 35px; background: rgba(0,0,0,0.85); border: 1.5px solid #d4af37;
       padding: 5px 16px; border-radius: 20px; font-size: 13px; color: #f1c40f; font-family: 'Outfit', sans-serif;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.8);
     }
     .logo-glow {
       font-family: 'Cinzel', serif; font-weight: 900; font-size: 28px; letter-spacing: 5px;
@@ -220,7 +220,7 @@
     }
     .app-screen-overlay.active { opacity: 1; pointer-events: auto; transform: scale(1); }
     .screen-window {
-      width: 90vw; max-width: 840px; height: 85vh; background: #0e1712;
+      width: 90vw; max-width: 860px; height: 88vh; background: #0e1712;
       border: 3px solid #d4af37; border-radius: 24px; box-shadow: 0 0 50px rgba(212,175,55,0.4);
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
@@ -241,41 +241,84 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* 捏臉與自訂人物介面樣式 */
-    .customize-container {
-      display: grid; grid-template-columns: 290px 1fr; gap: 20px; height: 100%;
+    /* 步驟引導面板樣式 */
+    .step-progress-bar {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+      background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 14px; border: 1.5px solid rgba(212,175,55,0.3);
     }
-    .custom-preview-pane {
-      background: rgba(0,0,0,0.6); border: 2px solid #d4af37; border-radius: 18px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+    .step-indicator {
+      display: flex; align-items: center; gap: 6px; font-size: 13px; color: #888; font-weight: bold;
     }
-    .preview-trainer-figure {
-      width: 220px; height: 300px;
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      margin-bottom: 12px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));
+    .step-indicator.active { color: #f1c40f; }
+    .step-indicator.done { color: #2ecc71; }
+    .step-num-badge {
+      width: 22px; height: 22px; border-radius: 50%; background: #222; border: 1.5px solid #555;
+      display: flex; align-items: center; justify-content: center; font-size: 11px;
     }
-    .custom-option-group {
-      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(212,175,55,0.3);
-      border-radius: 14px; padding: 14px 18px; margin-bottom: 12px;
+    .step-indicator.active .step-num-badge { background: #f1c40f; color: #000; border-color: #fff; }
+    .step-indicator.done .step-num-badge { background: #2ecc71; color: #fff; border-color: #fff; }
+
+    .step-container-grid {
+      display: grid; grid-template-columns: 340px 1fr; gap: 20px; flex: 1; height: 100%; min-height: 420px;
     }
-    .custom-option-group h4 {
-      color: #f1c40f; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+    
+    .camera-viewport {
+      background: radial-gradient(circle at center, rgba(30,50,38,0.8), rgba(10,18,14,0.95));
+      border: 2px solid #d4af37; border-radius: 18px; position: relative;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
     }
-    .pill-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .camera-focus-target {
+      width: 260px; height: 500px; background-size: contain; background-repeat: no-repeat;
+      background-position: center bottom;
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      transform-origin: 50% 12%; /* 依九頭身比例錨定頭部 */
+    }
+
+    .camera-focus-target.view-overview {
+      transform: scale(0.85) translateY(20px);
+    }
+    .camera-focus-target.view-head {
+      transform: scale(2.5) translateY(95px);
+    }
+    .camera-focus-target.view-face {
+      transform: scale(3.5) translateY(125px);
+    }
+
+    .step-options-pane {
+      background: rgba(255,255,255,0.03); border: 1.5px solid rgba(212,175,55,0.3);
+      border-radius: 18px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .step-panel-page { display: none; }
+    .step-panel-page.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .step-nav-footer {
+      display: flex; justify-content: space-between; align-items: center; padding-top: 14px;
+      border-top: 1.5px solid rgba(255,255,255,0.1); margin-top: 10px;
+    }
+    .btn-step-nav {
+      padding: 10px 24px; border-radius: 20px; font-weight: 800; font-size: 14px; cursor: pointer;
+      font-family: 'Lilita One', sans-serif; transition: 0.15s;
+    }
+    .btn-step-back { background: #2f3640; border: 1.5px solid #777; color: #fff; }
+    .btn-step-back:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-step-next { background: var(--gold); border: 2px solid #fff; color: #000; box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
+
+    .pill-btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
     .pill-btn {
       background: #1c2720; border: 1.5px solid #444; border-radius: 16px;
-      padding: 6px 14px; font-size: 12px; font-weight: bold; color: #ccc; cursor: pointer;
+      padding: 7px 16px; font-size: 13px; font-weight: bold; color: #ccc; cursor: pointer;
     }
     .pill-btn.active {
       background: var(--gold); border-color: #fff; color: #000; box-shadow: 0 2px 8px rgba(241,196,15,0.4);
     }
     .color-dot {
-      width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; cursor: pointer;
-      display: inline-block; transition: transform 0.15s;
+      width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid #fff; cursor: pointer;
+      display: inline-block; transition: transform 0.15s; margin-top: 6px;
     }
-    .color-dot.active { transform: scale(1.25); border-color: #f1c40f; box-shadow: 0 0 8px #f1c40f; }
+    .color-dot.active { transform: scale(1.25); border-color: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
 
-    /* 獎勵卡片與按鍵 */
     .reward-card {
       position: relative; border-radius: 16px; padding: 18px 14px;
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
@@ -286,7 +329,6 @@
       margin-top: 10px; font-family: 'Lilita One', sans-serif;
     }
 
-    /* 盃數之路 */
     .trophy-road-track { position: relative; display: flex; flex-direction: column; gap: 24px; padding: 20px 0; }
     .trophy-road-line {
       position: absolute; left: 48px; top: 30px; bottom: 30px; width: 6px;
@@ -311,7 +353,6 @@
       border-color: #2ecc71; background: linear-gradient(90deg, rgba(46,204,113,0.2), transparent);
     }
 
-    /* 1v1 對戰畫面 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
@@ -418,7 +459,7 @@
   <!-- 左側選單 -->
   <div class="left-menu">
     <div class="menu-btn" onclick="openScreen('shopScreen')"><span>🛒</span><label>時裝店</label></div>
-    <div class="menu-btn" onclick="openScreen('customizeScreen')"><span>✂️</span><label>捏臉</label></div>
+    <div class="menu-btn" onclick="openScreen('stepCustomScreen')"><span>✂️</span><label>造角</label></div>
     <div class="menu-btn" onclick="openScreen('trophyScreen')"><span>🏆</span><label>盃數路</label></div>
   </div>
 
@@ -438,7 +479,7 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 動漫主角 (比照截圖訓練家立繪) -->
+  <!-- 中央全身美式 3D 九頭身角色立繪 (全透明去背) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
@@ -467,61 +508,104 @@
     </button>
   </div>
 
-  <!-- ==========================================
-       彈窗 1：人物捏臉自訂中心 (換臉、換髮、換性別)
-       ========================================== -->
-  <div id="customizeScreen" class="app-screen-overlay">
-    <div class="screen-window" style="max-width: 820px;">
+  <!-- 步驟引導式 3D 角色塑形中心 -->
+  <div id="stepCustomScreen" class="app-screen-overlay">
+    <div class="screen-window">
       <div class="screen-header">
-        <div class="screen-title">✂️ 形象自訂中心 (CUSTOM TRAINER)</div>
+        <div class="screen-title">✂️ 角色外觀塑形中心 (FORTNITE 3D STYLED)</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content">
-        <div class="customize-container">
-          <!-- 左側全身模型預覽 -->
-          <div class="custom-preview-pane">
-            <div id="customizeFigurePreview" class="preview-trainer-figure"></div>
-            <h3 id="customizeNameTag" style="color:#f1c40f; margin-bottom:12px;">當前形象預覽</h3>
-            <button class="reward-btn" style="width:100%; background:var(--gold); color:#000; font-size:15px; cursor:pointer;" onclick="saveCustomHero()">套用此形象</button>
+        <div class="step-progress-bar">
+          <div id="stepInd0" class="step-indicator active">
+            <span class="step-num-badge">1</span> 基礎性別
+          </div>
+          <span>➔</span>
+          <div id="stepInd1" class="step-indicator">
+            <span class="step-num-badge">2</span> 髮型髮色
+          </div>
+          <span>➔</span>
+          <div id="stepInd2" class="step-indicator">
+            <span class="step-num-badge">3</span> 眼睛瞳色
+          </div>
+          <span>➔</span>
+          <div id="stepInd3" class="step-indicator">
+            <span class="step-num-badge">4</span> 總覽確認
+          </div>
+        </div>
+
+        <div class="step-container-grid">
+          <div class="camera-viewport">
+            <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
+            <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：全身九頭身視角</div>
           </div>
 
-          <!-- 右側微調選項 -->
-          <div style="overflow-y:auto; padding-right:10px;">
-            <div class="custom-option-group">
-              <h4>⚧ 性別設定</h4>
-              <div class="pill-btn-group">
-                <button class="pill-btn active" onclick="setTrainerGender('male', this)">男性訓練家</button>
-                <button class="pill-btn" onclick="setTrainerGender('female', this)">女性訓練家</button>
+          <div class="step-options-pane">
+            <div style="flex:1;">
+              <div id="stepPage0" class="step-panel-page active">
+                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 1：選擇基礎性別 (Gender)</h3>
+                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">決定九頭身美式半寫實體態與肌肉骨架結構。</p>
+                <div class="pill-btn-group">
+                  <button class="pill-btn active" onclick="Coordinator.SelectGender('male', this)">男性角色 (九頭身美式)</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectGender('female', this)">女性角色 (修長動態)</button>
+                </div>
+              </div>
+
+              <div id="stepPage1" class="step-panel-page">
+                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 2：選擇髮型與髮色 (Hair & Color)</h3>
+                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">美式雕塑感 3D 髮型搭配柔和高光渲染。</p>
+                <div style="font-size:12px; color:#ddd; margin-bottom:4px;">髮型結構：</div>
+                <div class="pill-btn-group">
+                  <button class="pill-btn active" onclick="Coordinator.SelectHairStyle('short', this)">美式俐落側分</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('curly', this)">立體微捲髮束</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('ponytail', this)">競技高馬尾</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('bucket', this)">潮流街頭漁夫帽</button>
+                </div>
+
+                <div style="font-size:12px; color:#ddd; margin-top:14px; margin-bottom:4px;">髮色高光：</div>
+                <div style="display:flex; gap:12px;">
+                  <span class="color-dot active" style="background:#2d3436;" onclick="Coordinator.SelectHairColor('black', this)"></span>
+                  <span class="color-dot" style="background:#805230;" onclick="Coordinator.SelectHairColor('brown', this)"></span>
+                  <span class="color-dot" style="background:#f1c40f;" onclick="Coordinator.SelectHairColor('blonde', this)"></span>
+                  <span class="color-dot" style="background:#d63031;" onclick="Coordinator.SelectHairColor('red', this)"></span>
+                  <span class="color-dot" style="background:#dfe6e9;" onclick="Coordinator.SelectHairColor('silver', this)"></span>
+                </div>
+              </div>
+
+              <div id="stepPage2" class="step-panel-page">
+                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 3：眼形輪廓與瞳孔 (Eyes & Color)</h3>
+                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">深邃眼窩、挺拔眉骨與美式動漫 3D 虹膜。</p>
+                <div style="font-size:12px; color:#ddd; margin-bottom:4px;">眼型五官：</div>
+                <div class="pill-btn-group">
+                  <button class="pill-btn active" onclick="Coordinator.SelectEyeShape('anime', this)">深邃歐美獵鷹眼</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectEyeShape('sharp', this)">剛毅微型修長眼</button>
+                </div>
+
+                <div style="font-size:12px; color:#ddd; margin-top:14px; margin-bottom:4px;">瞳孔顏色：</div>
+                <div style="display:flex; gap:12px;">
+                  <span class="color-dot active" style="background:#0984e3;" onclick="Coordinator.SelectEyeColor('#0984e3', this)"></span>
+                  <span class="color-dot" style="background:#e84393;" onclick="Coordinator.SelectEyeColor('#e84393', this)"></span>
+                  <span class="color-dot" style="background:#00b894;" onclick="Coordinator.SelectEyeColor('#00b894', this)"></span>
+                  <span class="color-dot" style="background:#fdcb6e;" onclick="Coordinator.SelectEyeColor('#fdcb6e', this)"></span>
+                  <span class="color-dot" style="background:#2d3436;" onclick="Coordinator.SelectEyeColor('#2d3436', this)"></span>
+                </div>
+              </div>
+
+              <div id="stepPage3" class="step-panel-page">
+                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 4：造型總覽與確認 (Overview)</h3>
+                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">檢視最終美式 3D 成果，確認後扣除代幣完成保存。</p>
+                <div style="background:rgba(0,0,0,0.4); padding:12px 16px; border-radius:12px; border:1px solid rgba(212,175,55,0.3); font-size:13px; line-height:1.7;">
+                  <div>• 性別骨架：<span id="reviewGender" style="color:#f1c40f;">男性 (九頭身)</span></div>
+                  <div>• 髮型款式：<span id="reviewHair" style="color:#f1c40f;">美式短髮</span></div>
+                  <div>• 髮色高光：<span id="reviewColor" style="color:#f1c40f;">黑色</span></div>
+                  <div>• 消耗費用：<span style="color:#2ecc71; font-weight:bold;">🪙 100 金幣</span></div>
+                </div>
               </div>
             </div>
 
-            <div class="custom-option-group">
-              <h4>💇 髮型造型</h4>
-              <div class="pill-btn-group">
-                <button class="pill-btn active" onclick="setTrainerHairStyle('short', this)">俐落短髮</button>
-                <button class="pill-btn" onclick="setTrainerHairStyle('curly', this)">貴族捲髮</button>
-                <button class="pill-btn" onclick="setTrainerHairStyle('ponytail', this)">活力馬尾</button>
-                <button class="pill-btn" onclick="setTrainerHairStyle('bucket', this)">潮流漁夫帽</button>
-              </div>
-            </div>
-
-            <div class="custom-option-group">
-              <h4>🎨 髮色調色盤</h4>
-              <div style="display:flex; gap:12px; margin-top:5px;">
-                <span class="color-dot active" style="background:#2c2c2c;" onclick="setTrainerHairColor('black', this)"></span>
-                <span class="color-dot" style="background:#f39c12;" onclick="setTrainerHairColor('brown', this)"></span>
-                <span class="color-dot" style="background:#f1c40f;" onclick="setTrainerHairColor('blonde', this)"></span>
-                <span class="color-dot" style="background:#e74c3c;" onclick="setTrainerHairColor('red', this)"></span>
-                <span class="color-dot" style="background:#dfe6e9;" onclick="setTrainerHairColor('silver', this)"></span>
-              </div>
-            </div>
-
-            <div class="custom-option-group">
-              <h4>👤 臉部輪廓</h4>
-              <div class="pill-btn-group">
-                <button class="pill-btn active" onclick="setTrainerFace('sharp', this)">帥氣俐落 (銳角)</button>
-                <button class="pill-btn" onclick="setTrainerFace('round', this)">溫和清爽 (圓潤)</button>
-              </div>
+            <div class="step-nav-footer">
+              <button id="btnStepBack" class="btn-step-nav btn-step-back" onclick="Coordinator.PreviousStep()" disabled>上一步</button>
+              <button id="btnStepNext" class="btn-step-nav btn-step-next" onclick="Coordinator.NextStep()">下一步 ➔</button>
             </div>
           </div>
         </div>
@@ -529,57 +613,40 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       彈窗 2：潮流時裝專區 (綠寶石購買全身換裝)
-       ========================================== -->
+  <!-- 潮流時裝商城 -->
   <div id="shopScreen" class="app-screen-overlay">
     <div class="screen-window">
       <div class="screen-header">
-        <div class="screen-title">🛒 潮流時裝專櫃 (BOUTIQUE)</div>
+        <div class="screen-title">🛒 潮流時裝專櫃 (3D BOUTIQUE)</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content">
         <h3 style="color:#f1c40f;">👔 限時潮流時裝 (需寶石解鎖)</h3>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px;">
-          
           <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
             <div style="font-size:42px;">🕶️</div>
-            <h4>高街龐克賽博服</h4>
+            <h4>高街龐克西服</h4>
             <p style="font-size:11px; color:#bbb;">黑曜石流光防風夾克</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('高街龐克賽博服', 250, 'punk')">💎 250 寶石</button>
+            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('高街龐克西服', 250, 'punk')">💎 250 寶石</button>
           </div>
-
           <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
             <div style="font-size:42px;">🧥</div>
-            <h4>霓虹潮流機能帽 T</h4>
+            <h4>霓虹機能連帽衛衣</h4>
             <p style="font-size:11px; color:#bbb;">街頭運動休閒機能裝</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('霓虹潮流機能帽 T', 450, 'cyber')">💎 450 寶石</button>
+            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('霓虹機能連帽衛衣', 450, 'cyber')">💎 450 寶石</button>
           </div>
-
           <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
             <div style="font-size:42px;">👑</div>
-            <h4>皇家百萬黃金禮服</h4>
+            <h4>皇家頂級純金燕尾服</h4>
             <p style="font-size:11px; color:#bbb;">純金手工刺繡奢華晚宴服</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('皇家百萬黃金禮服', 800, 'royal')">💎 800 寶石</button>
-          </div>
-        </div>
-
-        <h3 style="color:#f1c40f; margin-top:15px;">🪙 資源補給箱</h3>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px;">
-          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
-            <div style="font-size:42px;">🪙</div>
-            <h4>金幣手提箱</h4>
-            <p style="font-size:11px; color:#bbb;">獲得 50,000 金幣</p>
-            <button class="reward-btn" style="background:var(--gold); color:#000; cursor:pointer;" onclick="claimRewardFly(event, 'gold', 50000, null)">💎 50 寶石</button>
+            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('皇家頂級純金燕尾服', 800, 'royal')">💎 800 寶石</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================
-       彈窗 3：荒野榮譽盃數之路
-       ========================================== -->
+  <!-- 荒野榮譽盃數之路 -->
   <div id="trophyScreen" class="app-screen-overlay">
     <div class="screen-window">
       <div class="screen-header">
@@ -589,12 +656,9 @@
       <div class="screen-content">
         <div style="text-align:center; padding:10px 0;">
           <div style="font-size:24px; color:#f1c40f; font-weight:800;">當前總盃數：<span id="currentTrophiesSpan">650</span> 🏆</div>
-          <p style="color:#aaa; font-size:12px;">贏得對決獲取榮譽盃數，衝擊更高分段解鎖限定造型與資源！</p>
         </div>
-
         <div class="trophy-road-track">
           <div class="trophy-road-line"></div>
-
           <div class="trophy-step unlocked">
             <div class="trophy-node">🏆</div>
             <div class="trophy-card-info" style="opacity:0.5;">
@@ -602,34 +666,14 @@
               <button class="reward-btn" style="background:#333; color:#777;" disabled>✔ 已領取</button>
             </div>
           </div>
-
-          <div class="trophy-step unlocked">
-            <div class="trophy-node">🏆</div>
-            <div class="trophy-card-info" style="opacity:0.5;">
-              <div><h4>300 盃里程碑</h4><p style="font-size:12px; color:#aaa;">小試身手：解鎖 💎 50 寶石</p></div>
-              <button class="reward-btn" style="background:#333; color:#777;" disabled>✔ 已領取</button>
-            </div>
-          </div>
-
           <div class="trophy-step unlocked">
             <div class="trophy-node">🎭</div>
             <div class="trophy-card-info claimable" id="trophyStep500">
               <div>
                 <h4 style="color:#2ecc71;">500 盃里程碑 (達成！)</h4>
-                <p style="font-size:12px; color:#fff;">解鎖限定造型：【賭徒魔術師裝】+ 2,000 金幣</p>
+                <p style="font-size:12px; color:#fff;">解鎖限定造型：【賭神魔術風衣】+ 2,000 金幣</p>
               </div>
-              <button class="reward-btn" style="background:linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; cursor:pointer;" onclick="claimTrophyReward(event, 500, '賭徒魔術師裝', 'gold', 2000, document.getElementById('trophyStep500'))">立即領取</button>
-            </div>
-          </div>
-
-          <div class="trophy-step">
-            <div class="trophy-node">🔒</div>
-            <div class="trophy-card-info">
-              <div>
-                <h4 style="color:#f1c40f;">800 盃里程碑 (進度 650 / 800)</h4>
-                <p style="font-size:12px; color:#888;">解鎖潮流造型：【暗夜黑風衣】+ 💎 100 寶石</p>
-              </div>
-              <button class="reward-btn" style="background:#222; color:#666;" disabled>650/800 🔒</button>
+              <button class="reward-btn" style="background:linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; cursor:pointer;" onclick="claimTrophyReward(event, 500, '賭神魔術風衣', 'gold', 2000, document.getElementById('trophyStep500'))">立即領取</button>
             </div>
           </div>
         </div>
@@ -637,38 +681,20 @@
     </div>
   </div>
 
-  <!-- 彈窗：個人檔案 -->
+  <!-- 個人檔案 -->
   <div id="profileScreen" class="app-screen-overlay">
-    <div class="screen-window" style="max-width: 760px;">
-      <div class="screen-header">
-        <div class="screen-title">🎴 訓練家檔案 (TRAINER DOSSIER)</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content">
-        <div class="customize-container" style="grid-template-columns: 260px 1fr;">
-          <div class="custom-preview-pane">
-            <div id="profileBigAvatar" class="preview-trainer-figure" style="height:220px;"></div>
-            <input type="text" id="usernameInput" style="width:100%; padding:10px; border:2px solid #d4af37; border-radius:10px; background:#000; color:#fff; text-align:center; font-weight:bold; font-size:15px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
-            <button class="reward-btn" style="width:100%; background:var(--gold); color:#1a1202; margin-top:10px; cursor:pointer;" onclick="savePlayerName()">更新暱稱</button>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:14px;">
-            <div style="background:rgba(241,196,15,0.1); border-left:4px solid #f1c40f; padding:12px 16px; border-radius:8px;">
-              <h3 style="color:#f1c40f;">🏆 榮譽段位：鑽石精英</h3>
-              <p style="font-size:12px; color:#ccc;">總盃數 650 盃，下一里程碑：800 盃。</p>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
-              <div class="stat-box" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid rgba(212,175,55,0.3);"><div style="font-size:12px; color:#aaa;">勝率</div><div style="font-size:22px; color:#f1c40f;">71.2%</div></div>
-              <div class="stat-box" style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid rgba(212,175,55,0.3);"><div style="font-size:12px; color:#aaa;">最高連勝</div><div style="font-size:22px; color:#f1c40f;">12 次 🔥</div></div>
-            </div>
-          </div>
-        </div>
+    <div class="screen-window" style="max-width: 500px; height:50vh;">
+      <div class="screen-header"><div class="screen-title">🎴 牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
+      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
+        <input type="text" id="usernameInput" style="width:80%; padding:10px; border:2px solid #d4af37; border-radius:10px; background:#000; color:#fff; text-align:center; font-weight:bold; font-size:15px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
+        <button class="reward-btn" style="background:var(--gold); color:#1a1202; margin-top:12px; cursor:pointer; padding:8px 24px;" onclick="savePlayerName()">儲存暱稱</button>
       </div>
     </div>
   </div>
 
   <!-- 其他子視窗 -->
-  <div id="passScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">🎫 通行證</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>通行證賽季進行中</p></div></div></div>
-  <div id="taskScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">📋 每日任務</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>每日任務完成領金幣！</p></div></div></div>
+  <div id="passScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">🎫 通行證</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>通行證賽季火熱進行中！</p></div></div></div>
+  <div id="taskScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">📋 每日任務</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>每日任務領取金幣中！</p></div></div></div>
   <div id="giftScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:480px; height:50vh;"><div class="screen-header"><div class="screen-title">🎁 每日禮物</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content" style="align-items:center; justify-content:center; text-align:center;"><div style="font-size:60px;">🪙</div><button class="reward-btn" style="background:var(--gold); color:#000; padding:10px 30px; font-size:16px; cursor:pointer;" onclick="claimRewardFly(event, 'gold', 1500, null); setTimeout(closeScreens, 1200);">領取 1,500 金幣</button></div></div></div>
   <div id="friendsScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">👥 好友</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>在線好友：3 人</p></div></div></div>
   <div id="teamScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">🏠 小隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>組隊出戰準備！</p></div></div></div>
@@ -851,7 +877,7 @@
       }
     };
 
-    // 漂浮背景粒子
+    // 背景金粉粒子
     const canvas = document.getElementById('particlesCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -878,7 +904,7 @@
     }
     renderParticles();
 
-    // 點擊特效
+    // 點擊粒子特效
     const clickCanvas = document.getElementById('clickCanvas');
     const cCtx = clickCanvas.getContext('2d');
     let clickParticles = [], clickRings = [];
@@ -922,7 +948,7 @@
       if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
       if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
       if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen') || target.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#customizeScreen')) return AudioEngine.playMutedTap();
+      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
       if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
       AudioEngine.playBubblePop();
     }
@@ -948,179 +974,327 @@
     renderClickEffects();
 
     // =========================================================
-    // 寶可夢大集結風格：日系動漫全身訓練家模型向量生成器
+    // 《Fortnite》美式 3D 九頭身半寫實角色渲染引擎 (去背)
     // =========================================================
-    let trainerConfig = {
+    let CharacterData = {
       gender: 'male',
       hairStyle: 'bucket',
       hairColor: 'black',
-      faceShape: 'sharp',
+      eyeShape: 'anime',
+      eyeColor: '#0984e3',
       outfitName: '👕 經典黑潮街頭短 T',
       outfitCode: 'default'
     };
 
-    const savedTrainer = localStorage.getItem('poker_trainer_config');
-    if (savedTrainer) {
-      try { trainerConfig = JSON.parse(savedTrainer); } catch(e) {}
+    const savedChar = localStorage.getItem('poker_character_data');
+    if (savedChar) {
+      try { CharacterData = JSON.parse(savedChar); } catch(e) {}
     }
 
-    // 利用高階向量繪製全身訓練家 SVG (比照截圖黑色潮流短 T、短褲、長襪、球鞋與手套立繪)
-    function generateTrainerSVG(cfg) {
-      const isFemale = cfg.gender === 'female';
-      const skinColor = '#ffdfbf';
-      const hairColorMap = { black: '#2c3e50', brown: '#8b4513', blonde: '#f1c40f', red: '#c0392b', silver: '#bdc3c7' };
-      const hairColor = hairColorMap[cfg.hairColor] || '#2c3e50';
+    function render3DAvatarSVG(data) {
+      const isFemale = data.gender === 'female';
+      const hairColorMap = {
+        black: { base: '#1e272e', hi: '#485460' },
+        brown: { base: '#4a2c11', hi: '#7a4519' },
+        blonde: { base: '#c99700', hi: '#f1c40f' },
+        red: { base: '#831d14', hi: '#c0392b' },
+        silver: { base: '#636e72', hi: '#b2bec3' }
+      };
+      const hair = hairColorMap[data.hairColor] || hairColorMap.black;
 
-      // 依服裝代碼決定衣著主色與紋樣
-      let shirtColor = '#1e272e';
-      let pantsColor = '#111';
-      let emblem = '⚪';
-      if (cfg.outfitCode === 'punk') { shirtColor = '#8e44ad'; pantsColor = '#2c3e50'; emblem = '⚡'; }
-      if (cfg.outfitCode === 'cyber') { shirtColor = '#00cec9'; pantsColor = '#0984e3'; emblem = '💠'; }
-      if (cfg.outfitCode === 'royal') { shirtColor = '#d4af37'; pantsColor = '#1a1202'; emblem = '👑'; }
-      if (cfg.outfitCode === 'magician') { shirtColor = '#c0392b'; pantsColor = '#2c3e50'; emblem = '♠️'; }
+      let shirtGrad = { start: '#2d3436', mid: '#1e272e', end: '#090a0a', emblem: '⚡' };
+      let pantsGrad = { start: '#1e272e', end: '#000000' };
+
+      if (data.outfitCode === 'punk') {
+        shirtGrad = { start: '#8e44ad', mid: '#6c3483', end: '#341646', emblem: '☠️' };
+        pantsGrad = { start: '#2c3e50', end: '#1a252f' };
+      } else if (data.outfitCode === 'cyber') {
+        shirtGrad = { start: '#00cec9', mid: '#0984e3', end: '#1b1464', emblem: '💠' };
+        pantsGrad = { start: '#2d3436', end: '#111' };
+      } else if (data.outfitCode === 'royal') {
+        shirtGrad = { start: '#f1c40f', mid: '#b7950b', end: '#6e5602', emblem: '👑' };
+        pantsGrad = { start: '#211905', end: '#0d0901' };
+      } else if (data.outfitCode === 'magician') {
+        shirtGrad = { start: '#e74c3c', mid: '#922b21', end: '#4a120c', emblem: '♠️' };
+        pantsGrad = { start: '#1e272e', end: '#050708' };
+      }
 
       return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 380" width="100%" height="100%">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 520" width="100%" height="100%">
         <defs>
-          <radialGradient id="stageGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#2ecc71" stop-opacity="0.35"/>
-            <stop offset="100%" stop-color="#2ecc71" stop-opacity="0"/>
+          <!-- 美式 3D 肌肉光影漸層 (肌膚立體轉折) -->
+          <linearGradient id="skin3D" x1="10%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#fcd8b8"/>
+            <stop offset="40%" stop-color="#f0bc94"/>
+            <stop offset="80%" stop-color="#cf8e63"/>
+            <stop offset="100%" stop-color="#a4623a"/>
+          </linearGradient>
+
+          <!-- 九頭身修長腿部立體陰影 -->
+          <linearGradient id="leg3D" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fff1d6"/>
+            <stop offset="50%" stop-color="#eeb890"/>
+            <stop offset="85%" stop-color="#cf8e63"/>
+            <stop offset="100%" stop-color="#804a25"/>
+          </linearGradient>
+
+          <!-- 美式倒三角上衣立體漸層 -->
+          <linearGradient id="shirt3D" x1="15%" y1="0%" x2="85%" y2="100%">
+            <stop offset="0%" stop-color="${shirtGrad.start}"/>
+            <stop offset="50%" stop-color="${shirtGrad.mid}"/>
+            <stop offset="100%" stop-color="${shirtGrad.end}"/>
+          </linearGradient>
+
+          <linearGradient id="pants3D" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${pantsGrad.start}"/>
+            <stop offset="100%" stop-color="${pantsGrad.end}"/>
+          </linearGradient>
+
+          <linearGradient id="hair3D" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${hair.hi}"/>
+            <stop offset="60%" stop-color="${hair.base}"/>
+            <stop offset="100%" stop-color="#080a0c"/>
+          </linearGradient>
+
+          <!-- 柔和接觸陰影 -->
+          <radialGradient id="contactShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(0,0,0,0.88)"/>
+            <stop offset="45%" stop-color="rgba(0,0,0,0.4)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
           </radialGradient>
         </defs>
-        <!-- 地面微光影 -->
-        <ellipse cx="100" cy="365" rx="55" ry="12" fill="rgba(0,0,0,0.55)"/>
-        
-        <!-- 腿部與潮流長襪球鞋 -->
-        <rect x="80" y="240" width="14" height="85" rx="6" fill="${skinColor}"/>
-        <rect x="106" y="240" width="14" height="85" rx="6" fill="${skinColor}"/>
-        <!-- 黑色運動長襪 -->
-        <rect x="79" y="295" width="16" height="35" rx="4" fill="#111"/>
-        <rect x="105" y="295" width="16" height="35" rx="4" fill="#111"/>
-        <rect x="79" y="300" width="16" height="3" fill="#fff"/>
-        <rect x="105" y="300" width="16" height="3" fill="#fff"/>
-        <!-- 潮流球鞋 (灰色與青綠底) -->
-        <path d="M72,350 L98,350 L96,366 L70,366 Z" fill="#ecf0f1" stroke="#2c3e50" stroke-width="2"/>
-        <rect x="68" y="364" width="30" height="5" rx="2" fill="#2ecc71"/>
-        <path d="M102,350 L128,350 L126,366 L100,366 Z" fill="#ecf0f1" stroke="#2c3e50" stroke-width="2"/>
-        <rect x="98" y="364" width="30" height="5" rx="2" fill="#2ecc71"/>
 
-        <!-- 潮流運動短褲 -->
-        <path d="M72,190 L128,190 L132,248 L103,248 L100,210 L97,248 L68,248 Z" fill="${pantsColor}" stroke="#000" stroke-width="2.5"/>
+        <!-- 腳底柔和接觸陰影 (完全無外框透明去背) -->
+        <ellipse cx="120" cy="505" rx="68" ry="12" fill="url(#contactShadow)"/>
 
-        <!-- 雙手與手套 (半指格鬥手套) -->
-        <!-- 左手 (手持精靈球姿態) -->
-        <path d="M68,135 L52,185 L60,215" fill="none" stroke="${skinColor}" stroke-width="12" stroke-linecap="round"/>
-        <!-- 手套 -->
-        <circle cx="62" cy="216" r="10" fill="#f39c12" stroke="#000" stroke-width="2"/>
-        <rect x="56" y="210" width="12" height="6" fill="#111"/>
-        
-        <!-- 右手 (自然下垂擺姿勢) -->
-        <path d="M132,135 L146,185 L140,225" fill="none" stroke="${skinColor}" stroke-width="12" stroke-linecap="round"/>
-        <circle cx="140" cy="226" r="10" fill="#f39c12" stroke="#000" stroke-width="2"/>
-        <rect x="134" y="220" width="12" height="6" fill="#111"/>
+        <!-- ================= 九頭身修長腿部 (佔比超過一半) ================= -->
+        <!-- 左腿與右腿 (精壯線條、美式肌肉立體分佈) -->
+        <path d="M98,285 C96,335 94,405 92,455 L110,455 C113,405 116,335 117,285 Z" fill="url(#leg3D)"/>
+        <path d="M123,285 C124,335 127,405 130,455 L148,455 C146,405 144,335 142,285 Z" fill="url(#leg3D)"/>
 
-        <!-- 身體：街頭短 T -->
-        <path d="M68,125 L132,125 L129,195 L71,195 Z" fill="${shirtColor}" stroke="#000" stroke-width="2.5"/>
-        <!-- 袖子 -->
-        <path d="M68,125 L50,155 L64,165 L76,140 Z" fill="${shirtColor}" stroke="#000" stroke-width="2"/>
-        <path d="M132,125 L150,155 L136,165 L124,140 Z" fill="${shirtColor}" stroke="#000" stroke-width="2"/>
-        <!-- 胸口寶可夢精靈球印花 -->
-        <circle cx="100" cy="155" r="12" fill="none" stroke="#fff" stroke-width="2.5"/>
-        <circle cx="100" cy="155" r="4" fill="#fff"/>
-        <line x1="88" y1="155" x2="112" y2="155" stroke="#fff" stroke-width="2"/>
-        <text x="100" y="180" font-family="Lilita One" font-size="9" fill="#aaa" text-anchor="middle">ARENA</text>
+        <!-- 潮流長襪 -->
+        <path d="M91,420 L111,420 L110,462 L90,462 Z" fill="#111" stroke="#222" stroke-width="1.5"/>
+        <line x1="91" y1="428" x2="111" y2="428" stroke="#fff" stroke-width="2.5"/>
+        <path d="M129,420 L149,420 L150,462 L130,462 Z" fill="#111" stroke="#222" stroke-width="1.5"/>
+        <line x1="129" y1="428" x2="149" y2="428" stroke="#fff" stroke-width="2.5"/>
 
-        <!-- 脖子 -->
-        <rect x="93" y="105" width="14" height="22" fill="${skinColor}"/>
+        <!-- 美式 3D 潮流球鞋 (厚底微擬真) -->
+        <g id="shoes">
+          <path d="M80,464 Q96,458 116,462 L118,490 Q96,500 78,492 Z" fill="#ecf0f1"/>
+          <path d="M76,486 Q96,498 120,486 L118,495 Q96,506 74,496 Z" fill="#2ecc71"/>
+          <path d="M84,472 L94,484" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
 
-        <!-- 臉部 (日系大眼與精緻下巴) -->
-        <path d="M82,70 Q100,122 118,70 Q100,60 82,70" fill="${skinColor}" stroke="#2c3e50" stroke-width="1.5"/>
-        <!-- 眼睛 (寶可夢動漫大眼) -->
-        <ellipse cx="91" cy="88" rx="4" ry="5.5" fill="#2c3e50"/>
-        <circle cx="92.5" cy="86" r="1.5" fill="#fff"/>
-        <ellipse cx="109" cy="88" rx="4" ry="5.5" fill="#2c3e50"/>
-        <circle cx="110.5" cy="86" r="1.5" fill="#fff"/>
-        <!-- 微笑與眉毛 -->
-        <path d="M96,98 Q100,102 105,98" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M87,80 Q92,78 96,80" fill="none" stroke="${hairColor}" stroke-width="2" stroke-linecap="round"/>
-        <path d="M104,80 Q108,78 113,80" fill="none" stroke="${hairColor}" stroke-width="2" stroke-linecap="round"/>
+          <path d="M124,462 Q144,458 160,464 L162,492 Q144,500 122,490 Z" fill="#ecf0f1"/>
+          <path d="M120,486 Q144,498 164,486 L166,496 Q144,506 122,495 Z" fill="#2ecc71"/>
+          <path d="M148,472 L138,484" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
 
-        <!-- 髮型與帽子 (比照截圖：潮流卡其漁夫帽 + 帥氣側分劉海) -->
-        ${cfg.hairStyle === 'bucket' ? `
-          <!-- 劉海 -->
-          <path d="M84,72 Q94,90 100,74 Q106,90 116,72" fill="${hairColor}"/>
-          <!-- 潮流遮陽漁夫帽 -->
-          <ellipse cx="100" cy="64" rx="34" ry="10" fill="#d7ccc8" stroke="#8d6e63" stroke-width="2"/>
-          <path d="M78,63 Q100,42 122,63 L118,48 Q100,38 82,48 Z" fill="#bcaaa4" stroke="#8d6e63" stroke-width="2"/>
-          <rect x="80" y="58" width="40" height="4" fill="#5d4037"/>
+        <!-- 競技修身短褲 -->
+        <path d="M88,215 C108,218 132,218 152,215 C157,250 160,285 156,292 L125,292 C124,265 122,245 120,240 C118,245 116,265 115,292 L84,292 C80,285 83,250 88,215 Z" fill="url(#pants3D)"/>
+        <path d="M115,245 Q120,260 125,245" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2.5"/>
+
+        <!-- ================= 美式 3D 倒三角上身 ================= -->
+        <!-- 粗壯有力脖子與鎖骨微擬真線條 -->
+        <path d="M111,105 L129,105 L131,130 L109,130 Z" fill="url(#skin3D)"/>
+        <path d="M112,122 Q120,128 128,122" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>
+
+        <!-- 修長雙手 (九頭身肌肉立體線條) -->
+        <path d="M78,135 Q56,190 68,245" fill="none" stroke="url(#skin3D)" stroke-width="15" stroke-linecap="round"/>
+        <circle cx="69" cy="246" r="11" fill="#d35400" stroke="#111" stroke-width="2"/>
+        <path d="M162,135 Q184,190 172,245" fill="none" stroke="url(#skin3D)" stroke-width="15" stroke-linecap="round"/>
+        <circle cx="171" cy="246" r="11" fill="#d35400" stroke="#111" stroke-width="2"/>
+
+        <!-- 寬肩窄腰倒三角形短 T (Fortnite 標誌性輪廓) -->
+        <path d="M78,125 C106,130 134,130 162,125 C166,165 160,210 152,225 C132,230 108,230 88,225 C80,210 74,165 78,125 Z" fill="url(#shirt3D)"/>
+        <path d="M78,125 L58,155 L74,166 L88,138 Z" fill="url(#shirt3D)"/>
+        <path d="M162,125 L182,155 L166,166 L152,138 Z" fill="url(#shirt3D)"/>
+
+        <!-- 胸口印花 -->
+        <circle cx="120" cy="165" r="14" fill="rgba(255,255,255,0.08)" stroke="#fff" stroke-width="2"/>
+        <text x="120" y="171" font-family="Lilita One" font-size="13" fill="#fff" text-anchor="middle">${shirtGrad.emblem}</text>
+        <text x="120" y="195" font-family="Lilita One" font-size="8" fill="#f1c40f" text-anchor="middle" letter-spacing="1">POKER ARENA</text>
+
+        <!-- ================= 美式 3D 深邃五官與九頭身頭身比例 ================= -->
+        <!-- 頭部（比傳統比例精緻縮小，達成九頭身美感） -->
+        <!-- 俐落下巴輪廓、深邃下顎骨線條 (Jawline) -->
+        <path d="M102,68 C96,82 104,112 120,115 C136,112 144,82 138,68 Z" fill="url(#skin3D)"/>
+        <!-- 3D 頰骨與下巴陰影 -->
+        <path d="M105,82 Q120,105 135,82" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
+
+        <!-- 美式深邃眉骨與眼窩結構 (Deep-set eyes) -->
+        <g id="deepEyes">
+          <!-- 突出眉骨陰影 -->
+          <path d="M105,74 Q112,71 118,74" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M122,74 Q128,71 135,74" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- 凹陷眼窩陰影與美式半寫實虹膜 -->
+          <ellipse cx="111" cy="80" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
+          <ellipse cx="111" cy="81" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
+          <circle cx="109.5" cy="79" r="1.4" fill="#fff"/>
+
+          <ellipse cx="129" cy="80" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
+          <ellipse cx="129" cy="81" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
+          <circle cx="127.5" cy="79" r="1.4" fill="#fff"/>
+        </g>
+
+        <!-- 高挺筆直美式 3D 鼻樑與鼻翼陰影 -->
+        <path d="M120,74 L118,88 L122,88" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.8" stroke-linecap="round"/>
+
+        <!-- 美式自信微笑嘴唇 -->
+        <path d="M115,96 Q120,101 125,96" fill="none" stroke="#a93226" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- ================= 美式 3D 雕塑髮束 / 潮流帽子 ================= -->
+        ${data.hairStyle === 'bucket' ? `
+          <path d="M103,70 Q112,82 120,72 Q128,82 137,70 Z" fill="url(#hair3D)"/>
+          <ellipse cx="120" cy="62" rx="36" ry="10" fill="#bcaaa4" stroke="#5d4037" stroke-width="2"/>
+          <path d="M96,60 Q120,38 144,60 L140,46 Q120,34 100,46 Z" fill="#d7ccc8" stroke="#5d4037" stroke-width="2"/>
+          <rect x="98" y="55" width="44" height="4" fill="#4e342e" rx="1"/>
         ` : `
-          <!-- 標準俐落髮型 -->
-          <path d="M80,72 Q100,35 120,72 Q115,55 100,50 Q85,55 80,72" fill="${hairColor}"/>
-          <path d="M82,72 Q93,88 100,74 Q107,88 118,72 Z" fill="${hairColor}"/>
-          ${isFemale ? `<path d="M76,75 Q68,120 74,150 L82,145 Q78,110 82,75 Z" fill="${hairColor}"/>
-                        <path d="M124,75 Q132,120 126,150 L118,145 Q122,110 118,75 Z" fill="${hairColor}"/>` : ''}
+          <!-- 美式俐落立體髮塊 (Sculpted Hair) -->
+          <path d="M98,70 Q120,32 142,70 Q135,50 120,44 Q105,50 98,70" fill="url(#hair3D)"/>
+          <path d="M100,70 Q112,84 120,72 Q128,84 140,70 Z" fill="url(#hair3D)"/>
+          ${isFemale ? `
+            <path d="M94,72 Q84,115 88,150 L98,145 Q92,105 98,72 Z" fill="url(#hair3D)"/>
+            <path d="M146,72 Q156,115 152,150 L142,145 Q148,105 142,72 Z" fill="url(#hair3D)"/>
+          ` : ''}
         `}
       </svg>
       `;
     }
 
-    function applyTrainerVisuals() {
-      const svgCode = generateTrainerSVG(trainerConfig);
-      const svgDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgCode)}`;
+    function updateCharacterVisuals() {
+      const svg = render3DAvatarSVG(CharacterData);
+      const url = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 
-      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${svgDataUrl}")`;
-      document.getElementById('customizeFigurePreview').style.backgroundImage = `url("${svgDataUrl}")`;
-      document.getElementById('profileBigAvatar').style.backgroundImage = `url("${svgDataUrl}")`;
-      document.getElementById('playerAvatar').style.backgroundImage = `url("${svgDataUrl}")`;
-      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${svgDataUrl}")`;
-      document.getElementById('heroOutfitBadge').innerText = trainerConfig.outfitName;
+      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${url}")`;
+      document.getElementById('stepCameraTarget').style.backgroundImage = `url("${url}")`;
+      document.getElementById('playerAvatar').style.backgroundImage = `url("${url}")`;
+      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${url}")`;
+      document.getElementById('heroOutfitBadge').innerText = CharacterData.outfitName;
+
+      document.getElementById('reviewGender').innerText = CharacterData.gender === 'male' ? "男性 (九頭身美式)" : "女性 (修長動態)";
+      document.getElementById('reviewHair').innerText = CharacterData.hairStyle;
+      document.getElementById('reviewColor').innerText = CharacterData.hairColor;
     }
 
-    function setTrainerGender(gender, btn) {
-      trainerConfig.gender = gender;
-      btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-      applyTrainerVisuals();
-    }
+    // =========================================================
+    // 狀態機與流程中樞 (CharacterCreationCoordinator)
+    // =========================================================
+    const CustomizationStep = {
+      Gender: 0,
+      Hair: 1,
+      Eyes: 2,
+      Review: 3
+    };
 
-    function setTrainerHairStyle(style, btn) {
-      trainerConfig.hairStyle = style;
-      btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-      applyTrainerVisuals();
-    }
+    const Coordinator = {
+      currentStep: CustomizationStep.Gender,
 
-    function setTrainerHairColor(color, dot) {
-      trainerConfig.hairColor = color;
-      dot.parentElement.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
-      dot.classList.add('active');
-      applyTrainerVisuals();
-    }
+      EnterStep(step) {
+        this.currentStep = step;
 
-    function setTrainerFace(shape, btn) {
-      trainerConfig.faceShape = shape;
-      btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-      btn.classList.add('active');
-      applyTrainerVisuals();
-    }
+        for (let i = 0; i <= 3; i++) {
+          const page = document.getElementById(`stepPage${i}`);
+          const ind = document.getElementById(`stepInd${i}`);
+          if (page) page.classList.toggle('active', i === step);
+          if (ind) {
+            ind.classList.toggle('active', i === step);
+            ind.classList.toggle('done', i < step);
+          }
+        }
 
-    function saveCustomHero() {
-      localStorage.setItem('poker_trainer_config', JSON.stringify(trainerConfig));
-      applyTrainerVisuals();
-      alert("✅ 訓練家外觀已成功保存並同步至牌桌！");
-      closeScreens();
-    }
+        const backBtn = document.getElementById('btnStepBack');
+        const nextBtn = document.getElementById('btnStepNext');
+        backBtn.disabled = (step === CustomizationStep.Gender);
+        nextBtn.innerText = (step === CustomizationStep.Review) ? "完成並儲存 (🪙 100)" : "下一步 ➔";
 
-    // 潮流時裝購買
+        const cameraTarget = document.getElementById('stepCameraTarget');
+        const cameraHint = document.getElementById('stepCameraHint');
+        cameraTarget.className = "camera-focus-target";
+
+        if (step === CustomizationStep.Gender || step === CustomizationStep.Review) {
+          cameraTarget.classList.add('view-overview');
+          cameraHint.innerText = "🎥 鏡頭：全身九頭身視角";
+        } else if (step === CustomizationStep.Hair) {
+          cameraTarget.classList.add('view-head');
+          cameraHint.innerText = "🎥 鏡頭：頭部髮型特寫";
+        } else if (step === CustomizationStep.Eyes) {
+          cameraTarget.classList.add('view-face');
+          cameraHint.innerText = "🎥 鏡頭：深邃面部五官特寫";
+        }
+      },
+
+      NextStep() {
+        if (this.currentStep === CustomizationStep.Review) {
+          this.FinalizeCustomization();
+        } else {
+          this.EnterStep(this.currentStep + 1);
+        }
+      },
+
+      PreviousStep() {
+        if (this.currentStep > CustomizationStep.Gender) {
+          this.EnterStep(this.currentStep - 1);
+        }
+      },
+
+      SelectGender(gender, btn) {
+        CharacterData.gender = gender;
+        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        updateCharacterVisuals();
+      },
+
+      SelectHairStyle(style, btn) {
+        CharacterData.hairStyle = style;
+        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        updateCharacterVisuals();
+      },
+
+      SelectHairColor(color, dot) {
+        CharacterData.hairColor = color;
+        dot.parentElement.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
+        dot.classList.add('active');
+        updateCharacterVisuals();
+      },
+
+      SelectEyeShape(shape, btn) {
+        CharacterData.eyeShape = shape;
+        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        updateCharacterVisuals();
+      },
+
+      SelectEyeColor(color, dot) {
+        CharacterData.eyeColor = color;
+        dot.parentElement.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
+        dot.classList.add('active');
+        updateCharacterVisuals();
+      },
+
+      FinalizeCustomization() {
+        if (userGold < 100) return alert("❌ 金幣不足 100，無法完成客製化！");
+        userGold -= 100;
+        document.getElementById('goldCountText').innerText = userGold;
+        localStorage.setItem('poker_character_data', JSON.stringify(CharacterData));
+        updateCharacterVisuals();
+        AudioEngine.playCoinClink();
+        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存全新九頭身形象。");
+        closeScreens();
+      }
+    };
+
+    // 時裝購買
     function buyOutfit(name, cost, code) {
       if (userGems < cost) return alert("❌ 綠寶石不足！請補給寶石。");
       userGems -= cost;
       document.getElementById('gemCountText').innerText = userGems;
-      trainerConfig.outfitName = `✨ ${name}`;
-      trainerConfig.outfitCode = code;
-      saveCustomHero();
-      alert(`🎉 恭喜解鎖並穿戴全新潮流時裝：【${name}】！`);
+      CharacterData.outfitName = `✨ ${name}`;
+      CharacterData.outfitCode = code;
+      localStorage.setItem('poker_character_data', JSON.stringify(CharacterData));
+      updateCharacterVisuals();
+      alert(`🎉 恭喜解鎖並換穿潮流時裝：【${name}】！`);
     }
 
     // 盃數之路領取
@@ -1134,13 +1308,14 @@
       btn.style.color = '#777';
 
       claimRewardFly(e, rewardType, rewardAmount, null);
-      trainerConfig.outfitName = `🎭 ${skinName}`;
-      trainerConfig.outfitCode = 'magician';
-      saveCustomHero();
+      CharacterData.outfitName = `🎭 ${skinName}`;
+      CharacterData.outfitCode = 'magician';
+      localStorage.setItem('poker_character_data', JSON.stringify(CharacterData));
+      updateCharacterVisuals();
       alert(`🏆 榮譽達成！恭喜領取限定造型：【${skinName}】及 ${rewardAmount} 金幣！`);
     }
 
-    // 獎勵小物件爆散飛向右上角 HUD
+    // 飛行動畫
     let userGold = 2950;
     let userGems = 1000000;
     let userTrophies = 650;
@@ -1221,6 +1396,9 @@
       closeScreens();
       const screen = document.getElementById(screenId);
       if (screen) screen.classList.add('active');
+      if (screenId === 'stepCustomScreen') {
+        Coordinator.EnterStep(CustomizationStep.Gender);
+      }
     }
     function closeScreens() {
       document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
@@ -1244,7 +1422,7 @@
       document.getElementById('battleMyName').innerText = currentUsername;
       document.getElementById('hudTrophyCount').innerText = userTrophies;
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
-      applyTrainerVisuals();
+      updateCharacterVisuals();
     });
 
     // 遊戲連線與對戰

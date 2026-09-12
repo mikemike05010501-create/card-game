@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - VIP CASINO</title>
 
-  <!-- 強制禁止瀏覽器讀取舊快取，每次開啟即時更新 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- PWA 手遊全螢幕設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -40,13 +38,11 @@
       pointer-events: none; z-index: 1;
     }
 
-    /* 原有漂浮背景粒子 Canvas */
     #particlesCanvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 2;
     }
 
-    /* 全新：點擊黃金爆破特效 Canvas (最頂層) */
     #clickCanvas {
       position: fixed; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 9999;
@@ -179,6 +175,7 @@
       border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
     }
 
+    /* 發牌動畫與牌面樣式 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
@@ -196,10 +193,12 @@
       background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
     }
     .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
+    
     .poker-card {
       width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
       box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between;
       padding: 8px; font-weight: bold; color: #1e272e;
+      animation: dealCard 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
     .poker-card.red { color: #e74c3c; }
     .poker-card.back {
@@ -207,14 +206,28 @@
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
 
+    @keyframes dealCard {
+      0% {
+        opacity: 0;
+        transform: translateY(-160px) rotate(-25deg) scale(0.6);
+        box-shadow: 0 25px 35px rgba(0,0,0,0.8);
+      }
+      70% {
+        transform: translateY(8px) rotate(4deg) scale(1.04);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+      }
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- 原背景微粒 -->
   <canvas id="particlesCanvas"></canvas>
-  <!-- 點擊黃金爆破特效 Canvas -->
   <canvas id="clickCanvas"></canvas>
 
   <div class="hud-bar">
@@ -339,7 +352,64 @@
   </div>
 
   <script>
-    // 原有背景金粉漂浮系統
+    // ==========================================
+    // Web Audio 原生陶瓷籌碼撞擊與發牌音效系統
+    // ==========================================
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContextClass();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      // 模擬清脆陶瓷籌碼撞擊聲
+      playChipSound() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // 雙頻微敲擊音
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(2200 + (Math.random() * 300 - 150), now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.05);
+      },
+      // 模擬發牌滑布風切與落桌微聲
+      playDealSound() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.exponentialRampToValueAtTime(160, now + 0.09);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+    };
+
+    // 背景金粉漂浮
     const canvas = document.getElementById('particlesCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -378,9 +448,7 @@
     }
     renderParticles();
 
-    // ==========================================
-    // 全新：點擊畫面黃金爆破特效系統
-    // ==========================================
+    // 點擊爆破特效
     const clickCanvas = document.getElementById('clickCanvas');
     const cCtx = clickCanvas.getContext('2d');
     let clickParticles = [];
@@ -410,7 +478,7 @@
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.18; // 重力微墜落
+        this.vy += 0.18;
         this.alpha -= this.decay;
       }
       draw() {
@@ -457,13 +525,13 @@
     }
 
     function triggerClickBurst(x, y) {
+      AudioEngine.playChipSound();
       clickRings.push(new ClickRing(x, y));
       for (let i = 0; i < 18; i++) {
         clickParticles.push(new ClickSparkle(x, y));
       }
     }
 
-    // 支援手指觸控與滑鼠點選
     window.addEventListener('pointerdown', (e) => {
       triggerClickBurst(e.clientX, e.clientY);
     });
@@ -487,9 +555,7 @@
     }
     renderClickEffects();
 
-    // ==========================================
     // 遊戲連線與 HUD 邏輯
-    // ==========================================
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
 
@@ -548,14 +614,17 @@
           document.getElementById('battleOppAvatar').style.backgroundImage = `url('https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(oppName)}')`;
         }
       }
+      AudioEngine.playDealSound();
       renderBoard(data.players);
     });
 
     document.getElementById('drawBtn').addEventListener('click', () => {
+      AudioEngine.playDealSound();
       socket.emit('draw_card', { roomId: activeRoomId });
     });
 
     socket.on('update_board', (data) => {
+      AudioEngine.playDealSound();
       renderBoard(data.players);
     });
 

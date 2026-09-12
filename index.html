@@ -97,7 +97,7 @@
     .brawl-menu-btn:active { transform: scale(0.92); }
     .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
 
-    /* 飛行動畫小物件 */
+    /* 飛行動畫物件 */
     .flying-reward-particle {
       position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
       display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -157,7 +157,7 @@
     .daily-btn:active { transform: scale(0.94); }
 
     /* =========================================================
-       中央角色舞台：精緻 3D 黏土/日漫渲染立繪 (Contrapposto 去背)
+       中央角色舞台：3D 寫實黏土感立繪 (Contrapposto 去背)
        ========================================================= */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
@@ -479,7 +479,7 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 黏土/日漫渲染立繪 -->
+  <!-- 中央全身 3D 黏土/日漫渲染立繪 (Contrapposto 去背) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
@@ -752,229 +752,8 @@
   </div>
 
   <script>
-    // 音效引擎
-    const AudioEngine = {
-      ctx: null,
-      init() {
-        if (!this.ctx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContextClass();
-        }
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-      },
-      playBubblePop() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const startFreq = 480 + (Math.random() * 160);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(startFreq * 2.2, now + 0.045);
-        gain.gain.setValueAtTime(0.32, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.06);
-      },
-      playCoinClink() {
-        this.init();
-        const now = this.ctx.currentTime;
-        [1950, 2400].forEach((freq, i) => {
-          const delay = i * 0.035;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.22, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.09);
-        });
-      },
-      playMagicChime() {
-        this.init();
-        const now = this.ctx.currentTime;
-        [1318, 1760, 2093].forEach((freq, idx) => {
-          const delay = idx * 0.04;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.18, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.16);
-        });
-      },
-      playMutedTap() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.05);
-      },
-      playFeltThud() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.08);
-      },
-      playCloseSound() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(260, now + 0.055);
-        gain.gain.setValueAtTime(0.28, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.065);
-      },
-      playBubbleStream() {
-        this.init();
-        [520, 750, 1020].forEach((freq, idx) => {
-          const delay = idx * 0.035;
-          const now = this.ctx.currentTime + delay;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now);
-          osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + 0.04);
-          gain.gain.setValueAtTime(0.24, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.055);
-        });
-      }
-    };
-
-    // 背景金粉粒子
-    const canvas = document.getElementById('particlesCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 0.8, speedY: -(Math.random() * 0.4 + 0.15),
-        speedX: (Math.random() - 0.5) * 0.25, alpha: Math.random() * 0.7 + 0.2
-      });
-    }
-    function renderParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#f1c40f";
-      particles.forEach(p => {
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-        p.y += p.speedY; p.x += p.speedX;
-        if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
-      });
-      requestAnimationFrame(renderParticles);
-    }
-    renderParticles();
-
-    // 點擊粒子特效
-    const clickCanvas = document.getElementById('clickCanvas');
-    const cCtx = clickCanvas.getContext('2d');
-    let clickParticles = [], clickRings = [];
-    function resizeClickCanvas() { clickCanvas.width = window.innerWidth; clickCanvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeClickCanvas);
-    resizeClickCanvas();
-
-    class ClickSparkle {
-      constructor(x, y) {
-        this.x = x; this.y = y;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 6 + 2;
-        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed - 1.5;
-        this.size = Math.random() * 4 + 2;
-        this.color = Math.random() > 0.3 ? '#fce072' : '#ffffff';
-        this.alpha = 1; this.decay = Math.random() * 0.03 + 0.02;
-        this.isDiamond = Math.random() > 0.6;
-      }
-      update() { this.x += this.vx; this.y += this.vy; this.vy += 0.18; this.alpha -= this.decay; }
-      draw() {
-        cCtx.save(); cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.fillStyle = this.color; cCtx.shadowColor = '#d4af37'; cCtx.shadowBlur = 8;
-        if (this.isDiamond) { cCtx.font = `${this.size * 3}px serif`; cCtx.fillText('♦', this.x, this.y); }
-        else { cCtx.beginPath(); cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); cCtx.fill(); }
-        cCtx.restore();
-      }
-    }
-    class ClickRing {
-      constructor(x, y) { this.x = x; this.y = y; this.radius = 3; this.alpha = 0.9; }
-      update() { this.radius += 3.2; this.alpha -= 0.045; }
-      draw() {
-        cCtx.save(); cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.strokeStyle = '#f1c40f'; cCtx.lineWidth = 2.5;
-        cCtx.shadowColor = '#ffe066'; cCtx.shadowBlur = 10;
-        cCtx.beginPath(); cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); cCtx.stroke();
-        cCtx.restore();
-      }
-    }
-
-    function playContextSound(target) {
-      if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
-      if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
-      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen') || target.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen') || target.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
-      if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
-      AudioEngine.playBubblePop();
-    }
-
-    window.addEventListener('pointerdown', (e) => {
-      playContextSound(e.target);
-      clickRings.push(new ClickRing(e.clientX, e.clientY));
-      for (let i = 0; i < 16; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
-    });
-
-    function renderClickEffects() {
-      cCtx.clearRect(0, 0, clickCanvas.width, clickCanvas.height);
-      for (let i = clickRings.length - 1; i >= 0; i--) {
-        clickRings[i].update(); clickRings[i].draw();
-        if (clickRings[i].alpha <= 0) clickRings.splice(i, 1);
-      }
-      for (let i = clickParticles.length - 1; i >= 0; i--) {
-        clickParticles[i].update(); clickParticles[i].draw();
-        if (clickParticles[i].alpha <= 0) clickParticles.splice(i, 1);
-      }
-      requestAnimationFrame(renderClickEffects);
-    }
-    renderClickEffects();
-
     // =========================================================
-    // 3D 寫實黏土感／日漫渲染風格立繪管理 (Contrapposto 去背)
+    // 動態對位法 (Contrapposto) 3D 黏土/日漫渲染向量引擎 (完全內嵌去背)
     // =========================================================
     let CharacterData = {
       gender: 'male',
@@ -991,31 +770,194 @@
       try { CharacterData = JSON.parse(savedChar); } catch(e) {}
     }
 
-    // 採用高精度 3D 渲染立繪並維持動態連動
-    const DEFAULT_3D_MODEL_IMAGE = 'watermarked_img_3306472174093337687.jpg';
+    function renderClaySVG(data) {
+      const isFemale = data.gender === 'female';
+      const hairColorMap = {
+        black: { base: '#1e272e', hi: '#485460' },
+        brown: { base: '#4a2c11', hi: '#7a4519' },
+        blonde: { base: '#c99700', hi: '#f1c40f' },
+        red: { base: '#831d14', hi: '#c0392b' },
+        silver: { base: '#636e72', hi: '#b2bec3' }
+      };
+      const hair = hairColorMap[data.hairColor] || hairColorMap.black;
 
-    function renderClay3DSVG(data) {
-      // 複合渲染：將精緻的 3D 黏土日漫立繪作為基底並提供細緻透明羽化剪裁
-      return DEFAULT_3D_MODEL_IMAGE;
+      let shirtGrad = { start: '#2d3436', mid: '#1e272e', end: '#090a0a', emblem: '⚡' };
+      let pantsGrad = { start: '#1e272e', end: '#000000' };
+
+      if (data.outfitCode === 'punk') {
+        shirtGrad = { start: '#8e44ad', mid: '#6c3483', end: '#341646', emblem: '☠️' };
+        pantsGrad = { start: '#2c3e50', end: '#1a252f' };
+      } else if (data.outfitCode === 'cyber') {
+        shirtGrad = { start: '#00cec9', mid: '#0984e3', end: '#1b1464', emblem: '💠' };
+        pantsGrad = { start: '#2d3436', end: '#111' };
+      } else if (data.outfitCode === 'royal') {
+        shirtGrad = { start: '#f1c40f', mid: '#b7950b', end: '#6e5602', emblem: '👑' };
+        pantsGrad = { start: '#211905', end: '#0d0901' };
+      } else if (data.outfitCode === 'magician') {
+        shirtGrad = { start: '#e74c3c', mid: '#922b21', end: '#4a120c', emblem: '♠️' };
+        pantsGrad = { start: '#1e272e', end: '#050708' };
+      }
+
+      return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 540" width="100%" height="100%">
+        <defs>
+          <linearGradient id="skinClay" x1="10%" y1="0%" x2="90%" y2="100%">
+            <stop offset="0%" stop-color="#fcd8b8"/>
+            <stop offset="40%" stop-color="#f0bc94"/>
+            <stop offset="80%" stop-color="#cf8e63"/>
+            <stop offset="100%" stop-color="#a4623a"/>
+          </linearGradient>
+
+          <linearGradient id="legClay" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fff1d6"/>
+            <stop offset="50%" stop-color="#eeb890"/>
+            <stop offset="85%" stop-color="#cf8e63"/>
+            <stop offset="100%" stop-color="#804a25"/>
+          </linearGradient>
+
+          <linearGradient id="shirtClay" x1="15%" y1="0%" x2="85%" y2="100%">
+            <stop offset="0%" stop-color="${shirtGrad.start}"/>
+            <stop offset="50%" stop-color="${shirtGrad.mid}"/>
+            <stop offset="100%" stop-color="${shirtGrad.end}"/>
+          </linearGradient>
+
+          <linearGradient id="pantsClay" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${pantsGrad.start}"/>
+            <stop offset="100%" stop-color="${pantsGrad.end}"/>
+          </linearGradient>
+
+          <linearGradient id="hairClay" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="${hair.hi}"/>
+            <stop offset="60%" stop-color="${hair.base}"/>
+            <stop offset="100%" stop-color="#080a0c"/>
+          </linearGradient>
+
+          <radialGradient id="contactShadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(0,0,0,0.88)"/>
+            <stop offset="45%" stop-color="rgba(0,0,0,0.4)"/>
+            <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+          </radialGradient>
+        </defs>
+
+        <ellipse cx="125" cy="522" rx="76" ry="13" fill="url(#contactShadow)"/>
+
+        <!-- 左腿：直立支撐腿 -->
+        <g id="supportingLegLeft">
+          <path d="M102,280 C100,340 98,410 96,470 L115,470 C118,410 120,340 121,280 Z" fill="url(#legClay)"/>
+          <ellipse cx="108" cy="370" rx="6.5" ry="5" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.8"/>
+          <path d="M95,432 L116,432 L115,475 L94,475 Z" fill="#111"/>
+          <line x1="95" y1="440" x2="116" y2="440" stroke="#fff" stroke-width="2.5"/>
+          <path d="M82,476 Q100,470 122,474 L125,508 Q100,518 80,510 Z" fill="#ecf0f1"/>
+          <path d="M78,502 Q100,516 127,502 L125,513 Q100,524 76,512 Z" fill="#2ecc71"/>
+          <path d="M88,485 L98,498" stroke="#e74c3c" stroke-width="2.8" stroke-linecap="round"/>
+        </g>
+
+        <!-- 右腿：微彎放鬆腿 -->
+        <g id="freeLegRight">
+          <path d="M129,290 C136,340 148,405 158,465 L177,460 C165,405 152,340 144,286 Z" fill="url(#legClay)"/>
+          <ellipse cx="147" cy="375" rx="6.5" ry="5" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1.8"/>
+          <path d="M152,425 L172,420 L175,463 L155,468 Z" fill="#111"/>
+          <line x1="152" y1="432" x2="172" y2="427" stroke="#fff" stroke-width="2.5"/>
+          <path d="M148,468 Q168,460 188,467 L186,500 Q164,510 144,500 Z" fill="#ecf0f1"/>
+          <path d="M142,495 Q166,510 190,498 L188,508 Q164,518 140,505 Z" fill="#2ecc71"/>
+          <path d="M162,478 L170,492" stroke="#e74c3c" stroke-width="2.8" stroke-linecap="round"/>
+        </g>
+
+        <!-- 骨盆斜切短褲 -->
+        <g id="pelvisShorts">
+          <path d="M92,208 L160,222 L168,298 L134,295 L126,242 L120,242 L116,290 L85,282 Z" fill="url(#pantsClay)"/>
+          <path d="M118,245 Q123,260 128,245" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2.5"/>
+          <line x1="94" y1="210" x2="158" y2="224" stroke="#d4af37" stroke-width="3.5"/>
+          <rect x="122" y="214" width="10" height="7" fill="#f1c40f" rx="1"/>
+        </g>
+
+        <!-- 軀幹與肩膀斜切 -->
+        <g id="torsoScurve">
+          <path d="M80,122 C110,132 142,126 172,134 C175,172 168,212 160,222 C138,228 112,224 92,210 C84,196 76,160 80,122 Z" fill="url(#shirtClay)"/>
+          ${!isFemale ? `
+            <path d="M124,142 L123,195" stroke="rgba(0,0,0,0.22)" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M112,175 Q123,178 134,175" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
+            <path d="M114,192 Q123,195 132,192" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
+          ` : ''}
+          <path d="M80,122 L58,150 L75,162 L90,135 Z" fill="url(#shirtClay)"/>
+          <path d="M172,134 L193,160 L176,172 L162,145 Z" fill="url(#shirtClay)"/>
+          <circle cx="126" cy="164" r="14" fill="rgba(255,255,255,0.08)" stroke="#fff" stroke-width="2"/>
+          <text x="126" y="170" font-family="Lilita One" font-size="13" fill="#fff" text-anchor="middle">${shirtGrad.emblem}</text>
+          <text x="126" y="194" font-family="Lilita One" font-size="8" fill="#f1c40f" text-anchor="middle" letter-spacing="1">POKER ARENA</text>
+        </g>
+
+        <!-- 雙臂與手掌量感 -->
+        <g id="leftArm">
+          <path d="M82,132 Q58,185 68,245" fill="none" stroke="url(#skinClay)" stroke-width="15" stroke-linecap="round"/>
+          <circle cx="68" cy="252" r="13.5" fill="#d35400" stroke="#111" stroke-width="2"/>
+          <rect x="61" y="244" width="14" height="6" fill="#111" rx="2"/>
+        </g>
+
+        <g id="rightArm">
+          <path d="M172,145 Q196,195 182,252" fill="none" stroke="url(#skinClay)" stroke-width="15" stroke-linecap="round"/>
+          <circle cx="182" cy="258" r="13.5" fill="#d35400" stroke="#111" stroke-width="2"/>
+          <rect x="175" y="250" width="14" height="6" fill="#111" rx="2"/>
+        </g>
+
+        <!-- 脖子與鎖骨 -->
+        <path d="M116,104 L134,106 L136,128 L114,126 Z" fill="url(#skinClay)"/>
+        <path d="M117,122 Q125,127 133,123" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>
+
+        <!-- 九頭身頭部與深邃五官 -->
+        <g id="headHead">
+          <path d="M107,66 C101,80 109,110 125,113 C141,110 149,80 143,66 Z" fill="url(#skinClay)"/>
+          <path d="M110,80 Q125,103 140,80" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
+
+          <!-- 深邃眼窩與瞳孔 -->
+          <g id="deepEyes">
+            <path d="M110,72 Q117,69 123,72" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M127,72 Q133,69 140,72" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="116" cy="78" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
+            <ellipse cx="116" cy="79" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
+            <circle cx="114.5" cy="77" r="1.4" fill="#fff"/>
+            <ellipse cx="134" cy="78" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
+            <ellipse cx="134" cy="79" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
+            <circle cx="132.5" cy="77" r="1.4" fill="#fff"/>
+          </g>
+
+          <path d="M125,72 L123,86 L127,86" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M120,94 Q125,99 130,94" fill="none" stroke="#a93226" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- 3D 黏土髮絲 / 潮流遮陽帽 -->
+          ${data.hairStyle === 'bucket' ? `
+            <path d="M108,68 Q117,80 125,70 Q133,80 142,68 Z" fill="url(#hairClay)"/>
+            <ellipse cx="125" cy="60" rx="36" ry="10" fill="#bcaaa4" stroke="#5d4037" stroke-width="2"/>
+            <path d="M101,58 Q125,36 149,58 L145,44 Q125,32 105,44 Z" fill="#d7ccc8" stroke="#5d4037" stroke-width="2"/>
+            <rect x="103" y="53" width="44" height="4" fill="#4e342e" rx="1"/>
+          ` : `
+            <path d="M103,68 Q125,30 147,68 Q140,48 125,42 Q110,48 103,68" fill="url(#hairClay)"/>
+            <path d="M105,68 Q117,82 125,70 Q133,82 145,68 Z" fill="url(#hairClay)"/>
+            ${isFemale ? `
+              <path d="M99,70 Q89,113 93,148 L103,143 Q97,103 103,70 Z" fill="url(#hairClay)"/>
+              <path d="M151,70 Q161,113 157,148 L147,143 Q153,103 147,70 Z" fill="url(#hairClay)"/>
+            ` : ''}
+          `}
+        </g>
+      </svg>
+      `;
     }
 
     function updateCharacterVisuals() {
-      const imgUrl = renderClay3DSVG(CharacterData);
+      const svgCode = renderClaySVG(CharacterData);
+      const url = `data:image/svg+xml;utf8,${encodeURIComponent(svgCode)}`;
 
-      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${imgUrl}")`;
-      document.getElementById('stepCameraTarget').style.backgroundImage = `url("${imgUrl}")`;
-      document.getElementById('playerAvatar').style.backgroundImage = `url("${imgUrl}")`;
-      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${imgUrl}")`;
+      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${url}")`;
+      document.getElementById('stepCameraTarget').style.backgroundImage = `url("${url}")`;
+      document.getElementById('playerAvatar').style.backgroundImage = `url("${url}")`;
+      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${url}")`;
       document.getElementById('heroOutfitBadge').innerText = CharacterData.outfitName;
 
-      document.getElementById('reviewGender').innerText = CharacterData.gender === 'male' ? "男性 (3D 寫實黏土感)" : "女性 (3D 柔美流暢)";
+      document.getElementById('reviewGender').innerText = CharacterData.gender === 'male' ? "男性 (Contrapposto 九頭身)" : "女性 (修長 S 曲線)";
       document.getElementById('reviewHair').innerText = CharacterData.hairStyle;
       document.getElementById('reviewColor').innerText = CharacterData.hairColor;
     }
 
-    // =========================================================
-    // 狀態機與流程中樞 (CharacterCreationCoordinator)
-    // =========================================================
+    // 狀態機與流程中樞
     const CustomizationStep = {
       Gender: 0,
       Hair: 1,
@@ -1116,7 +1058,7 @@
         localStorage.setItem('poker_character_data', JSON.stringify(CharacterData));
         updateCharacterVisuals();
         AudioEngine.playCoinClink();
-        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存全新 3D 黏土日漫形象。");
+        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存全新 3D 形象。");
         closeScreens();
       }
     };
@@ -1227,7 +1169,7 @@
       }, 20);
     }
 
-    // 視窗開啟關閉控制
+    // 視窗控制
     function openScreen(screenId) {
       closeScreens();
       const screen = document.getElementById(screenId);

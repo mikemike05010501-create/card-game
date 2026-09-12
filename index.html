@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - VIP CASINO</title>
 
-  <!-- 防快取標籤 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -18,446 +17,266 @@
     :root {
       --gold: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #8c6b12 100%);
       --dark-panel: linear-gradient(180deg, rgba(28,38,32,0.95) 0%, rgba(10,18,14,0.95) 100%);
-      --shadow-3d: 0 10px 25px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.2);
+      --shadow-3d: 0 10px 25px rgba(0,0,0,0.8);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     
     body {
       font-family: 'Outfit', -apple-system, sans-serif;
-      background-color: #0b1d15;
+      background: radial-gradient(circle at center, #0d281e 0%, #05140d 60%, #000 100%);
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* === 實體賭場撲克桌景與聚光燈背景 === */
-    .casino-table-background {
-      position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
-      background: #08140e;
-      overflow: hidden;
-    }
-
-    /* 聚光燈效果 */
-    .spotlight {
-      position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
-      width: 70vw; height: 80vh;
-      background: radial-gradient(ellipse at top, rgba(255, 235, 160, 0.22) 0%, rgba(212, 175, 55, 0.08) 45%, transparent 75%);
-    }
-
-    /* 綠呢大賭桌本體（橢圓環形包邊） */
-    .poker-oval-table {
-      position: absolute; left: 50%; bottom: -35vh; transform: translateX(-50%);
-      width: 120vw; height: 95vh;
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 30%, #1e5842 0%, #153e2f 60%, #0d271e 100%);
-      border: 22px solid #2d1e18; /* 高級黑胡桃木外圍圍欄 */
-      box-shadow: 
-        0 -15px 40px rgba(0, 0, 0, 0.9),
-        inset 0 0 0 6px #d4af37, /* 金屬金線鑲邊 */
-        inset 0 10px 40px rgba(0,0,0,0.6); /* 桌內軟皮陰影 */
-    }
-
-    /* 桌面下注白線弧度 */
-    .table-line {
-      position: absolute; left: 50%; top: 12%; transform: translateX(-50%);
-      width: 85%; height: 60%;
-      border-top: 3px dashed rgba(212, 175, 55, 0.45);
-      border-radius: 50%;
-    }
-
-    /* 3D 擬真實體籌碼堆疊組件 */
-    .chip-stack {
-      position: absolute; display: flex; flex-direction: column-reverse; align-items: center;
-    }
-    .chip-item {
-      width: 54px; height: 18px; border-radius: 50%;
-      margin-bottom: -11px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.7), inset 0 2px 2px rgba(255,255,255,0.4);
-      border: 2px dashed rgba(255,255,255,0.7);
-      position: relative;
-    }
-    .chip-red { background: linear-gradient(180deg, #e74c3c 0%, #962d22 100%); }
-    .chip-blue { background: linear-gradient(180deg, #3498db 0%, #1b4f72 100%); }
-    .chip-black { background: linear-gradient(180deg, #34495e 0%, #1a252f 100%); }
-    .chip-gold-item { background: linear-gradient(180deg, #f1c40f 0%, #b7950b 100%); border-color: #fff; }
-
-    /* 散落在賭桌兩邊的籌碼群 */
-    .chips-left-group { position: absolute; left: 22%; bottom: 22vh; pointer-events: none; }
-    .chips-right-group { position: absolute; right: 22%; bottom: 24vh; pointer-events: none; }
-
-    /* 金粉微粒畫布 */
-    #particlesCanvas {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 2;
-    }
-
     /* 頂部 HUD */
     .hud-bar {
-      height: 65px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-      z-index: 10; position: relative;
+      height: 60px; display: flex; justify-content: space-between; align-items: center;
+      padding: 0 25px; background: rgba(0,0,0,0.7); border-bottom: 1px solid rgba(212,175,55,0.3);
+      z-index: 10;
     }
     .player-profile {
-      display: flex; align-items: center; gap: 12px;
-      background: rgba(10,20,15,0.85); padding: 5px 20px 5px 6px;
-      border-radius: 40px; border: 2px solid #d4af37; box-shadow: var(--shadow-3d);
-      cursor: pointer; backdrop-filter: blur(8px);
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(10,20,15,0.9); padding: 4px 16px 4px 6px;
+      border-radius: 40px; border: 2px solid #d4af37; cursor: pointer;
     }
     .avatar {
-      width: 44px; height: 44px; border-radius: 50%; border: 2px solid #d4af37;
+      width: 40px; height: 40px; border-radius: 50%; border: 2px solid #d4af37;
       background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
-      box-shadow: 0 0 10px rgba(212,175,55,0.6);
     }
-    .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
-    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; }
-
-    .currencies { display: flex; gap: 16px; }
+    .player-name { font-weight: 800; font-size: 15px; }
+    .currencies { display: flex; gap: 12px; }
     .currency-chip {
-      background: rgba(10,20,15,0.85); border: 2px solid #d4af37;
-      padding: 3px 14px 3px 6px; border-radius: 20px; font-weight: 800; font-size: 15px;
-      display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-3d);
-      font-family: 'Bebas Neue', sans-serif; backdrop-filter: blur(8px);
+      background: rgba(10,20,15,0.9); border: 1.5px solid #d4af37;
+      padding: 3px 12px; border-radius: 20px; font-weight: 800; font-size: 14px;
+      display: flex; align-items: center; gap: 6px; font-family: 'Bebas Neue', sans-serif;
     }
-    .currency-chip .icon {
-      width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 13px; color: #fff;
+
+    /* 中央整個可見的實體豪華賭桌 */
+    .table-stage {
+      flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2;
     }
-    .chip-purple .icon { background: #9b59b6; }
-    .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
-    .chip-green .icon { background: #2ecc71; }
+    .casino-felt-table {
+      width: 68vw; height: 62vh; border-radius: 120px;
+      background: radial-gradient(ellipse at center, #1b533c 0%, #103828 65%, #082117 100%);
+      border: 14px solid #3d2314; /* 胡桃木圍邊 */
+      box-shadow: 
+        0 0 0 4px #d4af37,
+        0 15px 40px rgba(0,0,0,0.9),
+        inset 0 0 25px rgba(0,0,0,0.7);
+      position: relative; display: flex; flex-direction: column;
+      align-items: center; justify-content: space-around; padding: 20px;
+    }
+
+    /* 賭桌標線與光暈印花 */
+    .table-inner-ring {
+      position: absolute; inset: 15px; border-radius: 100px;
+      border: 2px dashed rgba(212,175,55,0.4); pointer-events: none;
+    }
+    .table-logo {
+      font-family: 'Cinzel', serif; font-weight: 900; font-size: 28px; letter-spacing: 6px;
+      color: rgba(212, 175, 55, 0.4); text-align: center; pointer-events: none;
+    }
+
+    /* 實體籌碼堆 */
+    .table-chips {
+      position: absolute; display: flex; gap: 8px;
+    }
+    .chips-left { left: 40px; top: 50%; transform: translateY(-50%); }
+    .chips-right { right: 40px; top: 50%; transform: translateY(-50%); }
+
+    .chip {
+      width: 44px; height: 44px; border-radius: 50%; border: 4px dashed #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: bold;
+      font-size: 11px; box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+    }
+    .chip.c-red { background: radial-gradient(circle, #e74c3c 40%, #962d22 100%); }
+    .chip.c-blue { background: radial-gradient(circle, #3498db 40%, #1b4f72 100%); }
+    .chip.c-gold { background: radial-gradient(circle, #f1c40f 40%, #b7950b 100%); color: #000; border-color: #000; }
 
     /* 左側選單 */
     .left-menu {
-      position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
+      position: absolute; left: 20px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 5;
     }
     .menu-btn {
-      width: 65px; height: 65px; border-radius: 16px;
-      background: linear-gradient(135deg, rgba(44,62,80,0.9) 0%, rgba(15,23,30,0.95) 100%);
+      width: 60px; height: 60px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(44,62,80,0.9), rgba(15,23,30,0.95));
       border: 2px solid #d4af37; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
-      box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; cursor: pointer;
     }
-    .menu-btn:active { transform: scale(0.92); }
-    .menu-btn span { font-size: 26px; }
-    .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
+    .menu-btn span { font-size: 24px; }
+    .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; }
 
-    /* 右側選單 */
-    .right-menu {
-      position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
+    /* 右下角大對戰按鈕 */
+    .play-box {
+      position: absolute; right: 25px; bottom: 25px; z-index: 6;
     }
-    .side-tag-btn {
-      width: 75px; height: 55px; background: linear-gradient(135deg, rgba(30,39,46,0.9), rgba(47,54,64,0.95));
-      border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; font-size: 12px; font-weight: bold;
-      color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
+    .play-btn {
+      width: 220px; height: 75px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
+      border: 3px solid #fff; border-radius: 16px; color: #1e272e; font-size: 28px; font-weight: 900;
+      letter-spacing: 3px; font-family: 'Cinzel', serif; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 10px 25px rgba(212,175,55,0.6);
     }
-    .side-tag-btn:active { transform: scale(0.92); }
-    .side-tag-btn span { font-size: 22px; }
+    .play-btn label { font-size: 11px; font-weight: 800; font-family: 'Outfit', sans-serif; }
 
     /* 通行證 */
     .pass-container {
-      position: absolute; left: 25px; bottom: 25px; z-index: 5;
-      background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
-      border: 2.5px solid #d4af37; border-radius: 16px; width: 310px; height: 75px;
-      display: flex; align-items: center; padding: 0 16px; gap: 14px; box-shadow: var(--shadow-3d);
-      cursor: pointer; backdrop-filter: blur(8px);
+      position: absolute; left: 20px; bottom: 20px; z-index: 5;
+      background: rgba(10,20,15,0.9); border: 2px solid #d4af37; border-radius: 14px;
+      width: 260px; height: 65px; display: flex; align-items: center; padding: 0 14px; gap: 12px;
+      cursor: pointer;
     }
-    .pass-badge { font-size: 34px; }
-    .pass-progress { flex: 1; }
-    .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
-    .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
-
-    /* 中央人物 */
-    .center-visual {
-      position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-      width: 480px; height: 85vh; pointer-events: none; z-index: 3;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-    }
-    .dealer-suit { text-shadow: 0 15px 35px rgba(0,0,0,0.9); text-align: center; font-size: 210px; line-height: 0.8; }
-    .logo-glow {
-      font-family: 'Cinzel', serif; font-weight: 900; font-size: 32px; letter-spacing: 5px;
-      background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #f39c12 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 120px; text-align: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
-    }
-
-    /* 右下角對戰按鈕 */
-    .battle-center {
-      position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
-    }
-    .battle-mode-bar {
-      width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #d4af37;
-      padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
-      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px);
-    }
-    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
-
-    .play-btn {
-      width: 260px; height: 80px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
-      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 30px; font-weight: 900;
-      letter-spacing: 4px; font-family: 'Cinzel', serif; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 10px 30px rgba(212,175,55,0.7), inset 0 2px 5px #fff;
-    }
-    .play-btn:active { transform: scale(0.95); }
-    .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
     /* 登入彈窗 */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
-      align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.25s ease;
-      backdrop-filter: blur(5px);
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+      display: flex; justify-content: center; align-items: center; z-index: 100;
+      opacity: 0; pointer-events: none; transition: 0.2s;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-box {
-      background: var(--dark-panel); border-radius: 24px; padding: 32px; width: 480px; text-align: center;
-      border: 3px solid #d4af37; box-shadow: 0 0 50px rgba(212,175,55,0.5);
+      background: var(--dark-panel); border-radius: 20px; padding: 25px; width: 420px;
+      text-align: center; border: 2.5px solid #d4af37;
     }
-    .modal-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; margin-bottom: 20px; }
     .login-input {
-      width: 80%; padding: 14px 18px; font-size: 18px; font-weight: bold;
-      border: 2px solid #d4af37; border-radius: 12px; background: rgba(0,0,0,0.75);
-      color: #fff; text-align: center; outline: none; margin: 20px 0;
+      width: 80%; padding: 12px; font-size: 16px; font-weight: bold;
+      border: 2px solid #d4af37; border-radius: 10px; background: #000;
+      color: #fff; text-align: center; outline: none; margin: 15px 0;
     }
     .btn-action {
       background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; border: none;
-      border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
+      border-radius: 20px; padding: 8px 24px; font-size: 15px; font-weight: bold; cursor: pointer;
     }
 
     /* 對戰牌桌 */
     .game-match-view {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, #1e5842 0%, #0d271e 100%);
-      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
+      position: fixed; inset: 0; background: #081a12; z-index: 120;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 20px 30px;
     }
-    .players-status { display: flex; justify-content: space-between; align-items: center; }
-    .battle-avatar-card {
-      background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 8px 18px; border-radius: 16px;
-      display: flex; align-items: center; gap: 12px; width: 230px; box-shadow: var(--shadow-3d);
-    }
-    .card-board {
-      border: 3px dashed rgba(212,175,55,0.4); border-radius: 20px; flex: 1; margin: 20px 0;
-      display: flex; flex-direction: column; justify-content: space-around; position: relative;
-      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-    }
-    .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
     .poker-card {
-      width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between;
-      padding: 8px; font-weight: bold; color: #1e272e;
+      width: 70px; height: 98px; background: #fff; border-radius: 8px; border: 2px solid #000;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: space-between;
+      padding: 6px; font-weight: bold; color: #1e272e;
     }
     .poker-card.red { color: #e74c3c; }
     .poker-card.back {
-      background: linear-gradient(135deg, #c0392b, #962d22); border: 3px solid #fff;
+      background: linear-gradient(135deg, #c0392b, #962d22); border: 2.5px solid #fff;
       display: flex; align-items: center; justify-content: center; color: #fff;
     }
-
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- 實體綠呢毛氈賭桌、胡桃木框與籌碼背景 -->
-  <div class="casino-table-background">
-    <div class="spotlight"></div>
-    <div class="poker-oval-table">
-      <div class="table-line"></div>
-    </div>
-
-    <!-- 左側立體籌碼群 -->
-    <div class="chips-left-group">
-      <div class="chip-stack" style="left:0;">
-        <div class="chip-item chip-red"></div>
-        <div class="chip-item chip-red"></div>
-        <div class="chip-item chip-red"></div>
-        <div class="chip-item chip-gold-item"></div>
-      </div>
-      <div class="chip-stack" style="left:40px; bottom:-8px;">
-        <div class="chip-item chip-blue"></div>
-        <div class="chip-item chip-blue"></div>
-        <div class="chip-item chip-black"></div>
-      </div>
-    </div>
-
-    <!-- 右側立體籌碼群 -->
-    <div class="chips-right-group">
-      <div class="chip-stack" style="right:0;">
-        <div class="chip-item chip-gold-item"></div>
-        <div class="chip-item chip-gold-item"></div>
-        <div class="chip-item chip-black"></div>
-        <div class="chip-item chip-black"></div>
-      </div>
-      <div class="chip-stack" style="right:45px; bottom:-5px;">
-        <div class="chip-item chip-red"></div>
-        <div class="chip-item chip-blue"></div>
-        <div class="chip-item chip-blue"></div>
-      </div>
-    </div>
-  </div>
-
-  <canvas id="particlesCanvas"></canvas>
-
+  <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openLoginModal(true)">
       <div id="playerAvatar" class="avatar"></div>
       <div>
         <div id="playerNameText" class="player-name">VIP 牌手</div>
-        <div class="trophy-badge">🏆 1,200 <span>鑽石會籍</span></div>
+        <div style="font-size: 11px; color:#f1c40f;">🏆 1,200 點</div>
       </div>
     </div>
     
     <div class="currencies">
-      <div class="currency-chip chip-purple"><div class="icon">💜</div><span>999</span></div>
-      <div class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
-      <div class="currency-chip chip-green"><div class="icon">💚</div><span>1,000,000</span></div>
+      <div class="currency-chip">💜 999</div>
+      <div class="currency-chip">🪙 23,189</div>
+      <div class="currency-chip">💚 1,000,000</div>
     </div>
   </div>
 
+  <!-- 左側選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店功能建置中')"><span>🛒</span><label>商店</label></div>
+    <div class="menu-btn" onclick="alert('商店功能籌備中')"><span>🛒</span><label>商店</label></div>
     <div class="menu-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
     <div class="menu-btn" onclick="alert('巡迴賽火熱開打！')"><span>📰</span><label>新聞</label></div>
   </div>
 
-  <div class="pass-container">
-    <div class="pass-badge">🎫</div>
-    <div class="pass-progress">
-      <div style="font-size: 12px; font-weight: 800; color: #ffe066;">賭金通行證 (VIP Pass)</div>
-      <div class="pass-bar"><div class="pass-fill"></div></div>
+  <!-- 中央舞台：真實輪廓賭桌 -->
+  <div class="table-stage">
+    <div class="casino-felt-table">
+      <div class="table-inner-ring"></div>
+      
+      <!-- 桌面籌碼堆 -->
+      <div class="table-chips chips-left">
+        <div class="chip c-red">500</div>
+        <div class="chip c-gold">10K</div>
+      </div>
+
+      <div class="table-logo">
+        <div>POKER ARENA</div>
+        <div style="font-size: 12px; letter-spacing: 2px; margin-top: 4px; opacity: 0.7;">TEXAS VIP TABLE</div>
+      </div>
+
+      <div class="table-chips chips-right">
+        <div class="chip c-blue">1K</div>
+        <div class="chip c-gold">5K</div>
+      </div>
     </div>
-    <div style="font-size: 24px;">🎁</div>
   </div>
 
-  <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
-    <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">📋 每日任務</button>
-    <button onclick="alert('已領取今日 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
-  </div>
-
-  <div class="center-visual">
-    <div class="dealer-suit">🎩🤵</div>
-    <div class="logo-glow">POKER ARENA</div>
-  </div>
-
-  <div class="right-menu">
-    <button class="side-tag-btn" onclick="alert('在線好友：3人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊籌組中')"><span>🏠</span>小隊</button>
-    <button class="side-tag-btn" onclick="alert('戰隊排名第 5')"><span>🏅</span>戰隊</button>
-  </div>
-
-  <div class="battle-center">
-    <div class="battle-mode-bar">
-      <span>經典快速對決</span>
-      🏆 1v1 賭神賽
+  <!-- 左下通行證 -->
+  <div class="pass-container" onclick="alert('通行證：即將解鎖黃金寶箱！')">
+    <div style="font-size: 28px;">🎫</div>
+    <div>
+      <div style="font-size: 12px; font-weight: bold; color: #ffe066;">賭金通行證</div>
+      <div style="font-size: 10px; color: #aaa;">350 / 500 積分</div>
     </div>
+    <div style="font-size: 22px; margin-left: auto;">🎁</div>
+  </div>
+
+  <!-- 右下對戰按鈕 -->
+  <div class="play-box">
     <button id="matchBtn" class="play-btn">
       對戰
-      <label>真人即時配對</label>
+      <label>1v1 真人配對</label>
     </button>
   </div>
 
+  <!-- 登入改名彈窗 -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-box">
-      <h2 id="loginModalTitle" class="modal-title">牌手登入</h2>
-      <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱：</p>
+      <h2 id="loginModalTitle" style="color:#f1c40f; margin-bottom:10px;">牌手登入</h2>
+      <p style="color: #bbb; font-size: 13px;">請輸入你的遊戲暱稱：</p>
       <input type="text" id="usernameInput" class="login-input" placeholder="輸入暱稱..." maxlength="12">
       <div>
-        <button class="btn-action" onclick="savePlayerName()">進入賭場</button>
+        <button class="btn-action" onclick="savePlayerName()">確定</button>
       </div>
     </div>
   </div>
 
+  <!-- 配對中彈窗 -->
   <div id="matchingModal" class="modal-overlay">
-    <div class="modal-box" style="width: 380px;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif;">尋找對手中...</h2>
-      <div style="font-size: 50px; margin: 20px 0;">♣️♥️♦️♠️</div>
-      <p style="color: #ccc; font-size: 14px;">正在撮合線上牌手...</p>
-      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+    <div class="modal-box" style="width: 320px;">
+      <h3 style="color:#f1c40f; margin-bottom: 15px;">搜尋對手中...</h3>
+      <div style="font-size: 40px; margin: 15px 0;">♣️♥️♦️♠️</div>
+      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="background:#e74c3c; color:#fff; border:none; padding:6px 18px; border-radius:15px; cursor:pointer;">取消</button>
     </div>
   </div>
 
+  <!-- 對戰牌桌 -->
   <div id="gameMatchView" class="game-match-view hidden">
-    <div class="players-status">
-      <div class="battle-avatar-card">
-        <div id="battleMyAvatar" class="avatar" style="width:36px; height:36px;"></div>
-        <div>
-          <div id="battleMyName" style="font-weight: 800; font-size: 14px;">我方</div>
-          <div style="color:#4cd137; font-size:11px;">你的手牌</div>
-        </div>
-      </div>
-      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 賭神賽</h2>
-      <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
-        <div id="battleOppAvatar" class="avatar" style="width:36px; height:36px;"></div>
-        <div>
-          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">對手</div>
-          <div style="color:#e74c3c; font-size:11px;">在線牌手</div>
-        </div>
-      </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div id="battleMyName" style="font-weight:bold; color:#4cd137;">我方</div>
+      <div id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif; font-size:18px;">房間</div>
+      <div id="battleOppName" style="font-weight:bold; color:#ff7675;">對手</div>
     </div>
 
-    <div class="card-board">
-      <div style="text-align: center;">
-        <div id="opponentCards" class="hand-cards">
-          <div class="poker-card back">👑</div>
-        </div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;">對手手牌區</div>
+    <div style="flex:1; border:2px dashed rgba(212,175,55,0.4); border-radius:16px; margin:15px 0; display:flex; flex-direction:column; justify-content:space-around; align-items:center;">
+      <div id="opponentCards" style="display:flex; gap:10px;">
+        <div class="poker-card back">👑</div>
       </div>
-
-      <div style="text-align: center;">
-        <div style="display:inline-block; background:rgba(0,0,0,0.7); padding:4px 16px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;">🪙 賭池: 10,000</div>
-      </div>
-
-      <div style="text-align: center;">
-        <div id="myCards" class="hand-cards"></div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;">你的手牌區</div>
-      </div>
+      <div id="myCards" style="display:flex; gap:10px;"></div>
     </div>
 
-    <div style="display: flex; gap: 20px; justify-content: center;">
-      <button id="drawBtn" style="width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:var(--gold); border:2px solid #fff; cursor:pointer;">抽一張牌</button>
-      <button onclick="document.getElementById('gameMatchView').classList.add('hidden')" style="background:transparent; border:2px solid #e74c3c; color:#e74c3c; padding:10px 24px; border-radius:12px; font-weight:bold; cursor:pointer;">離開對局</button>
+    <div style="display:flex; gap:15px; justify-content:center;">
+      <button id="drawBtn" style="padding:10px 24px; font-size:16px; font-weight:bold; background:var(--gold); border:none; border-radius:10px; cursor:pointer;">抽一張牌</button>
+      <button onclick="document.getElementById('gameMatchView').classList.add('hidden')" style="padding:10px 20px; background:transparent; border:2px solid #e74c3c; color:#e74c3c; border-radius:10px; cursor:pointer;">離開</button>
     </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('particlesCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    for (let i = 0; i < 35; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 0.8,
-        speedY: -(Math.random() * 0.4 + 0.15),
-        speedX: (Math.random() - 0.5) * 0.25,
-        alpha: Math.random() * 0.7 + 0.2
-      });
-    }
-
-    function renderParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#f1c40f";
-      particles.forEach(p => {
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-        p.y += p.speedY;
-        p.x += p.speedX;
-        if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
-      });
-      requestAnimationFrame(renderParticles);
-    }
-    renderParticles();
-
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
 
@@ -493,7 +312,6 @@
       document.getElementById('playerNameText').innerText = name;
       const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`;
       document.getElementById('playerAvatar').style.backgroundImage = `url('${avatarUrl}')`;
-      document.getElementById('battleMyAvatar').style.backgroundImage = `url('${avatarUrl}')`;
       document.getElementById('battleMyName').innerText = name;
     }
 
@@ -507,13 +325,11 @@
       activeRoomId = data.roomId;
       document.getElementById('matchingModal').classList.remove('active');
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = `🏆 賭神賽 (${activeRoomId})`;
+      document.getElementById('roomTitle').innerText = `房間: ${activeRoomId}`;
 
       for (const id in data.players) {
         if (id !== socket.id) {
-          const oppName = data.players[id].name || "神秘牌手";
-          document.getElementById('battleOppName').innerText = oppName;
-          document.getElementById('battleOppAvatar').style.backgroundImage = `url('https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(oppName)}')`;
+          document.getElementById('battleOppName').innerText = data.players[id].name || "對手";
         }
       }
       renderBoard(data.players);
@@ -542,9 +358,9 @@
             const cardEl = document.createElement('div');
             cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
             cardEl.innerHTML = `
-              <div style="font-size:18px;">${val}</div>
-              <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-              <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
+              <div style="font-size:16px;">${val}</div>
+              <div style="font-size:24px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
+              <div style="font-size:16px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
             `;
             myCardsArea.appendChild(cardEl);
           });

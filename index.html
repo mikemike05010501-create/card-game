@@ -175,7 +175,6 @@
       border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
     }
 
-    /* 發牌動畫與牌面樣式 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
@@ -353,7 +352,7 @@
 
   <script>
     // ==========================================
-    // Web Audio 原生陶瓷籌碼撞擊與發牌音效系統
+    // 魔法水晶亮晶晶音效引擎 (Magic Chimes & Sparkles)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -366,46 +365,65 @@
           this.ctx.resume();
         }
       },
-      // 模擬清脆陶瓷籌碼撞擊聲
-      playChipSound() {
+      // 魔法星光水晶風鈴 (點擊時隨機大調五度音階)
+      playSparkleSound() {
         this.init();
         const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const notes = [1318.51, 1567.98, 1760.00, 2093.00, 2349.32, 2637.02]; // E6, G6, A6, C7, D7, E7
+        const baseFreq = notes[Math.floor(Math.random() * notes.length)];
 
-        // 雙頻微敲擊音
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(2200 + (Math.random() * 300 - 150), now);
-        osc.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+        // 主諧波 (純淨水晶音)
+        const osc1 = this.ctx.createOscillator();
+        const gain1 = this.ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(baseFreq, now);
 
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+        gain1.gain.setValueAtTime(0.22, now);
+        gain1.gain.exponentialRampToValueAtTime(0.0005, now + 0.38);
 
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        osc1.connect(gain1);
+        gain1.connect(this.ctx.destination);
 
-        osc.start(now);
-        osc.stop(now + 0.05);
+        // 次諧波 (微幅頻率偏移，營造星光微顫與折射光芒)
+        const osc2 = this.ctx.createOscillator();
+        const gain2 = this.ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(baseFreq * 2.01, now);
+
+        gain2.gain.setValueAtTime(0.12, now);
+        gain2.gain.exponentialRampToValueAtTime(0.0005, now + 0.28);
+
+        osc2.connect(gain2);
+        gain2.connect(this.ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.4);
+        osc2.stop(now + 0.3);
       },
-      // 模擬發牌滑布風切與落桌微聲
-      playDealSound() {
+      // 魔法光塵琶音刷奏 (發牌時向上快速流動)
+      playMagicSweep() {
         this.init();
         const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        const arpeggio = [1046.50, 1318.51, 1567.98, 2093.00]; // C6, E6, G6, C7
 
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(450, now);
-        osc.frequency.exponentialRampToValueAtTime(160, now + 0.09);
+        arpeggio.forEach((freq, idx) => {
+          const delay = idx * 0.035;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
 
-        gain.gain.setValueAtTime(0.28, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + delay);
 
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+          gain.gain.setValueAtTime(0.18, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.0005, now + delay + 0.25);
 
-        osc.start(now);
-        osc.stop(now + 0.1);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.28);
+        });
       }
     };
 
@@ -525,7 +543,7 @@
     }
 
     function triggerClickBurst(x, y) {
-      AudioEngine.playChipSound();
+      AudioEngine.playSparkleSound();
       clickRings.push(new ClickRing(x, y));
       for (let i = 0; i < 18; i++) {
         clickParticles.push(new ClickSparkle(x, y));
@@ -614,17 +632,17 @@
           document.getElementById('battleOppAvatar').style.backgroundImage = `url('https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(oppName)}')`;
         }
       }
-      AudioEngine.playDealSound();
+      AudioEngine.playMagicSweep();
       renderBoard(data.players);
     });
 
     document.getElementById('drawBtn').addEventListener('click', () => {
-      AudioEngine.playDealSound();
+      AudioEngine.playMagicSweep();
       socket.emit('draw_card', { roomId: activeRoomId });
     });
 
     socket.on('update_board', (data) => {
-      AudioEngine.playDealSound();
+      AudioEngine.playMagicSweep();
       renderBoard(data.players);
     });
 

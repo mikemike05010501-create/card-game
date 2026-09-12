@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>POKER ARENA - 奢華黑金 VIP 賭城</title>
+  <title>POKER ARENA - VIP CASINO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,47 +11,62 @@
   <style>
     :root {
       --gold: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #8c6b12 100%);
-      --green-felt: radial-gradient(circle at center, #1b4d3e 0%, #0d2c20 70%, #05140e 100%);
-      --dark-panel: linear-gradient(180deg, #2c3531 0%, #111a16 100%);
-      --shadow-3d: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.1);
+      --dark-panel: linear-gradient(180deg, rgba(28,38,32,0.95) 0%, rgba(10,18,14,0.95) 100%);
+      --shadow-3d: 0 10px 25px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.2);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
     
     body {
       font-family: 'Outfit', -apple-system, sans-serif;
-      background: var(--green-felt);
+      /* 頂級賭場綠呢桌面 + 實體籌碼與光影底圖 */
+      background: 
+        radial-gradient(circle at 50% 25%, rgba(212,175,55,0.18) 0%, transparent 60%),
+        radial-gradient(circle at center, rgba(14,56,38,0.7) 0%, rgba(3,15,9,0.95) 100%),
+        url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
+    }
+
+    /* 賭桌邊框木質與光暈暗角遮罩 */
+    body::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none; z-index: 1;
+    }
+
+    /* 金粉微粒漂浮畫布 */
+    #particlesCanvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 2;
     }
 
     /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+      padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
       z-index: 10; position: relative;
     }
     .player-profile {
       display: flex; align-items: center; gap: 12px;
-      background: rgba(0,0,0,0.6); padding: 5px 20px 5px 6px;
+      background: rgba(10,20,15,0.85); padding: 5px 20px 5px 6px;
       border-radius: 40px; border: 2px solid #d4af37; box-shadow: var(--shadow-3d);
-      cursor: pointer; transition: 0.2s;
+      cursor: pointer; backdrop-filter: blur(8px);
     }
-    .player-profile:active { transform: scale(0.95); }
     .avatar {
       width: 44px; height: 44px; border-radius: 50%; border: 2px solid #d4af37;
-      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=poker') no-repeat center/cover;
-      box-shadow: 0 0 10px rgba(212,175,55,0.5);
+      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
+      box-shadow: 0 0 10px rgba(212,175,55,0.6);
     }
     .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
-    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 3px; font-weight: 600; }
+    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; }
 
     .currencies { display: flex; gap: 16px; }
     .currency-chip {
-      background: rgba(13,28,20,0.85); border: 2.5px solid #d4af37;
+      background: rgba(10,20,15,0.85); border: 2px solid #d4af37;
       padding: 3px 14px 3px 6px; border-radius: 20px; font-weight: 800; font-size: 15px;
       display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-3d);
-      font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.5px;
+      font-family: 'Bebas Neue', sans-serif; backdrop-filter: blur(8px);
     }
     .currency-chip .icon {
       width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -61,41 +76,41 @@
     .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
     .chip-green .icon { background: #2ecc71; }
 
-    /* 左側選單 */
+    /* 左側選單按鈕 */
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
     .menu-btn {
-      width: 65px; height: 65px; border-radius: 14px;
-      background: linear-gradient(135deg, #2c3e50 0%, #0f171e 100%);
+      width: 65px; height: 65px; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(44,62,80,0.9) 0%, rgba(15,23,30,0.95) 100%);
       border: 2px solid #d4af37; display: flex; flex-direction: column;
       align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
-      box-shadow: var(--shadow-3d); position: relative;
+      box-shadow: var(--shadow-3d); position: relative; backdrop-filter: blur(6px);
     }
-    .menu-btn:active { transform: scale(0.9); }
+    .menu-btn:active { transform: scale(0.92); }
     .menu-btn span { font-size: 26px; }
     .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
 
-    /* 右側選單 */
+    /* 右側選單按鈕 */
     .right-menu {
       position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
     .side-tag-btn {
-      width: 75px; height: 55px; background: linear-gradient(135deg, #1e272e, #2f3640);
+      width: 75px; height: 55px; background: linear-gradient(135deg, rgba(30,39,46,0.9), rgba(47,54,64,0.95));
       border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; font-size: 12px; font-weight: bold;
       color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d);
+      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
     }
     .side-tag-btn:active { transform: scale(0.92); }
     .side-tag-btn span { font-size: 22px; }
 
-    /* 賭金通行證 */
+    /* 通行證 */
     .pass-container {
       position: absolute; left: 25px; bottom: 25px; z-index: 5;
-      background: linear-gradient(90deg, #101a14 0%, rgba(20,38,30,0.95) 100%);
+      background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
       border: 2.5px solid #d4af37; border-radius: 16px; width: 310px; height: 75px;
       display: flex; align-items: center; padding: 0 16px; gap: 14px; box-shadow: var(--shadow-3d);
-      cursor: pointer;
+      cursor: pointer; backdrop-filter: blur(8px);
     }
     .pass-badge { font-size: 34px; }
     .pass-progress { flex: 1; }
@@ -105,15 +120,15 @@
     /* 中央人物 */
     .center-visual {
       position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-      width: 480px; height: 85vh; pointer-events: none; z-index: 2;
+      width: 480px; height: 85vh; pointer-events: none; z-index: 3;
       display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
     }
-    .dealer-suit { text-shadow: 0 15px 30px rgba(0,0,0,0.9); text-align: center; font-size: 210px; line-height: 0.8; }
+    .dealer-suit { text-shadow: 0 15px 35px rgba(0,0,0,0.9); text-align: center; font-size: 210px; line-height: 0.8; }
     .logo-glow {
-      font-family: 'Cinzel', serif; font-weight: 900; font-size: 32px; letter-spacing: 4px;
+      font-family: 'Cinzel', serif; font-weight: 900; font-size: 32px; letter-spacing: 5px;
       background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #f39c12 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 120px; text-align: center;
+      margin-bottom: 120px; text-align: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
     }
 
     /* 右下角對戰按鈕 */
@@ -121,9 +136,9 @@
       position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
     }
     .battle-mode-bar {
-      width: 260px; background: rgba(0,0,0,0.8); border: 2px solid #d4af37;
+      width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #d4af37;
       padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
-      box-shadow: var(--shadow-3d);
+      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px);
     }
     .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
 
@@ -137,39 +152,35 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
-    /* 彈窗樣式 */
+    /* 登入彈窗 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center;
+      background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
       align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.25s ease;
+      backdrop-filter: blur(5px);
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-box {
-      background: var(--dark-panel); border-radius: 24px; padding: 30px; width: 480px; text-align: center;
-      border: 3px solid #d4af37; box-shadow: 0 0 50px rgba(212,175,55,0.4);
+      background: var(--dark-panel); border-radius: 24px; padding: 32px; width: 480px; text-align: center;
+      border: 3px solid #d4af37; box-shadow: 0 0 50px rgba(212,175,55,0.5);
     }
     .modal-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; margin-bottom: 20px; }
-
-    /* 輸入框樣式（手遊登入） */
-    .input-group { margin: 20px 0; }
     .login-input {
       width: 80%; padding: 14px 18px; font-size: 18px; font-weight: bold;
-      border: 2px solid #d4af37; border-radius: 12px; background: rgba(0,0,0,0.7);
-      color: #fff; text-align: center; outline: none; letter-spacing: 1px;
+      border: 2px solid #d4af37; border-radius: 12px; background: rgba(0,0,0,0.75);
+      color: #fff; text-align: center; outline: none; margin: 20px 0;
     }
-    .login-input:focus { border-color: #ffe066; box-shadow: 0 0 15px rgba(212,175,55,0.6); }
-
     .btn-action {
       background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; border: none;
-      border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800;
-      cursor: pointer; box-shadow: 0 4px 15px rgba(212,175,55,0.4); margin-top: 10px;
+      border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
     }
-    .btn-action:active { transform: scale(0.95); }
 
-    /* 對戰牌桌 1v1 */
+    /* 對戰牌桌 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: var(--green-felt); z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
+      background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
+                  url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
+      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .players-status { display: flex; justify-content: space-between; align-items: center; }
     .battle-avatar-card {
@@ -177,14 +188,14 @@
       display: flex; align-items: center; gap: 12px; width: 230px; box-shadow: var(--shadow-3d);
     }
     .card-board {
-      border: 3px dashed rgba(212,175,55,0.35); border-radius: 20px; flex: 1; margin: 20px 0;
+      border: 3px dashed rgba(212,175,55,0.4); border-radius: 20px; flex: 1; margin: 20px 0;
       display: flex; flex-direction: column; justify-content: space-around; position: relative;
-      background: radial-gradient(circle, rgba(27,77,62,0.3) 0%, rgba(0,0,0,0.6) 100%);
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
     }
     .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
     .poker-card {
       width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.4); display: flex; flex-direction: column; justify-content: space-between;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between;
       padding: 8px; font-weight: bold; color: #1e272e;
     }
     .poker-card.red { color: #e74c3c; }
@@ -198,31 +209,34 @@
 </head>
 <body>
 
-  <!-- 1. 頂部 HUD (左上角可點擊改名) -->
+  <!-- 金粉動態粒子 -->
+  <canvas id="particlesCanvas"></canvas>
+
+  <!-- 頂部 HUD -->
   <div class="hud-bar">
-    <div class="player-profile" onclick="openLoginModal(true)" title="點擊修改暱稱">
+    <div class="player-profile" onclick="openLoginModal(true)">
       <div id="playerAvatar" class="avatar"></div>
       <div>
-        <div id="playerNameText" class="player-name">未登入</div>
-        <div class="trophy-badge">🏆 1,200 <span>VIP 牌手</span></div>
+        <div id="playerNameText" class="player-name">VIP 牌手</div>
+        <div class="trophy-badge">🏆 1,200 <span>鑽石會籍</span></div>
       </div>
     </div>
     
     <div class="currencies">
       <div class="currency-chip chip-purple"><div class="icon">💜</div><span>999</span></div>
-      <div id="coinCount" class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
+      <div class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
       <div class="currency-chip chip-green"><div class="icon">💚</div><span>1,000,000</span></div>
     </div>
   </div>
 
-  <!-- 2. 左側選單 -->
+  <!-- 左側選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店系統建置中！')"><span>🛒</span><label>商店</label></div>
+    <div class="menu-btn" onclick="alert('商店功能建置中')"><span>🛒</span><label>商店</label></div>
     <div class="menu-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="menu-btn" onclick="alert('1v1 賭神賽火熱進行中！')"><span>📰</span><label>新聞</label></div>
+    <div class="menu-btn" onclick="alert('巡迴賽火熱開打！')"><span>📰</span><label>新聞</label></div>
   </div>
 
-  <!-- 3. 通行證 -->
+  <!-- 賭金通行證 -->
   <div class="pass-container">
     <div class="pass-badge">🎫</div>
     <div class="pass-progress">
@@ -232,24 +246,30 @@
     <div style="font-size: 24px;">🎁</div>
   </div>
 
-  <!-- 4. 中央人物 -->
+  <!-- 每日任務與禮物 -->
+  <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
+    <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">📋 每日任務</button>
+    <button onclick="alert('已領取今日 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
+  </div>
+
+  <!-- 中央角色 -->
   <div class="center-visual">
     <div class="dealer-suit">🎩🤵</div>
     <div class="logo-glow">POKER ARENA</div>
   </div>
 
-  <!-- 5. 右側選單 -->
+  <!-- 右側選單 -->
   <div class="right-menu">
     <button class="side-tag-btn" onclick="alert('在線好友：3人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊功能即將開放')"><span>🏠</span>小隊</button>
-    <button class="side-tag-btn" onclick="alert('戰隊競賽中')"><span>🏅</span>戰隊</button>
+    <button class="side-tag-btn" onclick="alert('小隊籌組中')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="alert('戰隊排名第 5')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 6. 右下角開始對戰 -->
+  <!-- 右下角對戰開始按鈕 -->
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
-      🏆 1v1 賭神巡迴賽
+      🏆 1v1 賭神賽
     </div>
     <button id="matchBtn" class="play-btn">
       對戰
@@ -257,34 +277,31 @@
     </button>
   </div>
 
-  <!-- 🪪 登入 / 建立角色彈窗 -->
+  <!-- 登入 / 改名彈窗 -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="loginModalTitle" class="modal-title">牌手登入</h2>
-      <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱以加入對戰：</p>
-      
-      <div class="input-group">
-        <input type="text" id="usernameInput" class="login-input" placeholder="輸入玩家暱稱..." maxlength="12">
+      <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱：</p>
+      <input type="text" id="usernameInput" class="login-input" placeholder="輸入暱稱..." maxlength="12">
+      <div>
+        <button class="btn-action" onclick="savePlayerName()">進入賭場</button>
       </div>
-
-      <button class="btn-action" onclick="savePlayerName()">進入遊戲</button>
     </div>
   </div>
 
-  <!-- ⏳ 配對中彈窗 -->
+  <!-- 配對中彈窗 -->
   <div id="matchingModal" class="modal-overlay">
     <div class="modal-box" style="width: 380px;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif;">搜尋對手中...</h2>
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif;">尋找對手中...</h2>
       <div style="font-size: 50px; margin: 20px 0;">♣️♥️♦️♠️</div>
-      <p style="color: #ccc; font-size: 14px;">正在尋找實力相近的牌手...</p>
-      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+      <p style="color: #ccc; font-size: 14px;">正在全網撮合線上牌手...</p>
+      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 🃏 對戰牌桌 -->
+  <!-- 對戰牌桌 -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
-      <!-- 我方 -->
       <div class="battle-avatar-card">
         <div id="battleMyAvatar" class="avatar" style="width:36px; height:36px;"></div>
         <div>
@@ -293,7 +310,6 @@
         </div>
       </div>
       <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 賭神賽</h2>
-      <!-- 對手 -->
       <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
         <div id="battleOppAvatar" class="avatar" style="width:36px; height:36px;"></div>
         <div>
@@ -312,7 +328,7 @@
       </div>
 
       <div style="text-align: center;">
-        <div style="display:inline-block; background:rgba(0,0,0,0.6); padding:4px 14px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;">🪙 賭池: 10,000</div>
+        <div style="display:inline-block; background:rgba(0,0,0,0.7); padding:4px 16px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;">🪙 賭池: 10,000</div>
       </div>
 
       <div style="text-align: center;">
@@ -328,13 +344,52 @@
   </div>
 
   <script>
+    // 1. 金粉漂浮特效腳本
+    const canvas = document.getElementById('particlesCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 0.8,
+        speedY: -(Math.random() * 0.4 + 0.15),
+        speedX: (Math.random() - 0.5) * 0.25,
+        alpha: Math.random() * 0.7 + 0.2
+      });
+    }
+
+    function renderParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#f1c40f";
+      particles.forEach(p => {
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        p.y += p.speedY;
+        p.x += p.speedX;
+        if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
+      });
+      requestAnimationFrame(renderParticles);
+    }
+    renderParticles();
+
+    // 2. 串接伺服器與登入邏輯
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
 
     let currentUsername = "";
     let activeRoomId = null;
 
-    // 1. 初始化讀取帳號
     window.addEventListener('DOMContentLoaded', () => {
       const savedName = localStorage.getItem('poker_player_name');
       if (savedName) {
@@ -346,20 +401,14 @@
 
     function openLoginModal(isEdit) {
       const modal = document.getElementById('loginModal');
-      const title = document.getElementById('loginModalTitle');
-      const input = document.getElementById('usernameInput');
-      title.innerText = isEdit ? "修改角色暱稱" : "建立牌手角色";
-      input.value = currentUsername || "";
+      document.getElementById('loginModalTitle').innerText = isEdit ? "修改暱稱" : "牌手登入";
+      document.getElementById('usernameInput').value = currentUsername || "";
       modal.classList.add('active');
     }
 
     function savePlayerName() {
-      const input = document.getElementById('usernameInput');
-      const name = input.value.trim();
-      if (!name) {
-        alert("暱稱不能為空！");
-        return;
-      }
+      const name = document.getElementById('usernameInput').value.trim();
+      if (!name) return alert("暱稱不能為空！");
       localStorage.setItem('poker_player_name', name);
       setPlayer(name);
       document.getElementById('loginModal').classList.remove('active');
@@ -368,31 +417,25 @@
     function setPlayer(name) {
       currentUsername = name;
       document.getElementById('playerNameText').innerText = name;
-      // 根據名字自動生成專屬可愛風格頭像
       const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`;
       document.getElementById('playerAvatar').style.backgroundImage = `url('${avatarUrl}')`;
       document.getElementById('battleMyAvatar').style.backgroundImage = `url('${avatarUrl}')`;
       document.getElementById('battleMyName').innerText = name;
     }
 
-    // 2. 配對邏輯（把玩家名字一起傳給伺服器）
+    // 3. 配對與對戰
     document.getElementById('matchBtn').addEventListener('click', () => {
-      if (!currentUsername) {
-        openLoginModal(false);
-        return;
-      }
+      if (!currentUsername) return openLoginModal(false);
       socket.emit('start_match', { playerName: currentUsername });
       document.getElementById('matchingModal').classList.add('active');
     });
 
-    // 3. 接收伺服器開局
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;
       document.getElementById('matchingModal').classList.remove('active');
       document.getElementById('gameMatchView').classList.remove('hidden');
       document.getElementById('roomTitle').innerText = `🏆 賭神賽 (${activeRoomId})`;
 
-      // 找出對手的名字
       for (const id in data.players) {
         if (id !== socket.id) {
           const oppName = data.players[id].name || "神秘牌手";
@@ -400,11 +443,9 @@
           document.getElementById('battleOppAvatar').style.backgroundImage = `url('https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(oppName)}')`;
         }
       }
-
       renderBoard(data.players);
     });
 
-    // 4. 抽牌
     document.getElementById('drawBtn').addEventListener('click', () => {
       socket.emit('draw_card', { roomId: activeRoomId });
     });

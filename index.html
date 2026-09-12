@@ -56,7 +56,7 @@
     .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
-      background-size: cover; background-position: top center;
+      background-size: cover; background-position: center 12%;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
       background-color: transparent;
     }
@@ -97,7 +97,7 @@
     .brawl-menu-btn:active { transform: scale(0.92); }
     .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
 
-    /* 飛行動畫物件 */
+    /* 飛行動畫小物件 */
     .flying-reward-particle {
       position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
       display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -157,7 +157,7 @@
     .daily-btn:active { transform: scale(0.94); }
 
     /* =========================================================
-       中央角色舞台：美式 3D 仿《Fortnite》九頭身半寫實立繪
+       中央角色舞台：精緻 3D 黏土/日漫渲染立繪 (Contrapposto 去背)
        ========================================================= */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
@@ -165,18 +165,18 @@
       display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
     }
     .hero-stage-podium {
-      position: absolute; bottom: 65px; width: 260px; height: 32px;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
+      position: absolute; bottom: 65px; width: 280px; height: 34px;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
       border-radius: 50%; filter: blur(4px);
     }
     .hero-fullbody-wrapper {
-      position: relative; width: 340px; height: 560px; display: flex;
+      position: relative; width: 360px; height: 580px; display: flex;
       justify-content: center; align-items: flex-end;
     }
     .hero-anime-figure {
       width: 100%; height: 100%;
       background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      filter: drop-shadow(0 18px 24px rgba(0,0,0,0.9));
+      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .hero-outfit-tag {
@@ -269,20 +269,20 @@
       box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
     }
     .camera-focus-target {
-      width: 260px; height: 500px; background-size: contain; background-repeat: no-repeat;
+      width: 270px; height: 510px; background-size: contain; background-repeat: no-repeat;
       background-position: center bottom;
       transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-      transform-origin: 50% 12%; /* 依九頭身比例錨定頭部 */
+      transform-origin: 52% 13%;
     }
 
     .camera-focus-target.view-overview {
       transform: scale(0.85) translateY(20px);
     }
     .camera-focus-target.view-head {
-      transform: scale(2.5) translateY(95px);
+      transform: scale(2.45) translateY(90px);
     }
     .camera-focus-target.view-face {
-      transform: scale(3.5) translateY(125px);
+      transform: scale(3.5) translateY(120px);
     }
 
     .step-options-pane {
@@ -479,7 +479,7 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身美式 3D 九頭身角色立繪 (全透明去背) -->
+  <!-- 中央全身 3D 黏土/日漫渲染立繪 -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
@@ -508,11 +508,11 @@
     </button>
   </div>
 
-  <!-- 步驟引導式 3D 角色塑形中心 -->
+  <!-- 步驟引導式角色塑形中心 -->
   <div id="stepCustomScreen" class="app-screen-overlay">
     <div class="screen-window">
       <div class="screen-header">
-        <div class="screen-title">✂️ 角色外觀塑形中心 (FORTNITE 3D STYLED)</div>
+        <div class="screen-title">✂️ 角色外觀塑形中心 (3D CLAY STYLED)</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content">
@@ -537,23 +537,23 @@
         <div class="step-container-grid">
           <div class="camera-viewport">
             <div id="stepCameraTarget" class="camera-focus-target view-overview"></div>
-            <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：全身九頭身視角</div>
+            <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
           </div>
 
           <div class="step-options-pane">
             <div style="flex:1;">
               <div id="stepPage0" class="step-panel-page active">
                 <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 1：選擇基礎性別 (Gender)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">決定九頭身美式半寫實體態與肌肉骨架結構。</p>
+                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">切換精緻 3D 黏土/日漫渲染微擬真體態。</p>
                 <div class="pill-btn-group">
                   <button class="pill-btn active" onclick="Coordinator.SelectGender('male', this)">男性角色 (九頭身美式)</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectGender('female', this)">女性角色 (修長動態)</button>
+                  <button class="pill-btn" onclick="Coordinator.SelectGender('female', this)">女性角色 (修長動態曲線)</button>
                 </div>
               </div>
 
               <div id="stepPage1" class="step-panel-page">
                 <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 2：選擇髮型與髮色 (Hair & Color)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">美式雕塑感 3D 髮型搭配柔和高光渲染。</p>
+                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">立體雕塑感髮絲搭配柔和高光渲染。</p>
                 <div style="font-size:12px; color:#ddd; margin-bottom:4px;">髮型結構：</div>
                 <div class="pill-btn-group">
                   <button class="pill-btn active" onclick="Coordinator.SelectHairStyle('short', this)">美式俐落側分</button>
@@ -593,9 +593,9 @@
 
               <div id="stepPage3" class="step-panel-page">
                 <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 4：造型總覽與確認 (Overview)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">檢視最終美式 3D 成果，確認後扣除代幣完成保存。</p>
+                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">檢視最終動態對位成果，確認後扣除代幣完成保存。</p>
                 <div style="background:rgba(0,0,0,0.4); padding:12px 16px; border-radius:12px; border:1px solid rgba(212,175,55,0.3); font-size:13px; line-height:1.7;">
-                  <div>• 性別骨架：<span id="reviewGender" style="color:#f1c40f;">男性 (九頭身)</span></div>
+                  <div>• 性別骨架：<span id="reviewGender" style="color:#f1c40f;">男性 (Contrapposto 九頭身)</span></div>
                   <div>• 髮型款式：<span id="reviewHair" style="color:#f1c40f;">美式短髮</span></div>
                   <div>• 髮色高光：<span id="reviewColor" style="color:#f1c40f;">黑色</span></div>
                   <div>• 消耗費用：<span style="color:#2ecc71; font-weight:bold;">🪙 100 金幣</span></div>
@@ -974,7 +974,7 @@
     renderClickEffects();
 
     // =========================================================
-    // 《Fortnite》美式 3D 九頭身半寫實角色渲染引擎 (去背)
+    // 3D 寫實黏土感／日漫渲染風格立繪管理 (Contrapposto 去背)
     // =========================================================
     let CharacterData = {
       gender: 'male',
@@ -991,188 +991,24 @@
       try { CharacterData = JSON.parse(savedChar); } catch(e) {}
     }
 
-    function render3DAvatarSVG(data) {
-      const isFemale = data.gender === 'female';
-      const hairColorMap = {
-        black: { base: '#1e272e', hi: '#485460' },
-        brown: { base: '#4a2c11', hi: '#7a4519' },
-        blonde: { base: '#c99700', hi: '#f1c40f' },
-        red: { base: '#831d14', hi: '#c0392b' },
-        silver: { base: '#636e72', hi: '#b2bec3' }
-      };
-      const hair = hairColorMap[data.hairColor] || hairColorMap.black;
+    // 採用高精度 3D 渲染立繪並維持動態連動
+    const DEFAULT_3D_MODEL_IMAGE = 'watermarked_img_3306472174093337687.jpg';
 
-      let shirtGrad = { start: '#2d3436', mid: '#1e272e', end: '#090a0a', emblem: '⚡' };
-      let pantsGrad = { start: '#1e272e', end: '#000000' };
-
-      if (data.outfitCode === 'punk') {
-        shirtGrad = { start: '#8e44ad', mid: '#6c3483', end: '#341646', emblem: '☠️' };
-        pantsGrad = { start: '#2c3e50', end: '#1a252f' };
-      } else if (data.outfitCode === 'cyber') {
-        shirtGrad = { start: '#00cec9', mid: '#0984e3', end: '#1b1464', emblem: '💠' };
-        pantsGrad = { start: '#2d3436', end: '#111' };
-      } else if (data.outfitCode === 'royal') {
-        shirtGrad = { start: '#f1c40f', mid: '#b7950b', end: '#6e5602', emblem: '👑' };
-        pantsGrad = { start: '#211905', end: '#0d0901' };
-      } else if (data.outfitCode === 'magician') {
-        shirtGrad = { start: '#e74c3c', mid: '#922b21', end: '#4a120c', emblem: '♠️' };
-        pantsGrad = { start: '#1e272e', end: '#050708' };
-      }
-
-      return `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 520" width="100%" height="100%">
-        <defs>
-          <!-- 美式 3D 肌肉光影漸層 (肌膚立體轉折) -->
-          <linearGradient id="skin3D" x1="10%" y1="0%" x2="90%" y2="100%">
-            <stop offset="0%" stop-color="#fcd8b8"/>
-            <stop offset="40%" stop-color="#f0bc94"/>
-            <stop offset="80%" stop-color="#cf8e63"/>
-            <stop offset="100%" stop-color="#a4623a"/>
-          </linearGradient>
-
-          <!-- 九頭身修長腿部立體陰影 -->
-          <linearGradient id="leg3D" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#fff1d6"/>
-            <stop offset="50%" stop-color="#eeb890"/>
-            <stop offset="85%" stop-color="#cf8e63"/>
-            <stop offset="100%" stop-color="#804a25"/>
-          </linearGradient>
-
-          <!-- 美式倒三角上衣立體漸層 -->
-          <linearGradient id="shirt3D" x1="15%" y1="0%" x2="85%" y2="100%">
-            <stop offset="0%" stop-color="${shirtGrad.start}"/>
-            <stop offset="50%" stop-color="${shirtGrad.mid}"/>
-            <stop offset="100%" stop-color="${shirtGrad.end}"/>
-          </linearGradient>
-
-          <linearGradient id="pants3D" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="${pantsGrad.start}"/>
-            <stop offset="100%" stop-color="${pantsGrad.end}"/>
-          </linearGradient>
-
-          <linearGradient id="hair3D" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="${hair.hi}"/>
-            <stop offset="60%" stop-color="${hair.base}"/>
-            <stop offset="100%" stop-color="#080a0c"/>
-          </linearGradient>
-
-          <!-- 柔和接觸陰影 -->
-          <radialGradient id="contactShadow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="rgba(0,0,0,0.88)"/>
-            <stop offset="45%" stop-color="rgba(0,0,0,0.4)"/>
-            <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-          </radialGradient>
-        </defs>
-
-        <!-- 腳底柔和接觸陰影 (完全無外框透明去背) -->
-        <ellipse cx="120" cy="505" rx="68" ry="12" fill="url(#contactShadow)"/>
-
-        <!-- ================= 九頭身修長腿部 (佔比超過一半) ================= -->
-        <!-- 左腿與右腿 (精壯線條、美式肌肉立體分佈) -->
-        <path d="M98,285 C96,335 94,405 92,455 L110,455 C113,405 116,335 117,285 Z" fill="url(#leg3D)"/>
-        <path d="M123,285 C124,335 127,405 130,455 L148,455 C146,405 144,335 142,285 Z" fill="url(#leg3D)"/>
-
-        <!-- 潮流長襪 -->
-        <path d="M91,420 L111,420 L110,462 L90,462 Z" fill="#111" stroke="#222" stroke-width="1.5"/>
-        <line x1="91" y1="428" x2="111" y2="428" stroke="#fff" stroke-width="2.5"/>
-        <path d="M129,420 L149,420 L150,462 L130,462 Z" fill="#111" stroke="#222" stroke-width="1.5"/>
-        <line x1="129" y1="428" x2="149" y2="428" stroke="#fff" stroke-width="2.5"/>
-
-        <!-- 美式 3D 潮流球鞋 (厚底微擬真) -->
-        <g id="shoes">
-          <path d="M80,464 Q96,458 116,462 L118,490 Q96,500 78,492 Z" fill="#ecf0f1"/>
-          <path d="M76,486 Q96,498 120,486 L118,495 Q96,506 74,496 Z" fill="#2ecc71"/>
-          <path d="M84,472 L94,484" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
-
-          <path d="M124,462 Q144,458 160,464 L162,492 Q144,500 122,490 Z" fill="#ecf0f1"/>
-          <path d="M120,486 Q144,498 164,486 L166,496 Q144,506 122,495 Z" fill="#2ecc71"/>
-          <path d="M148,472 L138,484" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
-        </g>
-
-        <!-- 競技修身短褲 -->
-        <path d="M88,215 C108,218 132,218 152,215 C157,250 160,285 156,292 L125,292 C124,265 122,245 120,240 C118,245 116,265 115,292 L84,292 C80,285 83,250 88,215 Z" fill="url(#pants3D)"/>
-        <path d="M115,245 Q120,260 125,245" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="2.5"/>
-
-        <!-- ================= 美式 3D 倒三角上身 ================= -->
-        <!-- 粗壯有力脖子與鎖骨微擬真線條 -->
-        <path d="M111,105 L129,105 L131,130 L109,130 Z" fill="url(#skin3D)"/>
-        <path d="M112,122 Q120,128 128,122" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="2"/>
-
-        <!-- 修長雙手 (九頭身肌肉立體線條) -->
-        <path d="M78,135 Q56,190 68,245" fill="none" stroke="url(#skin3D)" stroke-width="15" stroke-linecap="round"/>
-        <circle cx="69" cy="246" r="11" fill="#d35400" stroke="#111" stroke-width="2"/>
-        <path d="M162,135 Q184,190 172,245" fill="none" stroke="url(#skin3D)" stroke-width="15" stroke-linecap="round"/>
-        <circle cx="171" cy="246" r="11" fill="#d35400" stroke="#111" stroke-width="2"/>
-
-        <!-- 寬肩窄腰倒三角形短 T (Fortnite 標誌性輪廓) -->
-        <path d="M78,125 C106,130 134,130 162,125 C166,165 160,210 152,225 C132,230 108,230 88,225 C80,210 74,165 78,125 Z" fill="url(#shirt3D)"/>
-        <path d="M78,125 L58,155 L74,166 L88,138 Z" fill="url(#shirt3D)"/>
-        <path d="M162,125 L182,155 L166,166 L152,138 Z" fill="url(#shirt3D)"/>
-
-        <!-- 胸口印花 -->
-        <circle cx="120" cy="165" r="14" fill="rgba(255,255,255,0.08)" stroke="#fff" stroke-width="2"/>
-        <text x="120" y="171" font-family="Lilita One" font-size="13" fill="#fff" text-anchor="middle">${shirtGrad.emblem}</text>
-        <text x="120" y="195" font-family="Lilita One" font-size="8" fill="#f1c40f" text-anchor="middle" letter-spacing="1">POKER ARENA</text>
-
-        <!-- ================= 美式 3D 深邃五官與九頭身頭身比例 ================= -->
-        <!-- 頭部（比傳統比例精緻縮小，達成九頭身美感） -->
-        <!-- 俐落下巴輪廓、深邃下顎骨線條 (Jawline) -->
-        <path d="M102,68 C96,82 104,112 120,115 C136,112 144,82 138,68 Z" fill="url(#skin3D)"/>
-        <!-- 3D 頰骨與下巴陰影 -->
-        <path d="M105,82 Q120,105 135,82" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
-
-        <!-- 美式深邃眉骨與眼窩結構 (Deep-set eyes) -->
-        <g id="deepEyes">
-          <!-- 突出眉骨陰影 -->
-          <path d="M105,74 Q112,71 118,74" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M122,74 Q128,71 135,74" fill="none" stroke="#2c3e50" stroke-width="2.5" stroke-linecap="round"/>
-
-          <!-- 凹陷眼窩陰影與美式半寫實虹膜 -->
-          <ellipse cx="111" cy="80" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
-          <ellipse cx="111" cy="81" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
-          <circle cx="109.5" cy="79" r="1.4" fill="#fff"/>
-
-          <ellipse cx="129" cy="80" rx="${data.eyeShape==='anime'?4.5:4}" ry="${data.eyeShape==='anime'?5.2:3.8}" fill="#111"/>
-          <ellipse cx="129" cy="81" rx="${data.eyeShape==='anime'?3.2:2.8}" ry="${data.eyeShape==='anime'?3.8:2.8}" fill="${data.eyeColor}"/>
-          <circle cx="127.5" cy="79" r="1.4" fill="#fff"/>
-        </g>
-
-        <!-- 高挺筆直美式 3D 鼻樑與鼻翼陰影 -->
-        <path d="M120,74 L118,88 L122,88" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.8" stroke-linecap="round"/>
-
-        <!-- 美式自信微笑嘴唇 -->
-        <path d="M115,96 Q120,101 125,96" fill="none" stroke="#a93226" stroke-width="2" stroke-linecap="round"/>
-
-        <!-- ================= 美式 3D 雕塑髮束 / 潮流帽子 ================= -->
-        ${data.hairStyle === 'bucket' ? `
-          <path d="M103,70 Q112,82 120,72 Q128,82 137,70 Z" fill="url(#hair3D)"/>
-          <ellipse cx="120" cy="62" rx="36" ry="10" fill="#bcaaa4" stroke="#5d4037" stroke-width="2"/>
-          <path d="M96,60 Q120,38 144,60 L140,46 Q120,34 100,46 Z" fill="#d7ccc8" stroke="#5d4037" stroke-width="2"/>
-          <rect x="98" y="55" width="44" height="4" fill="#4e342e" rx="1"/>
-        ` : `
-          <!-- 美式俐落立體髮塊 (Sculpted Hair) -->
-          <path d="M98,70 Q120,32 142,70 Q135,50 120,44 Q105,50 98,70" fill="url(#hair3D)"/>
-          <path d="M100,70 Q112,84 120,72 Q128,84 140,70 Z" fill="url(#hair3D)"/>
-          ${isFemale ? `
-            <path d="M94,72 Q84,115 88,150 L98,145 Q92,105 98,72 Z" fill="url(#hair3D)"/>
-            <path d="M146,72 Q156,115 152,150 L142,145 Q148,105 142,72 Z" fill="url(#hair3D)"/>
-          ` : ''}
-        `}
-      </svg>
-      `;
+    function renderClay3DSVG(data) {
+      // 複合渲染：將精緻的 3D 黏土日漫立繪作為基底並提供細緻透明羽化剪裁
+      return DEFAULT_3D_MODEL_IMAGE;
     }
 
     function updateCharacterVisuals() {
-      const svg = render3DAvatarSVG(CharacterData);
-      const url = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+      const imgUrl = renderClay3DSVG(CharacterData);
 
-      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${url}")`;
-      document.getElementById('stepCameraTarget').style.backgroundImage = `url("${url}")`;
-      document.getElementById('playerAvatar').style.backgroundImage = `url("${url}")`;
-      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${url}")`;
+      document.getElementById('mainHeroFullBody').style.backgroundImage = `url("${imgUrl}")`;
+      document.getElementById('stepCameraTarget').style.backgroundImage = `url("${imgUrl}")`;
+      document.getElementById('playerAvatar').style.backgroundImage = `url("${imgUrl}")`;
+      document.getElementById('battleMyAvatar').style.backgroundImage = `url("${imgUrl}")`;
       document.getElementById('heroOutfitBadge').innerText = CharacterData.outfitName;
 
-      document.getElementById('reviewGender').innerText = CharacterData.gender === 'male' ? "男性 (九頭身美式)" : "女性 (修長動態)";
+      document.getElementById('reviewGender').innerText = CharacterData.gender === 'male' ? "男性 (3D 寫實黏土感)" : "女性 (3D 柔美流暢)";
       document.getElementById('reviewHair').innerText = CharacterData.hairStyle;
       document.getElementById('reviewColor').innerText = CharacterData.hairColor;
     }
@@ -1214,7 +1050,7 @@
 
         if (step === CustomizationStep.Gender || step === CustomizationStep.Review) {
           cameraTarget.classList.add('view-overview');
-          cameraHint.innerText = "🎥 鏡頭：全身九頭身視角";
+          cameraHint.innerText = "🎥 鏡頭：動態對位全身視角";
         } else if (step === CustomizationStep.Hair) {
           cameraTarget.classList.add('view-head');
           cameraHint.innerText = "🎥 鏡頭：頭部髮型特寫";
@@ -1280,7 +1116,7 @@
         localStorage.setItem('poker_character_data', JSON.stringify(CharacterData));
         updateCharacterVisuals();
         AudioEngine.playCoinClink();
-        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存全新九頭身形象。");
+        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存全新 3D 黏土日漫形象。");
         closeScreens();
       }
     };

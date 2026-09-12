@@ -952,7 +952,7 @@
     </div>
   </div>
 
-  <!-- 對戰畫面 (德州撲克 / 21點 玩家匹配/人機) -->
+  <!-- 1v1 / 多人對戰畫面 (支援 德州撲克 與 21點 玩家匹配/人機) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -1063,7 +1063,7 @@
     }
 
     // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
+    // 頂層點擊音效引擎 (自動喚醒且具備安全防護)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -1264,7 +1264,6 @@
         document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
         openScreen('matchingModal');
       } else {
-        // 21點匹配系統：模擬真實玩家匹配，支援100秒倒數，時間到自動補人機
         matchSecondsLeft = 100;
         document.getElementById('matchingTitleText').innerText = '尋找 21點 對戰玩家...';
         document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';

@@ -25,19 +25,82 @@
 
     body {
       font-family: 'Montserrat', -apple-system, sans-serif;
-      /* 依序抓取專案內可能上傳的圖片檔名 */
-      background-color: #0d120f;
-      background-image: 
-        url('bg.jpg'),
-        url('image.png'),
-        url('bg.png'),
-        url('table.jpg');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
+      background: #08110b;
     }
+
+    /* === 依據你提供的照片：遠景模糊的老虎機大廳 (散景光斑) === */
+    .casino-hall-bokeh {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background: 
+        radial-gradient(circle at 18% 25%, rgba(255, 205, 75, 0.45) 0%, transparent 18%),
+        radial-gradient(circle at 32% 30%, rgba(255, 75, 75, 0.4) 0%, transparent 15%),
+        radial-gradient(circle at 50% 16%, rgba(255, 235, 170, 0.55) 0%, transparent 22%),
+        radial-gradient(circle at 68% 26%, rgba(70, 175, 255, 0.4) 0%, transparent 16%),
+        radial-gradient(circle at 86% 22%, rgba(255, 135, 40, 0.45) 0%, transparent 18%),
+        linear-gradient(180deg, #1f140a 0%, #101c15 45%, #050d09 100%);
+      filter: blur(10px); transform: scale(1.1);
+    }
+
+    /* 天花板吊燈聚光柱 */
+    .chandelier-light {
+      position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+      width: 75vw; height: 60vh;
+      background: radial-gradient(ellipse at top, rgba(255, 220, 120, 0.3) 0%, rgba(212, 175, 55, 0.08) 50%, transparent 75%);
+      pointer-events: none; z-index: 1;
+    }
+
+    /* === 近景實體弧形大賭桌 === */
+    .table-foreground {
+      position: absolute; left: 50%; bottom: -12vh; transform: translateX(-50%);
+      width: 108vw; height: 68vh; border-radius: 50% 50% 0 0;
+      background: radial-gradient(circle at 50% 20%, #1c523c 0%, #123829 60%, #0a1f17 100%);
+      border-top: 26px solid #2e1c12;
+      box-shadow: 
+        0 -18px 45px rgba(0,0,0,0.95),
+        inset 0 3px 0 3px #d4af37,
+        inset 0 16px 35px rgba(0,0,0,0.7);
+      z-index: 2; pointer-events: none;
+    }
+
+    /* 桌面下注白線弧度與字印 */
+    .felt-bet-line {
+      position: absolute; left: 50%; top: 16%; transform: translateX(-50%);
+      width: 78%; height: 50%; border-top: 3px dashed rgba(245, 208, 97, 0.55);
+      border-radius: 50%; display: flex; justify-content: center;
+    }
+    .felt-text {
+      margin-top: 18px; font-family: 'Cinzel', serif; font-size: 13px;
+      letter-spacing: 5px; color: rgba(245, 208, 97, 0.5); font-weight: 900;
+    }
+
+    /* 桌面散落的 3D 籌碼堆疊 */
+    .chips-cluster {
+      position: absolute; display: flex; align-items: flex-end; gap: 8px; z-index: 3; pointer-events: none;
+    }
+    .chips-center-cluster { left: 48%; bottom: 14vh; transform: translateX(-50%); }
+    .chip-col { display: flex; flex-direction: column-reverse; }
+    .chip-3d {
+      width: 48px; height: 16px; border-radius: 50%; margin-bottom: -10px;
+      border: 2px dashed rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.85);
+    }
+    .c-red { background: linear-gradient(180deg, #e74c3c 0%, #871f14 100%); }
+    .c-blue { background: linear-gradient(180deg, #3498db 0%, #154360 100%); }
+    .c-gold { background: linear-gradient(180deg, #f1c40f 0%, #9a7d0a 100%); border-color: #000; }
+    .c-green { background: linear-gradient(180deg, #2ecc71 0%, #145a32 100%); }
+
+    /* 桌面上的底牌 */
+    .table-cards-deco {
+      position: absolute; right: 28%; bottom: 16vh; display: flex; gap: -20px; z-index: 3; pointer-events: none;
+    }
+    .deco-card {
+      width: 58px; height: 82px; border-radius: 6px; background: #fff;
+      border: 1.5px solid #222; box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+      transform: rotate(18deg); display: flex; align-items: center; justify-content: center;
+      color: #c0392b; font-weight: bold; font-size: 20px;
+    }
+    .deco-card:first-child { transform: rotate(-8deg) translateX(12px); }
 
     /* 頂部 HUD */
     .hud-bar {
@@ -66,7 +129,7 @@
       backdrop-filter: blur(6px); color: #f9e79f;
     }
 
-    /* 左側選單 */
+    /* 左側選單按鈕 */
     .left-menu {
       position: absolute; left: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
     }
@@ -86,7 +149,7 @@
       position: absolute; right: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
     }
 
-    /* 通行證 */
+    /* 左下通行證 */
     .pass-container {
       position: absolute; left: 24px; bottom: 22px; z-index: 8;
       background: var(--dark-leather); border: var(--gold-stroke); border-radius: 14px;
@@ -144,15 +207,10 @@
       padding: 9px 28px; font-weight: 800; font-size: 14px; color: #1c1303; cursor: pointer;
     }
 
-    /* 1v1 對戰牌桌 */
+    /* 1v1 對戰畫面 */
     .game-match-view {
-      position: fixed; inset: 0;
-      background-color: #0d120f;
-      background-image: url('bg.jpg'), url('image.png'), url('bg.png');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
-      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
+      position: fixed; inset: 0; background: #08110b; z-index: 120;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .poker-card {
       width: 70px; height: 100px; background: #fff; border-radius: 8px; border: 2px solid #000;
@@ -168,6 +226,44 @@
   </style>
 </head>
 <body>
+
+  <!-- 遠景：模糊賭場老虎機散景大廳 -->
+  <div class="casino-hall-bokeh"></div>
+
+  <!-- 天花板聚光燈柱 -->
+  <div class="chandelier-light"></div>
+
+  <!-- 近景：實體綠呢賭桌 -->
+  <div class="table-foreground">
+    <div class="felt-bet-line">
+      <div class="felt-text">BLACKJACK PAYS 3 TO 2</div>
+    </div>
+  </div>
+
+  <!-- 近景：散落的 3D 籌碼群 -->
+  <div class="chips-cluster chips-center-cluster">
+    <div class="chip-col">
+      <div class="chip-3d c-red"></div>
+      <div class="chip-3d c-red"></div>
+      <div class="chip-3d c-red"></div>
+      <div class="chip-3d c-gold"></div>
+    </div>
+    <div class="chip-col">
+      <div class="chip-3d c-blue"></div>
+      <div class="chip-3d c-blue"></div>
+      <div class="chip-3d c-green"></div>
+    </div>
+    <div class="chip-col">
+      <div class="chip-3d c-gold"></div>
+      <div class="chip-3d c-gold"></div>
+    </div>
+  </div>
+
+  <!-- 近景：桌上的撲克底牌 -->
+  <div class="table-cards-deco">
+    <div class="deco-card">A♠</div>
+    <div class="deco-card">K♥</div>
+  </div>
 
   <!-- 頂部 HUD -->
   <div class="hud-bar">

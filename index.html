@@ -209,21 +209,34 @@
     .battle-center {
       position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
     }
+    
+    /* 遊戲模式上方選擇面板 */
+    .battle-mode-bar {
+      width: 260px; background: rgba(0,0,0,0.88); border: 2px solid #d4af37;
+      padding: 10px 16px; border-radius: 14px; text-align: center; color: #e1b12c;
+      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px); font-family: 'Outfit', sans-serif;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      transition: transform 0.15s;
+    }
+    .battle-mode-bar:active { transform: scale(0.97); }
+    .battle-mode-bar div { text-align: left; }
+    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 15px; color: #fff; display: block; margin-bottom: 2px; }
 
     .play-btn {
-      width: 260px; height: 80px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
-      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 28px; font-weight: 900;
+      width: 260px; height: 75px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
+      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 26px; font-weight: 900;
       letter-spacing: 2px; font-family: 'Cinzel', serif; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       box-shadow: 0 10px 30px rgba(212,175,55,0.7), inset 0 2px 5px #fff;
+      transition: transform 0.15s;
     }
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 11px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
     /* 遊戲模式跳出方格選單 */
     .game-mode-modal {
-      position: absolute; bottom: 120px; right: 0; width: 260px;
-      background: rgba(14,23,18,0.95); border: 2.5px solid #d4af37; border-radius: 18px;
+      position: absolute; bottom: 140px; right: 0; width: 260px;
+      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 18px;
       padding: 12px; display: flex; flex-direction: column; gap: 10px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
       z-index: 20; opacity: 0; pointer-events: none; transform: translateY(10px) scale(0.95);
@@ -686,9 +699,19 @@
       </div>
     </div>
 
-    <button id="matchBtn" class="play-btn" onclick="handlePlayButtonPress()">
-      <span id="btnMainText">德州撲克</span>
-      <label id="btnSubLabel">點擊選擇模式 ▼</label>
+    <!-- 上方模式切換 Bar -->
+    <div class="battle-mode-bar" onclick="toggleGameModeModal(event)">
+      <div>
+        <small style="color:#aaa; font-size:10px;">目前模式 (點擊切換)</small>
+        <span id="modeTitleText">德州撲克</span>
+      </div>
+      <span style="font-size:16px;">▼</span>
+    </div>
+
+    <!-- 主遊玩按鈕 -->
+    <button id="matchBtn" class="play-btn" onclick="startCurrentGameSession()">
+      <span id="btnMainText">開始對戰</span>
+      <label id="btnSubLabel">ENTER MATCH</label>
     </button>
   </div>
 
@@ -1004,7 +1027,7 @@
     }
 
     // ==========================================
-    // 頂層點擊音效引擎 (強制自動解鎖 AudioContext)
+    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -1170,24 +1193,30 @@
     renderClickEffects();
 
     // ==========================================
-    // 遊戲模式跳出方格與模式選擇
+    // 遊戲模式切換與彈出方格選單邏輯
     // ==========================================
-    let selectedMode = 'poker'; // 'poker' 或 'blackjack'
+    let currentSelectedMode = 'poker'; // 'poker' 或 'blackjack'
 
-    function handlePlayButtonPress() {
+    function toggleGameModeModal(e) {
+      if (e) e.stopPropagation();
+      AudioEngine.playMutedTap();
       const modal = document.getElementById('gameModeModal');
       modal.classList.toggle('active');
     }
 
     function selectGameMode(mode) {
-      selectedMode = mode;
+      currentSelectedMode = mode;
       document.getElementById('optPoker').classList.toggle('selected', mode === 'poker');
       document.getElementById('optBj').classList.toggle('selected', mode === 'blackjack');
-      document.getElementById('btnMainText').innerText = mode === 'poker' ? '德州撲克' : '21點';
+      document.getElementById('modeTitleText').innerText = mode === 'poker' ? '德州撲克' : '21點 (Blackjack)';
+      document.getElementById('btnMainText').innerText = mode === 'poker' ? '德州撲克' : '21點對決';
       document.getElementById('gameModeModal').classList.remove('active');
+      AudioEngine.playMagicChime();
+    }
 
-      // 點擊後直接啟動對應模式
-      if (mode === 'poker') {
+    function startCurrentGameSession() {
+      AudioEngine.playBubbleStream();
+      if (currentSelectedMode === 'poker') {
         socket.emit('start_match', { playerName: currentUsername });
         document.getElementById('matchingTitleText').innerText = '尋找德州撲克對手中...';
         openScreen('matchingModal');
@@ -1195,6 +1224,13 @@
         startBlackjackGame();
       }
     }
+
+    // 點擊畫面其他地方自動收起方格選單
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.battle-center')) {
+        document.getElementById('gameModeModal').classList.remove('active');
+      }
+    });
 
     // 21點 遊戲狀態
     let bjPlayerCards = [];
@@ -1287,7 +1323,7 @@
 
     function handleGameAction() {
       AudioEngine.playBubbleStream();
-      if (selectedMode === 'blackjack') {
+      if (currentSelectedMode === 'blackjack') {
         bjPlayerCards.push(getRandomCardVal());
         renderBlackjackBoard(true);
         const pScore = getCardNumericValue(bjPlayerCards);
@@ -1525,6 +1561,7 @@
     // 德州撲克聯機對戰
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
+    let activeRoomId = null;
 
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;

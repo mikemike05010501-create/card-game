@@ -3,115 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>POKER ARENA</title>
+  <title>POKER ARENA - VIP CASINO</title>
+
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     
     body {
       font-family: 'Montserrat', sans-serif;
-      /* 依序載入你上傳的圖檔，若本機沒有則加載你指定的照片備用 */
-      background: #0b130e url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
+      background: #09130e radial-gradient(circle at center, #133a29 0%, #06150e 100%);
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* 頂部黑金 HUD */
+    /* 點擊特效專用畫布 */
+    #clickCanvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* 頂部 HUD */
     .hud {
-      height: 56px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 20px; background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
+      height: 60px; display: flex; justify-content: space-between; align-items: center;
+      padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
       z-index: 10;
     }
     .profile {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(18, 12, 8, 0.85); padding: 4px 14px 4px 5px;
-      border-radius: 25px; border: 1px solid #d4af37; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(18, 12, 8, 0.85); padding: 4px 16px 4px 6px;
+      border-radius: 25px; border: 1.5px solid #d4af37; cursor: pointer;
     }
     .avatar {
-      width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #d4af37;
+      width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #d4af37;
       background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=poker') no-repeat center/cover;
     }
 
-    .currencies { display: flex; gap: 10px; }
+    .currencies { display: flex; gap: 12px; }
     .curr-tag {
-      background: rgba(18, 12, 8, 0.85); border: 1px solid #d4af37;
-      padding: 3px 10px; border-radius: 14px; font-weight: 800; font-size: 13px; color: #f7dc6f;
+      background: rgba(18, 12, 8, 0.85); border: 1.5px solid #d4af37;
+      padding: 4px 14px; border-radius: 16px; font-weight: 800; font-size: 13px; color: #f7dc6f;
     }
 
-    /* 左側金屬快捷鍵 */
-    .side-btns { position: absolute; left: 20px; top: 75px; display: flex; flex-direction: column; gap: 10px; z-index: 8; }
+    /* 左側按鍵 */
+    .side-btns { position: absolute; left: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8; }
     .btn-gold-metal {
-      width: 54px; height: 54px; border-radius: 12px;
+      width: 58px; height: 58px; border-radius: 14px;
       background: linear-gradient(180deg, rgba(35,25,18,0.9), rgba(15,10,7,0.95));
-      border: 1px solid #d4af37; display: flex; flex-direction: column;
+      border: 1.5px solid #d4af37; display: flex; flex-direction: column;
       align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.8); transition: transform 0.1s;
     }
-    .btn-gold-metal span { font-size: 20px; }
-    .btn-gold-metal label { font-size: 9px; font-weight: 800; color: #f5d061; margin-top: 2px; }
+    .btn-gold-metal:active { transform: scale(0.92); }
+    .btn-gold-metal span { font-size: 22px; }
+    .btn-gold-metal label { font-size: 10px; font-weight: 800; color: #f5d061; margin-top: 2px; }
 
-    /* 中央印記 */
+    /* 中央標題 */
     .title-area {
-      position: absolute; left: 50%; top: 30%; transform: translate(-50%, -50%);
+      position: absolute; left: 50%; top: 32%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none; z-index: 5;
     }
     .title-area h1 {
-      font-family: 'Cinzel', serif; font-size: 36px; font-weight: 900; letter-spacing: 6px;
+      font-family: 'Cinzel', serif; font-size: 42px; font-weight: 900; letter-spacing: 6px;
       background: linear-gradient(180deg, #fff2b2, #d4af37, #aa8214);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.95));
+    }
+    .title-area p {
+      letter-spacing: 4px; font-size: 12px; color: #f5d061; margin-top: 5px; font-weight: 800;
     }
 
-    /* 右下大對戰按鈕 */
-    .battle-box { position: absolute; right: 20px; bottom: 20px; z-index: 8; }
+    /* 右下對戰按鈕 */
+    .battle-box { position: absolute; right: 24px; bottom: 24px; z-index: 8; }
     .play-btn {
-      width: 190px; height: 65px;
+      width: 210px; height: 70px;
       background: linear-gradient(135deg, #fff2b2 0%, #d4af37 40%, #8c6b12 100%);
-      border: 2px solid #fff; border-radius: 14px; color: #1a1202; font-size: 24px; font-weight: 900;
+      border: 2.5px solid #fff; border-radius: 16px; color: #1a1202; font-size: 26px; font-weight: 900;
       letter-spacing: 3px; font-family: 'Cinzel', serif; cursor: pointer;
-      box-shadow: 0 6px 20px rgba(212,175,55,0.5), inset 0 2px 2px #fff;
+      box-shadow: 0 6px 20px rgba(212,175,55,0.5), inset 0 2px 3px #fff;
+      transition: transform 0.1s;
     }
-    .play-btn:active { transform: scale(0.95); }
+    .play-btn:active { transform: scale(0.94); }
+    .play-btn label { font-size: 10px; font-weight: 800; font-family: 'Montserrat', sans-serif; display: block; color: #352504; }
 
     /* 通行證 */
     .pass-tag {
-      position: absolute; left: 20px; bottom: 20px; z-index: 8;
-      background: rgba(18, 12, 8, 0.9); border: 1px solid #d4af37; border-radius: 12px;
-      padding: 8px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+      position: absolute; left: 24px; bottom: 24px; z-index: 8;
+      background: rgba(18, 12, 8, 0.9); border: 1.5px solid #d4af37; border-radius: 14px;
+      padding: 10px 18px; display: flex; align-items: center; gap: 12px; cursor: pointer;
     }
 
     /* 彈窗 */
     .modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
       justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none;
+      transition: 0.2s;
     }
     .modal.active { opacity: 1; pointer-events: auto; }
     .box {
-      background: #14100c; border: 2px solid #d4af37; border-radius: 16px; padding: 24px;
-      text-align: center; width: 360px;
+      background: #14100c; border: 2px solid #d4af37; border-radius: 16px; padding: 25px;
+      text-align: center; width: 380px;
     }
     .box input {
-      width: 80%; padding: 10px; margin: 15px 0; border: 1px solid #d4af37;
+      width: 80%; padding: 10px; margin: 15px 0; border: 1.5px solid #d4af37;
       background: #000; color: #fff; text-align: center; border-radius: 8px; outline: none;
     }
     .box button {
       background: linear-gradient(135deg, #fff2b2, #d4af37); border: none;
-      padding: 8px 24px; font-weight: 800; border-radius: 18px; cursor: pointer;
+      padding: 9px 26px; font-weight: 800; border-radius: 20px; cursor: pointer;
     }
-
-    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
+  <!-- 全螢幕特效 Canvas -->
+  <canvas id="clickCanvas"></canvas>
+
   <div class="hud">
     <div class="profile" onclick="openLogin()">
       <div id="uAvatar" class="avatar"></div>
-      <div id="uName" style="font-weight:700; font-size:13px;">VIP 牌手</div>
+      <div id="uName" style="font-weight:700; font-size:14px;">VIP 牌手</div>
     </div>
     <div class="currencies">
       <div class="curr-tag">🪙 25,000</div>
@@ -120,37 +135,149 @@
   </div>
 
   <div class="side-btns">
-    <div class="btn-gold-metal" onclick="alert('商店準備中')"><span>🛒</span><label>商店</label></div>
+    <div class="btn-gold-metal" onclick="alert('商店系統建置中')"><span>🛒</span><label>商店</label></div>
     <div class="btn-gold-metal" onclick="openLogin()"><span>🎴</span><label>改名</label></div>
+    <div class="btn-gold-metal" onclick="alert('巡迴賽火熱開打！')"><span>📰</span><label>錦標賽</label></div>
   </div>
 
   <div class="title-area">
     <h1>POKER ARENA</h1>
-    <p style="letter-spacing: 3px; font-size: 11px; color: #f5d061;">VIP CASINO SUITE</p>
+    <p>VIP CASINO ARENA</p>
   </div>
 
-  <div class="pass-tag" onclick="alert('通行證領取中')">
-    <span style="font-size:24px;">🎫</span>
+  <div class="pass-tag" onclick="alert('賭金通行證：即將解鎖下一階獎勵！')">
+    <span style="font-size:26px;">🎫</span>
     <div>
-      <div style="font-size:11px; font-weight:800; color:#f5d061;">賭金通行證</div>
-      <div style="font-size:9px; color:#aaa;">VIP 賽季進行中</div>
+      <div style="font-size:12px; font-weight:800; color:#f5d061;">賭金通行證</div>
+      <div style="font-size:10px; color:#aaa;">VIP PASS 進行中</div>
     </div>
   </div>
 
   <div class="battle-box">
-    <button id="matchBtn" class="play-btn">對戰</button>
+    <button id="matchBtn" class="play-btn">
+      對戰
+      <label>1V1 BATTLE</label>
+    </button>
   </div>
 
   <div id="loginModal" class="modal">
     <div class="box">
-      <h3 style="color:#f5d061; font-family:'Cinzel',serif;">牌手暱稱</h3>
+      <h3 style="color:#f5d061; font-family:'Cinzel',serif;">修改牌手暱稱</h3>
       <input type="text" id="nameInput" placeholder="請輸入暱稱..." maxlength="12">
       <br>
-      <button onclick="saveName()">進入牌局</button>
+      <button onclick="saveName()">儲存設定</button>
     </div>
   </div>
 
   <script>
+    // === 尊榮金光點擊粒子系統 ===
+    const canvas = document.getElementById('clickCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let rings = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 2;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed - 1.5;
+        this.size = Math.random() * 4 + 2;
+        this.color = Math.random() > 0.3 ? '#fce072' : '#ffffff';
+        this.alpha = 1;
+        this.decay = Math.random() * 0.03 + 0.02;
+        this.isSparkle = Math.random() > 0.6;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.15; // 模擬真實重力拋物線
+        this.alpha -= this.decay;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = '#d4af37';
+        ctx.shadowBlur = 8;
+        if (this.isSparkle) {
+          ctx.font = `${this.size * 3}px serif`;
+          ctx.fillText('♦', this.x, this.y);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    class GoldRing {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 2;
+        this.alpha = 0.9;
+      }
+      update() {
+        this.radius += 2.8;
+        this.alpha -= 0.04;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.strokeStyle = '#f1c40f';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#ffe066';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function createClickEffect(x, y) {
+      rings.push(new GoldRing(x, y));
+      for (let i = 0; i < 20; i++) {
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    // 監聽所有滑鼠點擊與觸控點擊
+    window.addEventListener('pointerdown', (e) => {
+      createClickEffect(e.clientX, e.clientY);
+    });
+
+    function animateEffects() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = rings.length - 1; i >= 0; i--) {
+        rings[i].update();
+        rings[i].draw();
+        if (rings[i].alpha <= 0) rings.splice(i, 1);
+      }
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].alpha <= 0) particles.splice(i, 1);
+      }
+
+      requestAnimationFrame(animateEffects);
+    }
+    animateEffects();
+
+    // === 玩家暱稱與基礎流程 ===
     let uName = localStorage.getItem('poker_player_name') || "VIP 牌手";
     document.getElementById('uName').innerText = uName;
 
@@ -166,7 +293,7 @@
     }
 
     document.getElementById('matchBtn').addEventListener('click', () => {
-      alert("配對系統已就緒！正在撮合 " + document.getElementById('uName').innerText + " 入座...");
+      alert("配對功能就緒！正在撮合【" + document.getElementById('uName').innerText + "】入席...");
     });
   </script>
 </body>

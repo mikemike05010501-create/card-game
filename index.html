@@ -67,12 +67,8 @@
     .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; }
     .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; font-family: 'Outfit', sans-serif; }
 
-    /* ==========================================
-       荒野亂鬥風 右上角資源欄位
-       ========================================== */
-    .brawl-hud-right {
-      display: flex; align-items: center; gap: 10px;
-    }
+    /* 荒野亂鬥風 右上角資源欄位 */
+    .brawl-hud-right { display: flex; align-items: center; gap: 10px; }
     .brawl-pill {
       position: relative; display: flex; align-items: center;
       background: #000; border: 2.5px solid #2b2b2b;
@@ -96,10 +92,9 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.25);
     }
     .brawl-menu-btn:active { transform: scale(0.92); }
-    .brawl-menu-btn span {
-      width: 100%; height: 3px; background: #fff; border-radius: 2px;
-    }
+    .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
 
+    /* 左側選單 */
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -112,8 +107,9 @@
     }
     .menu-btn:active { transform: scale(0.92); }
     .menu-btn span { font-size: 26px; }
-    .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
+    .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; font-family: 'Outfit', sans-serif; }
 
+    /* 右側選單 */
     .right-menu {
       position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -121,11 +117,12 @@
       width: 75px; height: 55px; background: linear-gradient(135deg, rgba(30,39,46,0.9), rgba(47,54,64,0.95));
       border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; font-size: 12px; font-weight: bold;
       color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
+      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d); backdrop-filter: blur(6px); font-family: 'Outfit', sans-serif;
     }
     .side-tag-btn:active { transform: scale(0.92); }
     .side-tag-btn span { font-size: 22px; }
 
+    /* 通行證條 */
     .pass-container {
       position: absolute; left: 25px; bottom: 25px; z-index: 5;
       background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
@@ -137,6 +134,17 @@
     .pass-progress { flex: 1; }
     .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
     .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
+
+    /* 每日任務與禮物 */
+    .daily-tasks-row {
+      position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;
+    }
+    .daily-btn {
+      background: rgba(0,0,0,0.75); border: 2px solid #d4af37; border-radius: 20px;
+      color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6); font-family: 'Outfit', sans-serif;
+    }
+    .daily-btn:active { transform: scale(0.94); }
 
     .center-visual {
       position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
@@ -171,26 +179,50 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
-      align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.25s ease;
-      backdrop-filter: blur(5px);
+    /* 全螢幕視窗 */
+    .app-screen-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+      display: flex; justify-content: center; align-items: center; z-index: 150;
+      opacity: 0; pointer-events: none; transition: opacity 0.22s ease, transform 0.22s ease;
+      transform: scale(0.96); backdrop-filter: blur(8px);
     }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-box {
-      background: var(--dark-panel); border-radius: 24px; padding: 32px; width: 480px; text-align: center;
-      border: 3px solid #d4af37; box-shadow: 0 0 50px rgba(212,175,55,0.5);
+    .app-screen-overlay.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+    .screen-window {
+      width: 90vw; max-width: 780px; height: 82vh; background: #0e1712;
+      border: 3px solid #d4af37; border-radius: 24px; box-shadow: 0 0 50px rgba(212,175,55,0.4);
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
-    .modal-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; margin-bottom: 20px; }
-    .login-input {
-      width: 80%; padding: 14px 18px; font-size: 18px; font-weight: bold;
-      border: 2px solid #d4af37; border-radius: 12px; background: rgba(0,0,0,0.75);
-      color: #fff; text-align: center; outline: none; margin: 20px 0;
+    .screen-header {
+      height: 60px; background: linear-gradient(180deg, rgba(30,46,36,0.95), rgba(16,25,20,0.95));
+      border-bottom: 2px solid #d4af37; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
     }
-    .btn-action {
-      background: linear-gradient(135deg, #f1c40f, #d4af37); color: #000; border: none;
-      border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
+    .screen-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 22px; font-weight: 900; letter-spacing: 2px; }
+    .screen-close-btn {
+      width: 36px; height: 36px; border-radius: 50%; background: #c0392b; border: 2px solid #fff;
+      color: #fff; font-weight: 900; font-size: 16px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .screen-close-btn:active { transform: scale(0.9); }
+    .screen-content {
+      flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; }
+    .shop-item {
+      background: rgba(255,255,255,0.05); border: 2px solid rgba(212,175,55,0.5); border-radius: 16px;
+      padding: 18px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .shop-item-icon { font-size: 42px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8)); }
+    .shop-item-btn {
+      background: var(--gold); border: none; border-radius: 20px; padding: 6px 18px; font-weight: 900;
+      color: #1a1202; cursor: pointer; font-size: 14px; margin-top: 6px;
+    }
+
+    .task-item {
+      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(212,175,55,0.4); border-radius: 14px;
+      padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
     }
 
     .game-match-view {
@@ -224,19 +256,9 @@
     }
 
     @keyframes dealCard {
-      0% {
-        opacity: 0;
-        transform: translateY(-160px) rotate(-25deg) scale(0.6);
-        box-shadow: 0 25px 35px rgba(0,0,0,0.8);
-      }
-      70% {
-        transform: translateY(8px) rotate(4deg) scale(1.04);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) rotate(0deg) scale(1);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-      }
+      0% { opacity: 0; transform: translateY(-160px) rotate(-25deg) scale(0.6); }
+      70% { transform: translateY(8px) rotate(4deg) scale(1.04); }
+      100% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
     }
 
     .hidden { display: none !important; }
@@ -247,8 +269,9 @@
   <canvas id="particlesCanvas"></canvas>
   <canvas id="clickCanvas"></canvas>
 
+  <!-- 頂部 HUD -->
   <div class="hud-bar">
-    <div class="player-profile" onclick="openLoginModal(true)">
+    <div class="player-profile" onclick="openScreen('profileScreen')">
       <div id="playerAvatar" class="avatar"></div>
       <div>
         <div id="playerNameText" class="player-name">VIP 牌手</div>
@@ -256,9 +279,7 @@
       </div>
     </div>
     
-    <!-- 右上角：荒野亂鬥風 (彩虹徽章、黃金幣、綠寶石、清單按鍵) -->
     <div class="brawl-hud-right">
-      <!-- 點數 / 徽章 -->
       <div class="brawl-pill">
         <div class="brawl-icon">
           <svg viewBox="0 0 36 36" width="30" height="30">
@@ -277,13 +298,11 @@
         <span class="brawl-num">0</span>
       </div>
 
-      <!-- 金幣 (骷髏黃金幣) -->
       <div class="brawl-pill">
         <div class="brawl-icon">
           <svg viewBox="0 0 36 36" width="30" height="30">
             <circle cx="18" cy="18" r="15" fill="#f1c40f" stroke="#000" stroke-width="2.5"/>
             <circle cx="18" cy="18" r="11" fill="#e67e22" opacity="0.4"/>
-            <!-- 荒野骷髏印記 -->
             <ellipse cx="18" cy="16" rx="6.5" ry="5.5" fill="#d35400"/>
             <circle cx="15.5" cy="15" r="1.8" fill="#f1c40f"/>
             <circle cx="20.5" cy="15" r="1.8" fill="#f1c40f"/>
@@ -293,7 +312,6 @@
         <span class="brawl-num">20000</span>
       </div>
 
-      <!-- 綠寶石 (六角綠寶石) -->
       <div class="brawl-pill">
         <div class="brawl-icon">
           <svg viewBox="0 0 36 36" width="30" height="30">
@@ -305,8 +323,7 @@
         <span class="brawl-num">1000000</span>
       </div>
 
-      <!-- 右上漢堡選單鈕 -->
-      <div class="brawl-menu-btn" onclick="alert('選單功能建置中')">
+      <div class="brawl-menu-btn" onclick="openScreen('menuScreen')">
         <span></span>
         <span></span>
         <span></span>
@@ -314,13 +331,15 @@
     </div>
   </div>
 
+  <!-- 左側選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店系統準備中！')"><span>🛒</span><label>商店</label></div>
-    <div class="menu-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="menu-btn" onclick="alert('賭城巡迴錦標賽開打中！')"><span>📰</span><label>新聞</label></div>
+    <div class="menu-btn" onclick="openScreen('shopScreen')"><span>🛒</span><label>商店</label></div>
+    <div class="menu-btn" onclick="openScreen('profileScreen')"><span>🎴</span><label>改名</label></div>
+    <div class="menu-btn" onclick="openScreen('newsScreen')"><span>📰</span><label>新聞</label></div>
   </div>
 
-  <div class="pass-container">
+  <!-- 通行證按鈕 -->
+  <div class="pass-container" onclick="openScreen('passScreen')">
     <div class="pass-badge">🎫</div>
     <div class="pass-progress">
       <div style="font-size: 12px; font-weight: 800; color: #ffe066;">賭金通行證 (VIP Pass)</div>
@@ -329,22 +348,26 @@
     <div style="font-size: 24px;">🎁</div>
   </div>
 
-  <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
-    <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">📋 每日任務</button>
-    <button onclick="alert('每日禮物已領取：獲得 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
+  <!-- 每日任務與禮物 -->
+  <div class="daily-tasks-row">
+    <button class="daily-btn" onclick="openScreen('taskScreen')">📋 每日任務</button>
+    <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
+  <!-- 中央品牌角色與標題 -->
   <div class="center-visual">
     <div class="dealer-suit">🎩🤵</div>
     <div class="logo-glow">POKER ARENA</div>
   </div>
 
+  <!-- 右側選單 -->
   <div class="right-menu">
-    <button class="side-tag-btn" onclick="alert('在線好友：3人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊功能即將上線')"><span>🏠</span>小隊</button>
-    <button class="side-tag-btn" onclick="alert('戰隊排名第 5')"><span>🏅</span>戰隊</button>
+    <button class="side-tag-btn" onclick="openScreen('friendsScreen')"><span>👥</span>好友</button>
+    <button class="side-tag-btn" onclick="openScreen('teamScreen')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="openScreen('clanScreen')"><span>🏅</span>戰隊</button>
   </div>
 
+  <!-- 右下對戰按鈕 -->
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
@@ -356,26 +379,178 @@
     </button>
   </div>
 
-  <div id="loginModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2 id="loginModalTitle" class="modal-title">牌手登入</h2>
-      <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱：</p>
-      <input type="text" id="usernameInput" class="login-input" placeholder="輸入暱稱..." maxlength="12">
-      <div>
-        <button class="btn-action" onclick="savePlayerName()">進入賭場</button>
+  <!-- 1. 商店畫面 (金幣撞擊聲) -->
+  <div id="shopScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header">
+        <div class="screen-title">🛒 賭城黑市商店</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content">
+        <h3 style="color:#f1c40f;">每日限時特惠</h3>
+        <div class="shop-grid">
+          <div class="shop-item">
+            <div class="shop-item-icon">🪙</div>
+            <h4>金幣大禮包</h4>
+            <p style="font-size:12px; color:#bbb;">獲得 50,000 金幣</p>
+            <button class="shop-item-btn" onclick="alert('購買成功！')">💎 50 寶石</button>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-icon">💎</div>
+            <h4>寶石手提箱</h4>
+            <p style="font-size:12px; color:#bbb;">獲得 500 寶石</p>
+            <button class="shop-item-btn" onclick="alert('儲值功能建置中！')">NT$ 150</button>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-icon">🎴</div>
+            <h4>黑金尊榮卡背</h4>
+            <p style="font-size:12px; color:#bbb;">獨特發光黑曜石質感</p>
+            <button class="shop-item-btn" onclick="alert('已裝備新卡背！')">💎 120 寶石</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="matchingModal" class="modal-overlay">
-    <div class="modal-box" style="width: 380px;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif;">尋找對手中...</h2>
-      <div style="font-size: 50px; margin: 20px 0;">♣️♥️♦️♠️</div>
-      <p style="color: #ccc; font-size: 14px;">正在撮合線上牌手...</p>
-      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+  <!-- 2. 每日任務畫面 (魔法星光微鈴) -->
+  <div id="taskScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header">
+        <div class="screen-title">📋 每日懸賞任務</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content">
+        <div class="task-item">
+          <div>
+            <h4>牌神首勝</h4>
+            <p style="font-size:12px; color:#aaa;">在 1v1 對決中擊敗 1 位線上對手 (0/1)</p>
+          </div>
+          <button class="shop-item-btn" onclick="alert('任務尚未達成！')">領取 🪙 1,000</button>
+        </div>
+        <div class="task-item">
+          <div>
+            <h4>要牌狂熱</h4>
+            <p style="font-size:12px; color:#aaa;">累計抽牌達 5 次 (2/5)</p>
+          </div>
+          <button class="shop-item-btn" onclick="alert('任務尚未達成！')">領取 💎 10</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- 3. 每日禮物畫面 -->
+  <div id="giftScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width:500px; height:55vh;">
+      <div class="screen-header">
+        <div class="screen-title">🎁 每日登入補給</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
+        <div style="font-size: 70px;">🪙</div>
+        <h3 style="color:#f1c40f; margin-top:10px;">今日補給箱</h3>
+        <p style="color:#ccc; font-size:14px; margin: 10px 0 20px;">歡迎回到高額賭桌，收下你的每日底金！</p>
+        <button class="shop-item-btn" style="padding:10px 30px; font-size:16px;" onclick="alert('成功領取 1,500 金幣！'); closeScreens();">領取獎勵</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 新聞快訊畫面 -->
+  <div id="newsScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header">
+        <div class="screen-title">📰 賭城巡迴賽快訊</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content">
+        <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; border-left:4px solid #f1c40f;">
+          <h3 style="color:#f1c40f;">第 1 賽季：撲克爭霸錦標賽開打</h3>
+          <p style="font-size:13px; color:#bbb; margin-top:6px;">即日起全伺服器線上排位賽正式啟動，只要排位達到鑽石會籍即可解鎖專屬牌桌桌布與稱號。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 通行證畫面 (魔法星光) -->
+  <div id="passScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header">
+        <div class="screen-title">🎫 VIP 尊榮賽事通行證</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content">
+        <div style="text-align:center; padding:15px 0;">
+          <div style="font-size:18px; color:#f1c40f; font-weight:800;">第 1 賽季 (等級 8 / 50)</div>
+          <div style="width:80%; margin:10px auto; height:14px; background:#000; border-radius:7px; overflow:hidden; border:1px solid #d4af37;">
+            <div style="width:35%; height:100%; background:linear-gradient(90deg, #f39c12, #f1c40f);"></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:10px;">
+          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">🪙</div>Lv.1 (已領)</div>
+          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">💎</div>Lv.2 (已領)</div>
+          <div class="shop-item" style="min-width:130px; border-color:#f1c40f;"><div style="font-size:30px;">🎁</div>Lv.3 (可領)</div>
+          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">👑</div>Lv.4</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 好友 / 小隊 / 戰隊 (軟木塞微頓音) -->
+  <div id="friendsScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width:550px;">
+      <div class="screen-header"><div class="screen-title">👥 在線好友</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
+      <div class="screen-content">
+        <div class="task-item"><div><h4>賭聖阿發</h4><p style="font-size:12px; color:#2ecc71;">● 正在遊戲中</p></div><button class="shop-item-btn" onclick="alert('邀請已送出！')">觀戰</button></div>
+        <div class="task-item"><div><h4>賭王九哥</h4><p style="font-size:12px; color:#aaa;">○ 離線 (2小時前)</p></div><button class="shop-item-btn">邀請</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="teamScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width:550px; height:50vh;">
+      <div class="screen-header"><div class="screen-title">🏠 雙人小隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
+      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
+        <h3>組隊大廳</h3>
+        <p style="color:#aaa; font-size:13px; margin: 10px 0;">目前隊伍僅有你一人，點擊發送邀請連結給好友。</p>
+        <button class="shop-item-btn" onclick="alert('小隊連結已複製！')">複製小隊代碼</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="clanScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width:550px;">
+      <div class="screen-header"><div class="screen-title">🏅 戰隊俱樂部</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
+      <div class="screen-content">
+        <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:12px;">
+          <h4>皇家同花順俱樂部</h4>
+          <p style="font-size:12px; color:#bbb; margin-top:4px;">全服排名：第 5 名 | 活躍成員：28/30</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 改名 / 牌手設定 -->
+  <div id="profileScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width:440px; height:50vh;">
+      <div class="screen-header"><div class="screen-title">🎴 牌手設定</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
+      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
+        <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱：</p>
+        <input type="text" id="usernameInput" style="width:80%; padding:12px; margin:15px 0; border:2px solid #d4af37; border-radius:12px; background:#000; color:#fff; text-align:center; font-size:16px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
+        <button class="shop-item-btn" style="padding:10px 30px; font-size:16px;" onclick="savePlayerName()">確定修改</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 配對中彈窗 -->
+  <div id="matchingModal" class="app-screen-overlay">
+    <div class="screen-window" style="width: 360px; height: 45vh; align-items:center; justify-content:center; text-align:center;">
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;">尋找對手中...</h2>
+      <div style="font-size: 50px; margin: 15px 0;">♣️♥️♦️♠️</div>
+      <p style="color: #ccc; font-size: 14px;">正在撮合線上牌手...</p>
+      <button onclick="closeScreens()" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+    </div>
+  </div>
+
+  <!-- 9. 1v1 對戰畫面 (桌面皮革氈布聲) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -420,7 +595,9 @@
   </div>
 
   <script>
-    // 水滴微泡泡音效引擎
+    // ==========================================
+    // 多情境多音頻原生音效引擎 (Contextual Audio Engine)
+    // ==========================================
     const AudioEngine = {
       ctx: null,
       init() {
@@ -432,45 +609,122 @@
           this.ctx.resume();
         }
       },
+      // 1. 大廳主畫面：水滴微泡泡聲
       playBubblePop() {
         this.init();
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-
-        const startFreq = 480 + (Math.random() * 180);
+        const startFreq = 480 + (Math.random() * 160);
         osc.type = 'sine';
         osc.frequency.setValueAtTime(startFreq, now);
         osc.frequency.exponentialRampToValueAtTime(startFreq * 2.2, now + 0.045);
-
-        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.setValueAtTime(0.32, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start(now);
         osc.stop(now + 0.06);
       },
+      // 2. 商店畫面：硬幣金幣敲擊聲
+      playCoinClink() {
+        this.init();
+        const now = this.ctx.currentTime;
+        [1950, 2400].forEach((freq, i) => {
+          const delay = i * 0.035;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + delay);
+          gain.gain.setValueAtTime(0.22, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.09);
+        });
+      },
+      // 3. 任務 / 通行證：魔法星光風鈴
+      playMagicChime() {
+        this.init();
+        const now = this.ctx.currentTime;
+        [1318, 1760, 2093].forEach((freq, idx) => {
+          const delay = idx * 0.04;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + delay);
+          gain.gain.setValueAtTime(0.18, now + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + delay);
+          osc.stop(now + delay + 0.16);
+        });
+      },
+      // 4. 社群 / 好友 / 小隊：軟木塞微頓音
+      playMutedTap() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      },
+      // 5. 牌桌對決畫面：厚實毛氈落桌鈍響
+      playFeltThud() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      },
+      // 6. 關閉介面：泡泡滑落消散聲
+      playCloseSound() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.exponentialRampToValueAtTime(260, now + 0.055);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.065);
+      },
+      // 發牌流暢音
       playBubbleStream() {
         this.init();
-        const pitches = [550, 780, 1050];
-        pitches.forEach((freq, idx) => {
-          const delay = idx * 0.038;
+        [520, 750, 1020].forEach((freq, idx) => {
+          const delay = idx * 0.035;
           const now = this.ctx.currentTime + delay;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-
           osc.type = 'sine';
           osc.frequency.setValueAtTime(freq, now);
           osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + 0.04);
-
-          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.setValueAtTime(0.24, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-
           osc.start(now);
           osc.stop(now + 0.055);
         });
@@ -592,8 +846,34 @@
       }
     }
 
-    function triggerClickBurst(x, y) {
+    // 依據目前點擊所在的畫面分派不同的專屬音效
+    function playContextSound(target) {
+      if (target.closest('.screen-close-btn')) {
+        AudioEngine.playCloseSound();
+        return;
+      }
+      if (target.closest('#shopScreen')) {
+        AudioEngine.playCoinClink();
+        return;
+      }
+      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen')) {
+        AudioEngine.playMagicChime();
+        return;
+      }
+      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen')) {
+        AudioEngine.playMutedTap();
+        return;
+      }
+      if (target.closest('#gameMatchView')) {
+        AudioEngine.playFeltThud();
+        return;
+      }
+      // 預設大廳泡泡聲
       AudioEngine.playBubblePop();
+    }
+
+    function triggerClickBurst(x, y, target) {
+      playContextSound(target);
       clickRings.push(new ClickRing(x, y));
       for (let i = 0; i < 18; i++) {
         clickParticles.push(new ClickSparkle(x, y));
@@ -601,7 +881,7 @@
     }
 
     window.addEventListener('pointerdown', (e) => {
-      triggerClickBurst(e.clientX, e.clientY);
+      triggerClickBurst(e.clientX, e.clientY, e.target);
     });
 
     function renderClickEffects() {
@@ -623,6 +903,17 @@
     }
     renderClickEffects();
 
+    // 介面開啟與關閉切換
+    function openScreen(screenId) {
+      closeScreens();
+      const screen = document.getElementById(screenId);
+      if (screen) screen.classList.add('active');
+    }
+
+    function closeScreens() {
+      document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
+    }
+
     // 遊戲連線與 HUD 邏輯
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
@@ -635,23 +926,16 @@
       if (savedName) {
         setPlayer(savedName);
       } else {
-        openLoginModal(false);
+        openScreen('profileScreen');
       }
     });
-
-    function openLoginModal(isEdit) {
-      const modal = document.getElementById('loginModal');
-      document.getElementById('loginModalTitle').innerText = isEdit ? "修改暱稱" : "牌手登入";
-      document.getElementById('usernameInput').value = currentUsername || "";
-      modal.classList.add('active');
-    }
 
     function savePlayerName() {
       const name = document.getElementById('usernameInput').value.trim();
       if (!name) return alert("暱稱不能為空！");
       localStorage.setItem('poker_player_name', name);
       setPlayer(name);
-      document.getElementById('loginModal').classList.remove('active');
+      closeScreens();
     }
 
     function setPlayer(name) {
@@ -664,14 +948,14 @@
     }
 
     document.getElementById('matchBtn').addEventListener('click', () => {
-      if (!currentUsername) return openLoginModal(false);
+      if (!currentUsername) return openScreen('profileScreen');
       socket.emit('start_match', { playerName: currentUsername });
-      document.getElementById('matchingModal').classList.add('active');
+      openScreen('matchingModal');
     });
 
     socket.on('game_start', (data) => {
       activeRoomId = data.roomId;
-      document.getElementById('matchingModal').classList.remove('active');
+      closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
       document.getElementById('roomTitle').innerText = `🏆 賭神賽 (${activeRoomId})`;
 

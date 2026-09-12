@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>多人對戰自動配對</title>
+  <title>真人對戰</title>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body style="text-align: center; padding-top: 80px; font-family: sans-serif;">
@@ -14,7 +14,6 @@
 
   <script>
     const SERVER_URL = "https://game-server-mike.onrender.com";
-
     const socket = io(SERVER_URL);
     const playBtn = document.getElementById('playBtn');
     const statusText = document.getElementById('status');
@@ -22,17 +21,23 @@
     playBtn.addEventListener('click', () => {
       socket.emit('start_match');
       playBtn.disabled = true;
-      statusText.innerText = "配對中，正在搜尋線上玩家...";
+      playBtn.style.opacity = '0.5';
+      statusText.innerText = "配對中，搜尋線上玩家...";
     });
 
     socket.on('status', (msg) => {
       statusText.innerText = msg;
     });
 
-    socket.on('matched', (data) => {
+    // 同時監聽 matched 與 game_start，確保後端發哪個都能接收到
+    function onMatchedSuccess(data) {
       statusText.style.color = "green";
       statusText.innerText = `配對成功！已進入同一桌（房間號：${data.roomId}）`;
-    });
+      playBtn.style.display = "none";
+    }
+
+    socket.on('matched', onMatchedSuccess);
+    socket.on('game_start', onMatchedSuccess);
   </script>
 </body>
 </html>

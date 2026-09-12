@@ -157,7 +157,7 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* 中央角色舞台 (完美對齊你上傳的 3D 黏土精緻去背圖) */
+    /* 中央角色舞台 (絕對保證載入 3D 黏土精緻去背圖) */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
       width: 480px; height: 88vh; pointer-events: none; z-index: 3;
@@ -270,7 +270,8 @@
     }
     .camera-focus-target {
       width: 270px; height: 510px; background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
+      background-size: contain; background-repeat: no-repeat;
+      background-position: center bottom;
       transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
       transform-origin: 52% 25%;
     }
@@ -398,7 +399,7 @@
 
   <script>
     // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒且具備無感解鎖機制)
+    // 頂層點擊音效引擎 (自動解鎖 Web Audio Context)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -617,7 +618,7 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 黏土/日漫渲染立繪 -->
+  <!-- 中央全身 3D 黏土精緻立繪 (直接對應圖片) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
@@ -800,7 +801,7 @@
           <div class="trophy-step unlocked">
             <div class="trophy-node">🏆</div>
             <div class="trophy-card-info" style="opacity:0.5;">
-              <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇：解鎖 🪙 1,000 金幣</p></div>
+              <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇 : 解鎖 🪙 1,000 金幣</p></div>
               <button class="reward-btn" style="background:#333; color:#777;" disabled>✔ 已領取</button>
             </div>
           </div>
@@ -1209,7 +1210,7 @@
       document.getElementById('hudTrophyCount').innerText = userTrophies;
       document.getElementById('currentTrophiesSpan').innerText = userTrophies;
       
-      // 確保人物立繪在頁面載入時正確套用圖片
+      // 直接賦予大廳中央角色圖背景
       document.getElementById('mainHeroFullBody').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
       document.getElementById('stepCameraTarget').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
     });

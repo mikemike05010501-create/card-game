@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - VIP CASINO</title>
 
-  <!-- 強制禁止瀏覽器讀取舊快取，每次開啟即時更新 -->
+  <!-- 防快取標籤 -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- PWA 手遊全螢幕設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -26,25 +25,73 @@
     
     body {
       font-family: 'Outfit', -apple-system, sans-serif;
-      background: 
-        radial-gradient(circle at 50% 25%, rgba(212,175,55,0.2) 0%, transparent 60%),
-        radial-gradient(circle at center, rgba(14,56,38,0.75) 0%, rgba(3,15,9,0.95) 100%),
-        url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
+      background-color: #0b1d15;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    body::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
-      pointer-events: none; z-index: 1;
+    /* === 實體賭場撲克桌景與聚光燈背景 === */
+    .casino-table-background {
+      position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
+      background: #08140e;
+      overflow: hidden;
     }
 
+    /* 聚光燈效果 */
+    .spotlight {
+      position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+      width: 70vw; height: 80vh;
+      background: radial-gradient(ellipse at top, rgba(255, 235, 160, 0.22) 0%, rgba(212, 175, 55, 0.08) 45%, transparent 75%);
+    }
+
+    /* 綠呢大賭桌本體（橢圓環形包邊） */
+    .poker-oval-table {
+      position: absolute; left: 50%; bottom: -35vh; transform: translateX(-50%);
+      width: 120vw; height: 95vh;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 30%, #1e5842 0%, #153e2f 60%, #0d271e 100%);
+      border: 22px solid #2d1e18; /* 高級黑胡桃木外圍圍欄 */
+      box-shadow: 
+        0 -15px 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 6px #d4af37, /* 金屬金線鑲邊 */
+        inset 0 10px 40px rgba(0,0,0,0.6); /* 桌內軟皮陰影 */
+    }
+
+    /* 桌面下注白線弧度 */
+    .table-line {
+      position: absolute; left: 50%; top: 12%; transform: translateX(-50%);
+      width: 85%; height: 60%;
+      border-top: 3px dashed rgba(212, 175, 55, 0.45);
+      border-radius: 50%;
+    }
+
+    /* 3D 擬真實體籌碼堆疊組件 */
+    .chip-stack {
+      position: absolute; display: flex; flex-direction: column-reverse; align-items: center;
+    }
+    .chip-item {
+      width: 54px; height: 18px; border-radius: 50%;
+      margin-bottom: -11px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.7), inset 0 2px 2px rgba(255,255,255,0.4);
+      border: 2px dashed rgba(255,255,255,0.7);
+      position: relative;
+    }
+    .chip-red { background: linear-gradient(180deg, #e74c3c 0%, #962d22 100%); }
+    .chip-blue { background: linear-gradient(180deg, #3498db 0%, #1b4f72 100%); }
+    .chip-black { background: linear-gradient(180deg, #34495e 0%, #1a252f 100%); }
+    .chip-gold-item { background: linear-gradient(180deg, #f1c40f 0%, #b7950b 100%); border-color: #fff; }
+
+    /* 散落在賭桌兩邊的籌碼群 */
+    .chips-left-group { position: absolute; left: 22%; bottom: 22vh; pointer-events: none; }
+    .chips-right-group { position: absolute; right: 22%; bottom: 24vh; pointer-events: none; }
+
+    /* 金粉微粒畫布 */
     #particlesCanvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 2;
     }
 
+    /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -79,6 +126,7 @@
     .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
     .chip-green .icon { background: #2ecc71; }
 
+    /* 左側選單 */
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -93,6 +141,7 @@
     .menu-btn span { font-size: 26px; }
     .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
 
+    /* 右側選單 */
     .right-menu {
       position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -105,6 +154,7 @@
     .side-tag-btn:active { transform: scale(0.92); }
     .side-tag-btn span { font-size: 22px; }
 
+    /* 通行證 */
     .pass-container {
       position: absolute; left: 25px; bottom: 25px; z-index: 5;
       background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
@@ -117,6 +167,7 @@
     .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
     .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
 
+    /* 中央人物 */
     .center-visual {
       position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
       width: 480px; height: 85vh; pointer-events: none; z-index: 3;
@@ -130,6 +181,7 @@
       margin-bottom: 120px; text-align: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
     }
 
+    /* 右下角對戰按鈕 */
     .battle-center {
       position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
     }
@@ -150,6 +202,7 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
+    /* 登入彈窗 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
@@ -172,10 +225,10 @@
       border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
     }
 
+    /* 對戰牌桌 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
-                  url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
+      background: radial-gradient(circle at center, #1e5842 0%, #0d271e 100%);
       z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .players-status { display: flex; justify-content: space-between; align-items: center; }
@@ -205,6 +258,44 @@
 </head>
 <body>
 
+  <!-- 實體綠呢毛氈賭桌、胡桃木框與籌碼背景 -->
+  <div class="casino-table-background">
+    <div class="spotlight"></div>
+    <div class="poker-oval-table">
+      <div class="table-line"></div>
+    </div>
+
+    <!-- 左側立體籌碼群 -->
+    <div class="chips-left-group">
+      <div class="chip-stack" style="left:0;">
+        <div class="chip-item chip-red"></div>
+        <div class="chip-item chip-red"></div>
+        <div class="chip-item chip-red"></div>
+        <div class="chip-item chip-gold-item"></div>
+      </div>
+      <div class="chip-stack" style="left:40px; bottom:-8px;">
+        <div class="chip-item chip-blue"></div>
+        <div class="chip-item chip-blue"></div>
+        <div class="chip-item chip-black"></div>
+      </div>
+    </div>
+
+    <!-- 右側立體籌碼群 -->
+    <div class="chips-right-group">
+      <div class="chip-stack" style="right:0;">
+        <div class="chip-item chip-gold-item"></div>
+        <div class="chip-item chip-gold-item"></div>
+        <div class="chip-item chip-black"></div>
+        <div class="chip-item chip-black"></div>
+      </div>
+      <div class="chip-stack" style="right:45px; bottom:-5px;">
+        <div class="chip-item chip-red"></div>
+        <div class="chip-item chip-blue"></div>
+        <div class="chip-item chip-blue"></div>
+      </div>
+    </div>
+  </div>
+
   <canvas id="particlesCanvas"></canvas>
 
   <div class="hud-bar">
@@ -224,9 +315,9 @@
   </div>
 
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店系統準備中！')"><span>🛒</span><label>商店</label></div>
+    <div class="menu-btn" onclick="alert('商店功能建置中')"><span>🛒</span><label>商店</label></div>
     <div class="menu-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="menu-btn" onclick="alert('賭城巡迴錦標賽開打中！')"><span>📰</span><label>新聞</label></div>
+    <div class="menu-btn" onclick="alert('巡迴賽火熱開打！')"><span>📰</span><label>新聞</label></div>
   </div>
 
   <div class="pass-container">
@@ -240,7 +331,7 @@
 
   <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
     <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">📋 每日任務</button>
-    <button onclick="alert('每日禮物已領取：獲得 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
+    <button onclick="alert('已領取今日 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
   </div>
 
   <div class="center-visual">
@@ -250,14 +341,14 @@
 
   <div class="right-menu">
     <button class="side-tag-btn" onclick="alert('在線好友：3人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊功能即將上線')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="alert('小隊籌組中')"><span>🏠</span>小隊</button>
     <button class="side-tag-btn" onclick="alert('戰隊排名第 5')"><span>🏅</span>戰隊</button>
   </div>
 
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
-      🏆 1v1 賭神巡迴賽
+      🏆 1v1 賭神賽
     </div>
     <button id="matchBtn" class="play-btn">
       對戰
@@ -340,7 +431,7 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 35; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,

@@ -3,356 +3,171 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>POKER ARENA - VIP CASINO</title>
-
-  <!-- 強制防快取 -->
+  <title>POKER ARENA</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
-    :root {
-      /* 與照片實景一致的黃銅拋光金與真皮黑 */
-      --brass-gold: linear-gradient(135deg, #fff2b2 0%, #d4af37 35%, #aa8214 70%, #634a06 100%);
-      --dark-leather: linear-gradient(180deg, rgba(28, 20, 15, 0.88) 0%, rgba(12, 9, 7, 0.95) 100%);
-      --gold-stroke: 1.5px solid rgba(230, 190, 80, 0.7);
-      --metal-glow: 0 4px 15px rgba(212, 175, 55, 0.45);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    
     body {
-      font-family: 'Montserrat', -apple-system, sans-serif;
-      /* 直接載入你指定的這張實體賭桌照片 */
-      background: #0d120f url('https://images2.imgbox.com/f0/ee/oV9c1tE4_o.png') no-repeat center center / cover;
+      font-family: 'Montserrat', sans-serif;
+      /* 依序載入你上傳的圖檔，若本機沒有則加載你指定的照片備用 */
+      background: #0b130e url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* 頂部 HUD */
-    .hud-bar {
-      height: 60px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 100%);
-      z-index: 10; position: relative;
+    /* 頂部黑金 HUD */
+    .hud {
+      height: 56px; display: flex; justify-content: space-between; align-items: center;
+      padding: 0 20px; background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
+      z-index: 10;
     }
-    .player-profile {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--dark-leather); padding: 4px 16px 4px 5px;
-      border-radius: 30px; border: var(--gold-stroke); box-shadow: 0 6px 16px rgba(0,0,0,0.8);
-      cursor: pointer; backdrop-filter: blur(6px); transition: transform 0.15s;
+    .profile {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(18, 12, 8, 0.85); padding: 4px 14px 4px 5px;
+      border-radius: 25px; border: 1px solid #d4af37; cursor: pointer;
     }
-    .player-profile:active { transform: scale(0.96); }
     .avatar {
-      width: 38px; height: 38px; border-radius: 50%; border: 2px solid #d4af37;
-      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
-    }
-    .player-name { font-weight: 700; font-size: 14px; letter-spacing: 0.5px; }
-
-    .currencies { display: flex; gap: 12px; }
-    .currency-pill {
-      background: var(--dark-leather); border: var(--gold-stroke);
-      padding: 3px 12px; border-radius: 16px; font-weight: 700; font-size: 13px;
-      display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-      backdrop-filter: blur(6px); color: #f9e79f;
+      width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #d4af37;
+      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=poker') no-repeat center/cover;
     }
 
-    /* 左側選單 (實體金屬質感按鍵) */
-    .left-menu {
-      position: absolute; left: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
-    }
-    .brass-btn {
-      width: 58px; height: 58px; border-radius: 12px;
-      background: var(--dark-leather); border: var(--gold-stroke);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 6px 14px rgba(0,0,0,0.7), inset 0 1px 1px rgba(255,255,255,0.2);
-      transition: transform 0.1s; backdrop-filter: blur(6px);
-    }
-    .brass-btn:active { transform: scale(0.92); }
-    .brass-btn span { font-size: 22px; }
-    .brass-btn label { font-size: 10px; font-weight: 700; color: #f5d061; margin-top: 2px; }
-
-    /* 右側選單 */
-    .right-menu {
-      position: absolute; right: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
+    .currencies { display: flex; gap: 10px; }
+    .curr-tag {
+      background: rgba(18, 12, 8, 0.85); border: 1px solid #d4af37;
+      padding: 3px 10px; border-radius: 14px; font-weight: 800; font-size: 13px; color: #f7dc6f;
     }
 
-    /* 中央精簡 LOGO */
-    .center-logo {
-      position: absolute; left: 50%; top: 32%; transform: translate(-50%, -50%);
+    /* 左側金屬快捷鍵 */
+    .side-btns { position: absolute; left: 20px; top: 75px; display: flex; flex-direction: column; gap: 10px; z-index: 8; }
+    .btn-gold-metal {
+      width: 54px; height: 54px; border-radius: 12px;
+      background: linear-gradient(180deg, rgba(35,25,18,0.9), rgba(15,10,7,0.95));
+      border: 1px solid #d4af37; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    }
+    .btn-gold-metal span { font-size: 20px; }
+    .btn-gold-metal label { font-size: 9px; font-weight: 800; color: #f5d061; margin-top: 2px; }
+
+    /* 中央印記 */
+    .title-area {
+      position: absolute; left: 50%; top: 30%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none; z-index: 5;
     }
-    .center-logo h1 {
-      font-family: 'Cinzel', serif; font-size: 38px; font-weight: 900; letter-spacing: 6px;
-      background: linear-gradient(180deg, #fff7d6 0%, #dfb746 50%, #7d5b0c 100%);
+    .title-area h1 {
+      font-family: 'Cinzel', serif; font-size: 36px; font-weight: 900; letter-spacing: 6px;
+      background: linear-gradient(180deg, #fff2b2, #d4af37, #aa8214);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.95));
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
     }
 
-    /* 左下通行證 */
-    .pass-container {
-      position: absolute; left: 24px; bottom: 22px; z-index: 8;
-      background: var(--dark-leather); border: var(--gold-stroke); border-radius: 14px;
-      width: 270px; height: 62px; display: flex; align-items: center; padding: 0 14px; gap: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8); cursor: pointer; backdrop-filter: blur(6px);
-    }
-    .pass-bar { flex: 1; height: 8px; background: #000; border-radius: 4px; overflow: hidden; border: 1px solid rgba(212,175,55,0.3); }
-    .pass-fill { width: 45%; height: 100%; background: linear-gradient(90deg, #d4af37, #f7dc6f); }
-
-    /* 右下對戰按鈕 */
-    .battle-center {
-      position: absolute; right: 24px; bottom: 22px; z-index: 8;
-    }
+    /* 右下大對戰按鈕 */
+    .battle-box { position: absolute; right: 20px; bottom: 20px; z-index: 8; }
     .play-btn {
-      width: 210px; height: 70px; background: var(--brass-gold);
-      border: 2px solid #fff; border-radius: 14px; color: #1c1303; font-size: 26px; font-weight: 900;
+      width: 190px; height: 65px;
+      background: linear-gradient(135deg, #fff2b2 0%, #d4af37 40%, #8c6b12 100%);
+      border: 2px solid #fff; border-radius: 14px; color: #1a1202; font-size: 24px; font-weight: 900;
       letter-spacing: 3px; font-family: 'Cinzel', serif; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: var(--metal-glow), 0 8px 22px rgba(0,0,0,0.8), inset 0 2px 3px #fff;
-      transition: transform 0.1s;
+      box-shadow: 0 6px 20px rgba(212,175,55,0.5), inset 0 2px 2px #fff;
     }
     .play-btn:active { transform: scale(0.95); }
-    .play-btn label { font-size: 10px; font-weight: 900; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; color: #3b2803; }
 
-    /* 登入彈窗 */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      display: flex; justify-content: center; align-items: center; z-index: 100;
-      opacity: 0; pointer-events: none; transition: 0.2s; backdrop-filter: blur(8px);
-    }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .modal-box {
-      background: var(--dark-leather); border-radius: 18px; padding: 25px; width: 400px; text-align: center;
-      border: 2px solid #d4af37; box-shadow: 0 0 35px rgba(212, 175, 55, 0.4);
-    }
-    .login-input {
-      width: 80%; padding: 12px; font-size: 16px; font-weight: bold;
-      border: 1.5px solid #d4af37; border-radius: 10px; background: rgba(0,0,0,0.7);
-      color: #fff; text-align: center; outline: none; margin: 15px 0;
-    }
-    .btn-gold {
-      background: var(--brass-gold); border: none; border-radius: 20px;
-      padding: 9px 28px; font-weight: 800; font-size: 14px; color: #1c1303; cursor: pointer;
+    /* 通行證 */
+    .pass-tag {
+      position: absolute; left: 20px; bottom: 20px; z-index: 8;
+      background: rgba(18, 12, 8, 0.9); border: 1px solid #d4af37; border-radius: 12px;
+      padding: 8px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;
     }
 
-    /* 1v1 對戰畫面 */
-    .game-match-view {
-      position: fixed; inset: 0;
-      background: #0d120f url('https://images2.imgbox.com/f0/ee/oV9c1tE4_o.png') no-repeat center center / cover;
-      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
+    /* 彈窗 */
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex;
+      justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none;
     }
-    .poker-card {
-      width: 70px; height: 100px; background: #fff; border-radius: 8px; border: 2px solid #000;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: space-between;
-      padding: 6px 8px; font-weight: bold; color: #1e272e;
+    .modal.active { opacity: 1; pointer-events: auto; }
+    .box {
+      background: #14100c; border: 2px solid #d4af37; border-radius: 16px; padding: 24px;
+      text-align: center; width: 360px;
     }
-    .poker-card.red { color: #e74c3c; }
-    .poker-card.back {
-      background: linear-gradient(135deg, #c0392b, #871f14); border: 2.5px solid #fff;
-      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px;
+    .box input {
+      width: 80%; padding: 10px; margin: 15px 0; border: 1px solid #d4af37;
+      background: #000; color: #fff; text-align: center; border-radius: 8px; outline: none;
     }
+    .box button {
+      background: linear-gradient(135deg, #fff2b2, #d4af37); border: none;
+      padding: 8px 24px; font-weight: 800; border-radius: 18px; cursor: pointer;
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- 頂部 HUD -->
-  <div class="hud-bar">
-    <div class="player-profile" onclick="openLoginModal(true)">
-      <div id="playerAvatar" class="avatar"></div>
-      <div>
-        <div id="playerNameText" class="player-name">VIP 牌手</div>
-        <div style="font-size:10px; color:#f5d061; font-weight:700;">🏆 1,200 點</div>
-      </div>
+  <div class="hud">
+    <div class="profile" onclick="openLogin()">
+      <div id="uAvatar" class="avatar"></div>
+      <div id="uName" style="font-weight:700; font-size:13px;">VIP 牌手</div>
     </div>
     <div class="currencies">
-      <div class="currency-pill">💜 999</div>
-      <div class="currency-pill">🪙 23,189</div>
-      <div class="currency-pill">💚 1,000,000</div>
+      <div class="curr-tag">🪙 25,000</div>
+      <div class="curr-tag">💚 1,000,000</div>
     </div>
   </div>
 
-  <!-- 左側選單 -->
-  <div class="left-menu">
-    <div class="brass-btn" onclick="alert('商店系統準備中')"><span>🛒</span><label>商店</label></div>
-    <div class="brass-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="brass-btn" onclick="alert('VIP 巡迴錦標賽開打中！')"><span>📰</span><label>新聞</label></div>
+  <div class="side-btns">
+    <div class="btn-gold-metal" onclick="alert('商店準備中')"><span>🛒</span><label>商店</label></div>
+    <div class="btn-gold-metal" onclick="openLogin()"><span>🎴</span><label>改名</label></div>
   </div>
 
-  <!-- 右側選單 -->
-  <div class="right-menu">
-    <div class="brass-btn" onclick="alert('在線好友：3 人')"><span>👥</span><label>好友</label></div>
-    <div class="brass-btn" onclick="alert('小隊功能即將開放')"><span>🏠</span><label>小隊</label></div>
-  </div>
-
-  <!-- 中央品牌標題 -->
-  <div class="center-logo">
+  <div class="title-area">
     <h1>POKER ARENA</h1>
-    <p style="letter-spacing: 4px; color: rgba(245, 208, 97, 0.8); font-size: 11px; font-weight:700;">HIGH-ROLLER CASINO TABLE</p>
+    <p style="letter-spacing: 3px; font-size: 11px; color: #f5d061;">VIP CASINO SUITE</p>
   </div>
 
-  <!-- 左下通行證 -->
-  <div class="pass-container" onclick="alert('通行證：即將解鎖黃金賽池！')">
-    <div style="font-size:26px;">🎫</div>
-    <div style="flex:1;">
-      <div style="font-size:11px; font-weight:800; color:#f5d061; margin-bottom:3px;">賭金通行證</div>
-      <div class="pass-bar"><div class="pass-fill"></div></div>
-    </div>
-    <div style="font-size:20px;">🎁</div>
-  </div>
-
-  <!-- 右下對戰按鈕 -->
-  <div class="battle-center">
-    <button id="matchBtn" class="play-btn">
-      對戰
-      <label>1V1 MATCH</label>
-    </button>
-  </div>
-
-  <!-- 登入 / 改名彈窗 -->
-  <div id="loginModal" class="modal-overlay">
-    <div class="modal-box">
-      <h2 id="loginModalTitle" style="color:#f5d061; font-family:'Cinzel',serif; margin-bottom:10px;">牌手登入</h2>
-      <p style="color: #bbb; font-size: 13px;">請輸入你的遊戲暱稱：</p>
-      <input type="text" id="usernameInput" class="login-input" placeholder="輸入暱稱..." maxlength="12">
-      <div>
-        <button class="btn-gold" onclick="savePlayerName()">確定進入</button>
-      </div>
+  <div class="pass-tag" onclick="alert('通行證領取中')">
+    <span style="font-size:24px;">🎫</span>
+    <div>
+      <div style="font-size:11px; font-weight:800; color:#f5d061;">賭金通行證</div>
+      <div style="font-size:9px; color:#aaa;">VIP 賽季進行中</div>
     </div>
   </div>
 
-  <!-- 配對中彈窗 -->
-  <div id="matchingModal" class="modal-overlay">
-    <div class="modal-box" style="width: 320px;">
-      <h3 style="color:#f5d061; font-family:'Cinzel',serif; font-size:18px;">搜尋對手中...</h3>
-      <div style="font-size: 40px; margin: 15px 0;">♣️♥️♦️♠️</div>
-      <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="background:#c0392b; color:#fff; border:none; padding:6px 18px; border-radius:15px; cursor:pointer;">取消</button>
-    </div>
+  <div class="battle-box">
+    <button id="matchBtn" class="play-btn">對戰</button>
   </div>
 
-  <!-- 1v1 對戰牌桌 -->
-  <div id="gameMatchView" class="game-match-view hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <div id="battleMyName" style="font-weight:bold; color:#4cd137;">我方</div>
-      <h2 id="roomTitle" style="color:#f5d061; font-family:'Cinzel',serif; font-size:18px;">房間</h2>
-      <div id="battleOppName" style="font-weight:bold; color:#ff7675;">對手</div>
-    </div>
-
-    <div style="flex:1; border:2px dashed rgba(245,208,97,0.4); border-radius:16px; margin:15px 0; display:flex; flex-direction:column; justify-content:space-around; align-items:center; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);">
-      <div id="opponentCards" style="display:flex; gap:10px;">
-        <div class="poker-card back">👑</div>
-      </div>
-      <div style="color:#f5d061; font-weight:bold; font-size:14px;">🪙 賭池: 10,000</div>
-      <div id="myCards" style="display:flex; gap:10px;"></div>
-    </div>
-
-    <div style="display:flex; gap:15px; justify-content:center;">
-      <button id="drawBtn" class="btn-gold" style="padding:10px 24px; font-size:15px;">抽一張牌</button>
-      <button onclick="document.getElementById('gameMatchView').classList.add('hidden')" style="background:transparent; border:1.5px solid #e74c3c; color:#e74c3c; padding:10px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">離開</button>
+  <div id="loginModal" class="modal">
+    <div class="box">
+      <h3 style="color:#f5d061; font-family:'Cinzel',serif;">牌手暱稱</h3>
+      <input type="text" id="nameInput" placeholder="請輸入暱稱..." maxlength="12">
+      <br>
+      <button onclick="saveName()">進入牌局</button>
     </div>
   </div>
 
   <script>
-    const SERVER_URL = "https://game-server-mike.onrender.com";
-    const socket = io(SERVER_URL);
+    let uName = localStorage.getItem('poker_player_name') || "VIP 牌手";
+    document.getElementById('uName').innerText = uName;
 
-    let currentUsername = "";
-    let activeRoomId = null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedName = localStorage.getItem('poker_player_name');
-      if (savedName) {
-        setPlayer(savedName);
-      } else {
-        openLoginModal(false);
-      }
-    });
-
-    function openLoginModal(isEdit) {
-      const modal = document.getElementById('loginModal');
-      document.getElementById('loginModalTitle').innerText = isEdit ? "修改暱稱" : "牌手登入";
-      document.getElementById('usernameInput').value = currentUsername || "";
-      modal.classList.add('active');
+    function openLogin() {
+      document.getElementById('loginModal').classList.add('active');
     }
-
-    function savePlayerName() {
-      const name = document.getElementById('usernameInput').value.trim();
-      if (!name) return alert("暱稱不能為空！");
-      localStorage.setItem('poker_player_name', name);
-      setPlayer(name);
+    function saveName() {
+      const val = document.getElementById('nameInput').value.trim();
+      if (!val) return;
+      localStorage.setItem('poker_player_name', val);
+      document.getElementById('uName').innerText = val;
       document.getElementById('loginModal').classList.remove('active');
     }
 
-    function setPlayer(name) {
-      currentUsername = name;
-      document.getElementById('playerNameText').innerText = name;
-      const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`;
-      document.getElementById('playerAvatar').style.backgroundImage = `url('${avatarUrl}')`;
-      document.getElementById('battleMyName').innerText = name;
-    }
-
     document.getElementById('matchBtn').addEventListener('click', () => {
-      if (!currentUsername) return openLoginModal(false);
-      socket.emit('start_match', { playerName: currentUsername });
-      document.getElementById('matchingModal').classList.add('active');
+      alert("配對系統已就緒！正在撮合 " + document.getElementById('uName').innerText + " 入座...");
     });
-
-    socket.on('game_start', (data) => {
-      activeRoomId = data.roomId;
-      document.getElementById('matchingModal').classList.remove('active');
-      document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = `房間: ${activeRoomId}`;
-
-      for (const id in data.players) {
-        if (id !== socket.id) {
-          document.getElementById('battleOppName').innerText = data.players[id].name || "對手";
-        }
-      }
-      renderBoard(data.players);
-    });
-
-    document.getElementById('drawBtn').addEventListener('click', () => {
-      socket.emit('draw_card', { roomId: activeRoomId });
-    });
-
-    socket.on('update_board', (data) => {
-      renderBoard(data.players);
-    });
-
-    function renderBoard(players) {
-      const myId = socket.id;
-      const myCardsArea = document.getElementById('myCards');
-      const oppCardsArea = document.getElementById('opponentCards');
-      
-      myCardsArea.innerHTML = '';
-      oppCardsArea.innerHTML = '';
-
-      for (const id in players) {
-        if (id === myId) {
-          players[id].cards.forEach(val => {
-            const isRed = Math.random() > 0.5;
-            const cardEl = document.createElement('div');
-            cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
-            cardEl.innerHTML = `
-              <div style="font-size:16px;">${val}</div>
-              <div style="font-size:24px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-              <div style="font-size:16px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
-            `;
-            myCardsArea.appendChild(cardEl);
-          });
-        } else {
-          players[id].cards.forEach(() => {
-            const cardBack = document.createElement('div');
-            cardBack.className = 'poker-card back';
-            cardBack.innerHTML = '👑';
-            oppCardsArea.appendChild(cardBack);
-          });
-        }
-      }
-    }
   </script>
 </body>
 </html>

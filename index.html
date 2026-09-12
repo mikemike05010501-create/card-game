@@ -15,7 +15,6 @@
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
     :root {
-      /* 賭桌同款金屬金色 */
       --brass-gold: linear-gradient(135deg, #fff2b2 0%, #d4af37 35%, #aa8214 70%, #634a06 100%);
       --dark-leather: linear-gradient(180deg, rgba(28, 20, 15, 0.88) 0%, rgba(12, 9, 7, 0.95) 100%);
       --gold-stroke: 1.5px solid rgba(230, 190, 80, 0.7);
@@ -26,13 +25,21 @@
 
     body {
       font-family: 'Montserrat', -apple-system, sans-serif;
-      /* 載入指定的高質感實體賭桌場景圖 */
-      background: #0d120f url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
+      /* 依序抓取專案內可能上傳的圖片檔名 */
+      background-color: #0d120f;
+      background-image: 
+        url('bg.jpg'),
+        url('image.png'),
+        url('bg.png'),
+        url('table.jpg');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* 頂部 HUD (沉浸式深木紋皮質陰影) */
+    /* 頂部 HUD */
     .hud-bar {
       height: 60px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 100%);
@@ -59,7 +66,7 @@
       backdrop-filter: blur(6px); color: #f9e79f;
     }
 
-    /* 左側選單按鈕 (金屬黃銅雕花風格) */
+    /* 左側選單 */
     .left-menu {
       position: absolute; left: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
     }
@@ -74,12 +81,12 @@
     .brass-btn span { font-size: 22px; }
     .brass-btn label { font-size: 10px; font-weight: 700; color: #f5d061; margin-top: 2px; }
 
-    /* 右側快捷鈕 */
+    /* 右側選單 */
     .right-menu {
       position: absolute; right: 24px; top: 80px; display: flex; flex-direction: column; gap: 12px; z-index: 8;
     }
 
-    /* 左下通行證 (與賭桌金屬飾邊一致) */
+    /* 通行證 */
     .pass-container {
       position: absolute; left: 24px; bottom: 22px; z-index: 8;
       background: var(--dark-leather); border: var(--gold-stroke); border-radius: 14px;
@@ -101,7 +108,7 @@
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.95));
     }
 
-    /* 右下角大對戰按鈕 (拋光高光金屬 VIP 按鍵) */
+    /* 右下對戰按鈕 */
     .battle-center {
       position: absolute; right: 24px; bottom: 22px; z-index: 8;
     }
@@ -116,7 +123,7 @@
     .play-btn:active { transform: scale(0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.9); }
     .play-btn label { font-size: 10px; font-weight: 900; font-family: 'Montserrat', sans-serif; letter-spacing: 1px; color: #3b2803; }
 
-    /* 登入彈窗 (真皮胡桃木色系) */
+    /* 登入彈窗 */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
       display: flex; justify-content: center; align-items: center; z-index: 100;
@@ -140,7 +147,11 @@
     /* 1v1 對戰牌桌 */
     .game-match-view {
       position: fixed; inset: 0;
-      background: #0d120f url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=2000&auto=format&fit=crop') no-repeat center center / cover;
+      background-color: #0d120f;
+      background-image: url('bg.jpg'), url('image.png'), url('bg.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
       z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .poker-card {
@@ -174,11 +185,11 @@
     </div>
   </div>
 
-  <!-- 左側選單 (黃銅金屬邊框) -->
+  <!-- 左側選單 -->
   <div class="left-menu">
     <div class="brass-btn" onclick="alert('商店系統準備中')"><span>🛒</span><label>商店</label></div>
     <div class="brass-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="brass-btn" onclick="alert('VIP 巡迴錦標賽熱烈開打中！')"><span>📰</span><label>新聞</label></div>
+    <div class="brass-btn" onclick="alert('VIP 錦標賽熱烈開打中！')"><span>📰</span><label>新聞</label></div>
   </div>
 
   <!-- 右側選單 -->

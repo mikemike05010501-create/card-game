@@ -156,7 +156,7 @@
     }
     .daily-btn:active { transform: scale(0.94); }
 
-    /* 中央角色舞台 (完美載入你的 3D 黏土精緻去背立繪) */
+    /* 中央角色舞台 */
     .center-visual {
       position: absolute; left: 50%; bottom: 15px; transform: translateX(-50%);
       width: 480px; height: 88vh; pointer-events: none; z-index: 3;
@@ -173,7 +173,6 @@
     }
     .hero-anime-figure {
       width: 100%; height: 100%;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
       background-size: contain; background-repeat: no-repeat; background-position: center bottom;
       filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
       transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -268,8 +267,9 @@
       box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
     }
     .camera-focus-target {
-      width: 270px; height: 510px; background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
+      width: 270px; height: 510px;
+      background-size: contain; background-repeat: no-repeat;
+      background-position: center bottom;
       transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
       transform-origin: 52% 25%;
     }
@@ -397,7 +397,7 @@
 
   <script>
     // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒 AudioContext)
+    // 頂層點擊音效引擎 (強制自動解鎖 AudioContext)
     // ==========================================
     const AudioEngine = {
       ctx: null,
@@ -536,7 +536,7 @@
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div id="playerAvatar" class="avatar"></div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
         <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
@@ -616,7 +616,7 @@
     <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央全身 3D 黏土精緻立繪 (使用你上傳的高質感 3D 角色去背圖) -->
+  <!-- 中央全身 3D 黏土精緻立繪 (使用你提供的 3D 角色圖片背景) -->
   <div class="center-visual">
     <div class="hero-stage-podium"></div>
     <div class="hero-fullbody-wrapper">
@@ -1016,7 +1016,7 @@
 
         if (step === CustomizationStep.Gender || step === CustomizationStep.Review) {
           cameraTarget.classList.add('view-overview');
-          cameraHint.innerText = "🎥 鏡頭：全身動態視角";
+          cameraHint.innerText = "🎥 鏡頭：動態對位全身視角";
         } else if (step === CustomizationStep.Hair) {
           cameraTarget.classList.add('view-head');
           cameraHint.innerText = "🎥 鏡頭：頭部髮型特寫";
@@ -1223,7 +1223,7 @@
       activeRoomId = data.roomId;
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle', { background-image: "url('watermarked_img_3306472174093337687.jpg')" }).innerText = `🏆 荒野對決 (${activeRoomId})`;
+      document.getElementById('roomTitle').innerText = `🏆 荒野對決 (${activeRoomId})`;
 
       for (const id in data.players) {
         if (id !== socket.id) {

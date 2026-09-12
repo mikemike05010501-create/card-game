@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>POKER ARENA - VIP CASINO</title>
+
+  <!-- 強制禁止瀏覽器讀取舊快取，每次開啟即時更新 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- PWA 手遊全螢幕設定 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -19,29 +26,25 @@
     
     body {
       font-family: 'Outfit', -apple-system, sans-serif;
-      /* 頂級賭場綠呢桌面 + 實體籌碼與光影底圖 */
       background: 
-        radial-gradient(circle at 50% 25%, rgba(212,175,55,0.18) 0%, transparent 60%),
-        radial-gradient(circle at center, rgba(14,56,38,0.7) 0%, rgba(3,15,9,0.95) 100%),
+        radial-gradient(circle at 50% 25%, rgba(212,175,55,0.2) 0%, transparent 60%),
+        radial-gradient(circle at center, rgba(14,56,38,0.75) 0%, rgba(3,15,9,0.95) 100%),
         url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    /* 賭桌邊框木質與光暈暗角遮罩 */
     body::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
+      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
       pointer-events: none; z-index: 1;
     }
 
-    /* 金粉微粒漂浮畫布 */
     #particlesCanvas {
       position: absolute; inset: 0; width: 100%; height: 100%;
       pointer-events: none; z-index: 2;
     }
 
-    /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -70,13 +73,12 @@
     }
     .currency-chip .icon {
       width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: normal; color: #fff;
+      font-size: 13px; color: #fff;
     }
     .chip-purple .icon { background: #9b59b6; }
     .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; }
     .chip-green .icon { background: #2ecc71; }
 
-    /* 左側選單按鈕 */
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -85,13 +87,12 @@
       background: linear-gradient(135deg, rgba(44,62,80,0.9) 0%, rgba(15,23,30,0.95) 100%);
       border: 2px solid #d4af37; display: flex; flex-direction: column;
       align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
-      box-shadow: var(--shadow-3d); position: relative; backdrop-filter: blur(6px);
+      box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
     }
     .menu-btn:active { transform: scale(0.92); }
     .menu-btn span { font-size: 26px; }
     .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; }
 
-    /* 右側選單按鈕 */
     .right-menu {
       position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
     }
@@ -104,7 +105,6 @@
     .side-tag-btn:active { transform: scale(0.92); }
     .side-tag-btn span { font-size: 22px; }
 
-    /* 通行證 */
     .pass-container {
       position: absolute; left: 25px; bottom: 25px; z-index: 5;
       background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
@@ -117,7 +117,6 @@
     .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
     .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
 
-    /* 中央人物 */
     .center-visual {
       position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
       width: 480px; height: 85vh; pointer-events: none; z-index: 3;
@@ -131,7 +130,6 @@
       margin-bottom: 120px; text-align: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));
     }
 
-    /* 右下角對戰按鈕 */
     .battle-center {
       position: absolute; right: 25px; bottom: 25px; z-index: 6; display: flex; flex-direction: column; gap: 10px;
     }
@@ -152,7 +150,6 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
-    /* 登入彈窗 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center;
@@ -175,7 +172,6 @@
       border-radius: 30px; padding: 10px 30px; font-size: 16px; font-weight: 800; cursor: pointer;
     }
 
-    /* 對戰牌桌 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
@@ -209,10 +205,8 @@
 </head>
 <body>
 
-  <!-- 金粉動態粒子 -->
   <canvas id="particlesCanvas"></canvas>
 
-  <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openLoginModal(true)">
       <div id="playerAvatar" class="avatar"></div>
@@ -229,14 +223,12 @@
     </div>
   </div>
 
-  <!-- 左側選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="alert('商店功能建置中')"><span>🛒</span><label>商店</label></div>
+    <div class="menu-btn" onclick="alert('商店系統準備中！')"><span>🛒</span><label>商店</label></div>
     <div class="menu-btn" onclick="openLoginModal(true)"><span>🎴</span><label>改名</label></div>
-    <div class="menu-btn" onclick="alert('巡迴賽火熱開打！')"><span>📰</span><label>新聞</label></div>
+    <div class="menu-btn" onclick="alert('賭城巡迴錦標賽開打中！')"><span>📰</span><label>新聞</label></div>
   </div>
 
-  <!-- 賭金通行證 -->
   <div class="pass-container">
     <div class="pass-badge">🎫</div>
     <div class="pass-progress">
@@ -246,30 +238,26 @@
     <div style="font-size: 24px;">🎁</div>
   </div>
 
-  <!-- 每日任務與禮物 -->
   <div style="position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;">
     <button onclick="alert('今日任務：在 1v1 對戰中獲勝 1 場 (0/1)')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">📋 每日任務</button>
-    <button onclick="alert('已領取今日 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
+    <button onclick="alert('每日禮物已領取：獲得 500 金幣！')" style="background: rgba(0,0,0,0.7); border: 2px solid #d4af37; border-radius: 20px; color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;">🎁 每日禮物</button>
   </div>
 
-  <!-- 中央角色 -->
   <div class="center-visual">
     <div class="dealer-suit">🎩🤵</div>
     <div class="logo-glow">POKER ARENA</div>
   </div>
 
-  <!-- 右側選單 -->
   <div class="right-menu">
     <button class="side-tag-btn" onclick="alert('在線好友：3人')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="alert('小隊籌組中')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="alert('小隊功能即將上線')"><span>🏠</span>小隊</button>
     <button class="side-tag-btn" onclick="alert('戰隊排名第 5')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 右下角對戰開始按鈕 -->
   <div class="battle-center">
     <div class="battle-mode-bar">
       <span>經典快速對決</span>
-      🏆 1v1 賭神賽
+      🏆 1v1 賭神巡迴賽
     </div>
     <button id="matchBtn" class="play-btn">
       對戰
@@ -277,7 +265,6 @@
     </button>
   </div>
 
-  <!-- 登入 / 改名彈窗 -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-box">
       <h2 id="loginModalTitle" class="modal-title">牌手登入</h2>
@@ -289,17 +276,15 @@
     </div>
   </div>
 
-  <!-- 配對中彈窗 -->
   <div id="matchingModal" class="modal-overlay">
     <div class="modal-box" style="width: 380px;">
       <h2 style="color:#f1c40f; font-family:'Cinzel',serif;">尋找對手中...</h2>
       <div style="font-size: 50px; margin: 20px 0;">♣️♥️♦️♠️</div>
-      <p style="color: #ccc; font-size: 14px;">正在全網撮合線上牌手...</p>
+      <p style="color: #ccc; font-size: 14px;">正在撮合線上牌手...</p>
       <button onclick="document.getElementById('matchingModal').classList.remove('active')" style="margin-top:20px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 對戰牌桌 -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -344,7 +329,6 @@
   </div>
 
   <script>
-    // 1. 金粉漂浮特效腳本
     const canvas = document.getElementById('particlesCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -383,7 +367,6 @@
     }
     renderParticles();
 
-    // 2. 串接伺服器與登入邏輯
     const SERVER_URL = "https://game-server-mike.onrender.com";
     const socket = io(SERVER_URL);
 
@@ -423,7 +406,6 @@
       document.getElementById('battleMyName').innerText = name;
     }
 
-    // 3. 配對與對戰
     document.getElementById('matchBtn').addEventListener('click', () => {
       if (!currentUsername) return openLoginModal(false);
       socket.emit('start_match', { playerName: currentUsername });

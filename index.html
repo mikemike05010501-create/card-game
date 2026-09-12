@@ -9,666 +9,153 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Lilita+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lilita+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
-    :root {
-      --gold: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #8c6b12 100%);
-      --dark-panel: linear-gradient(180deg, rgba(28,38,32,0.95) 0%, rgba(10,18,14,0.95) 100%);
-      --shadow-3d: 0 10px 25px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.2);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     
     body {
       font-family: 'Lilita One', 'Outfit', sans-serif;
-      background: 
-        radial-gradient(circle at 50% 30%, rgba(212,175,55,0.2) 0%, transparent 60%),
-        radial-gradient(circle at center, rgba(14,56,38,0.75) 0%, rgba(3,15,9,0.95) 100%),
-        url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
+      background: radial-gradient(circle at center, rgba(14,56,38,0.85) 0%, rgba(3,15,9,0.98) 100%),
+                  url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
       color: #fff; width: 100vw; height: 100vh; overflow: hidden;
       display: flex; flex-direction: column; position: relative;
     }
 
-    body::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
-      pointer-events: none; z-index: 1;
-    }
-
-    #particlesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    #particlesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     #clickCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
     /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
-      z-index: 10; position: relative;
+      padding: 0 25px; background: rgba(0,0,0,0.85); z-index: 10; position: relative; border-bottom: 2px solid #d4af37;
     }
     .player-profile {
       display: flex; align-items: center; gap: 12px;
-      background: rgba(10,20,15,0.85); padding: 5px 20px 5px 6px;
-      border-radius: 40px; border: 2px solid #d4af37; box-shadow: var(--shadow-3d);
-      cursor: pointer; backdrop-filter: blur(8px); transition: transform 0.15s;
+      background: rgba(10,20,15,0.95); padding: 5px 20px 5px 6px;
+      border-radius: 40px; border: 2px solid #d4af37; cursor: pointer; z-index: 20;
     }
-    .player-profile:active { transform: scale(0.96); }
     .avatar {
-      width: 46px; height: 46px; border-radius: 12px; border: 2px solid #d4af37;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: cover; background-position: center top;
-      box-shadow: 0 0 10px rgba(212,175,55,0.6);
-      background-color: transparent; overflow: hidden;
+      width: 44px; height: 44px; border-radius: 10px; border: 2px solid #d4af37;
+      background: #222; display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
-    .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; }
-    
-    .trophy-badge {
-      font-size: 13px; color: #f1c40f; display: flex; align-items: center; gap: 5px; font-weight: 800;
-      background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(241,196,15,0.4);
-      margin-top: 2px;
-    }
+    .player-name { font-weight: 800; font-size: 16px; color: #fff; font-family: 'Outfit', sans-serif; }
+    .trophy-badge { font-size: 12px; color: #f1c40f; font-weight: bold; }
 
     /* 右上資源欄 */
-    .brawl-hud-right { display: flex; align-items: center; gap: 10px; z-index: 1000; }
+    .brawl-hud-right { display: flex; align-items: center; gap: 12px; z-index: 20; }
     .brawl-pill {
-      position: relative; display: flex; align-items: center;
-      background: #000; border: 2.5px solid #2b2b2b;
-      height: 34px; border-radius: 17px; padding: 0 14px 0 34px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.12);
-      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .brawl-pill.bump { transform: scale(1.22); border-color: #f1c40f; }
-    .brawl-pill .brawl-icon {
-      position: absolute; left: -4px; width: 38px; height: 38px;
-      display: flex; align-items: center; justify-content: center;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    }
-    .brawl-pill .brawl-num {
-      font-family: 'Lilita One', sans-serif; font-size: 18px; color: #fff;
-      letter-spacing: 0.5px; line-height: 1;
-      text-shadow: 2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000;
-    }
-    .brawl-menu-btn {
-      width: 44px; height: 36px; background: #2f3640; border: 2.5px solid #000;
-      border-radius: 8px; display: flex; flex-direction: column; justify-content: space-around;
-      align-items: center; padding: 6px 8px; cursor: pointer;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.25);
-    }
-    .brawl-menu-btn:active { transform: scale(0.92); }
-    .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
-
-    /* 飛行動畫物件 */
-    .flying-reward-particle {
-      position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
-      display: flex; align-items: center; justify-content: center; font-size: 24px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+      background: #000; border: 2.5px solid #d4af37; height: 36px; border-radius: 18px;
+      padding: 0 16px; display: flex; align-items: center; gap: 8px; font-family: 'Lilita One', sans-serif; font-size: 16px;
     }
 
-    /* 左側選單 */
-    .left-menu {
-      position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
-    }
+    /* 左右側選單 */
+    .left-menu { position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
     .menu-btn {
-      width: 65px; height: 65px; border-radius: 16px;
-      background: linear-gradient(135deg, rgba(44,62,80,0.9) 0%, rgba(15,23,30,0.95) 100%);
-      border: 2px solid #d4af37; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
-      box-shadow: var(--shadow-3d); backdrop-filter: blur(6px);
+      width: 65px; height: 65px; border-radius: 16px; background: rgba(30,40,35,0.9);
+      border: 2px solid #d4af37; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
     }
-    .menu-btn:active { transform: scale(0.92); }
-    .menu-btn span { font-size: 26px; }
-    .menu-btn label { font-size: 11px; font-weight: 800; color: #f1c40f; margin-top: 2px; font-family: 'Outfit', sans-serif; }
+    .menu-btn span { font-size: 24px; }
+    .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; margin-top: 2px; }
 
-    /* 右側選單 */
-    .right-menu {
-      position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
-    }
+    .right-menu { position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
     .side-tag-btn {
-      width: 75px; height: 55px; background: linear-gradient(135deg, rgba(30,39,46,0.9), rgba(47,54,64,0.95));
-      border: 2px solid rgba(212,175,55,0.6); border-radius: 12px; font-size: 12px; font-weight: bold;
-      color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 4px; box-shadow: var(--shadow-3d); backdrop-filter: blur(6px); font-family: 'Outfit', sans-serif;
+      width: 75px; height: 50px; background: rgba(30,40,35,0.9); border: 2px solid #d4af37;
+      border-radius: 12px; color: #fff; font-weight: bold; font-size: 12px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
     }
-    .side-tag-btn:active { transform: scale(0.92); }
-    .side-tag-btn span { font-size: 22px; }
 
-    /* 通行證條 */
-    .pass-container {
-      position: absolute; left: 25px; bottom: 25px; z-index: 5;
-      background: linear-gradient(90deg, rgba(16,26,20,0.95) 0%, rgba(20,38,30,0.9) 100%);
-      border: 2.5px solid #d4af37; border-radius: 16px; width: 310px; height: 75px;
-      display: flex; align-items: center; padding: 0 16px; gap: 14px; box-shadow: var(--shadow-3d);
-      cursor: pointer; backdrop-filter: blur(8px);
-    }
-    .pass-badge { font-size: 34px; }
-    .pass-progress { flex: 1; }
-    .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
-    .pass-fill { width: 45%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
-
-    /* 每日按鈕 */
-    .daily-tasks-row {
-      position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;
-    }
-    .daily-btn {
-      background: rgba(0,0,0,0.75); border: 2px solid #d4af37; border-radius: 20px;
-      color: #fff; padding: 8px 18px; font-weight: bold; font-size: 13px; cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6); font-family: 'Outfit', sans-serif;
-    }
-    .daily-btn:active { transform: scale(0.94); }
-
-    /* 中央大廳舞台：完美置中並附帶皮卡丘小夥伴與圓形草坪底座 */
+    /* 中央舞台與按鈕 */
     .center-visual {
-      position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
-      width: 520px; height: 85vh; pointer-events: none; z-index: 3;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-    }
-    .hero-stage-podium {
-      position: absolute; bottom: 25px; width: 380px; height: 90px;
-      background: radial-gradient(ellipse at center, rgba(46,204,113,0.85) 0%, rgba(30,130,76,0.6) 55%, rgba(0,0,0,0.6) 80%, transparent 100%);
-      border-radius: 50%; border: 3px solid rgba(212,175,55,0.6);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.3);
-    }
-    .hero-fullbody-wrapper {
-      position: relative; width: 380px; height: 560px; display: flex;
-      justify-content: center; align-items: flex-end; z-index: 4;
-    }
-    .hero-anime-figure {
-      width: 100%; height: 100%;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .companion-pet {
-      position: absolute; right: 45px; bottom: 35px; width: 75px; height: 75px;
-      background: radial-gradient(circle, #f1c40f 0%, #e67e22 70%);
-      border: 2.5px solid #000; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 38px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8); z-index: 5;
-      animation: petBounce 2s ease-in-out infinite;
-    }
-    @keyframes petBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    .hero-outfit-tag {
-      position: absolute; bottom: 10px; background: rgba(0,0,0,0.85); border: 1.5px solid #d4af37;
-      padding: 4px 14px; border-radius: 20px; font-size: 12px; color: #f1c40f; font-family: 'Outfit', sans-serif;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.8); z-index: 6;
+      position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+      width: 400px; height: 75vh; pointer-events: none; z-index: 5;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
     .logo-glow {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      font-family: 'Cinzel', serif; font-weight: 900; font-size: 26px; letter-spacing: 5px;
-      background: linear-gradient(135deg, #ffe066 0%, #d4af37 50%, #f39c12 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-align: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8)); z-index: 4;
-      pointer-events: none; width: 100%;
+      font-family: 'Cinzel', serif; font-weight: 900; font-size: 32px; letter-spacing: 4px;
+      color: #f1c40f; text-shadow: 0 4px 15px rgba(0,0,0,0.9); margin-bottom: 20px; text-align: center;
+    }
+    .hero-card-box {
+      width: 260px; height: 380px; background: rgba(0,0,0,0.6); border: 3px solid #d4af37;
+      border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8); pointer-events: auto; cursor: pointer;
     }
 
     .battle-center {
-      position: absolute; right: 25px; bottom: 25px; z-index: 120; display: flex; flex-direction: column; gap: 10px;
+      position: absolute; right: 25px; bottom: 25px; z-index: 20; display: flex; flex-direction: column; gap: 10px;
     }
-    
-    /* 遊戲模式上方選擇面板 */
     .battle-mode-bar {
-      width: 260px; background: rgba(0,0,0,0.88); border: 2px solid #d4af37;
+      width: 260px; background: rgba(0,0,0,0.9); border: 2px solid #d4af37;
       padding: 10px 16px; border-radius: 14px; text-align: center; color: #e1b12c;
-      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px); font-family: 'Outfit', sans-serif;
       cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-      transition: transform 0.15s; pointer-events: auto;
     }
-    .battle-mode-bar:active { transform: scale(0.97); }
-    .battle-mode-bar div { text-align: left; }
-    .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 15px; color: #fff; display: block; margin-bottom: 2px; }
-
     .play-btn {
       width: 260px; height: 75px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
       border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 26px; font-weight: 900;
-      letter-spacing: 2px; font-family: 'Cinzel', serif; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 10px 30px rgba(212,175,55,0.7), inset 0 2px 5px #fff;
-      transition: transform 0.15s; pointer-events: auto;
+      font-family: 'Cinzel', serif; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 10px 30px rgba(212,175,55,0.7);
     }
     .play-btn:active { transform: scale(0.95); }
-    .play-btn label { font-size: 11px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
-    /* 通用彈窗系統 */
+    /* 彈窗系統 */
     .app-screen-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
       display: flex; justify-content: center; align-items: center; z-index: 150;
-      opacity: 0; pointer-events: none; transition: opacity 0.22s ease, transform 0.22s ease;
-      transform: scale(0.96); backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
-    .app-screen-overlay.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+    .app-screen-overlay.active { opacity: 1; pointer-events: auto; }
     .screen-window {
-      width: 90vw; max-width: 860px; height: 88vh; background: #0e1712;
-      border: 3px solid #d4af37; border-radius: 24px; box-shadow: 0 0 50px rgba(212,175,55,0.4);
-      display: flex; flex-direction: column; overflow: hidden; position: relative;
+      width: 85vw; max-width: 600px; height: 75vh; background: #0e1712;
+      border: 3px solid #d4af37; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden;
     }
     .screen-header {
-      height: 60px; background: linear-gradient(180deg, rgba(30,46,36,0.95), rgba(16,25,20,0.95));
-      border-bottom: 2px solid #d4af37; display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px;
+      height: 55px; background: #15221b; border-bottom: 2px solid #d4af37;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
     }
-    .screen-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 22px; font-weight: 900; letter-spacing: 2px; }
+    .screen-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 20px; font-weight: 900; }
     .screen-close-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: #c0392b; border: 2px solid #fff;
-      color: #fff; font-weight: 900; font-size: 16px; cursor: pointer; display: flex;
-      align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      width: 32px; height: 32px; border-radius: 50%; background: #c0392b; border: 2px solid #fff;
+      color: #fff; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    .screen-close-btn:active { transform: scale(0.9); }
-    .screen-content {
-      flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
-      font-family: 'Outfit', sans-serif;
-    }
+    .screen-content { flex: 1; padding: 20px; overflow-y: auto; color: #fff; font-family: 'Outfit', sans-serif; }
 
-    /* 步驟引導面板樣式 */
-    .step-progress-bar {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-      background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 14px; border: 1.5px solid rgba(212,175,55,0.3);
-    }
-    .step-indicator {
-      display: flex; align-items: center; gap: 6px; font-size: 13px; color: #888; font-weight: bold;
-    }
-    .step-indicator.active { color: #f1c40f; }
-    .step-indicator.done { color: #2ecc71; }
-    .step-num-badge {
-      width: 22px; height: 22px; border-radius: 50%; background: #222; border: 1.5px solid #555;
-      display: flex; align-items: center; justify-content: center; font-size: 11px;
-    }
-    .step-indicator.active .step-num-badge { background: #f1c40f; color: #000; border-color: #fff; }
-    .step-indicator.done .step-num-badge { background: #2ecc71; color: #fff; border-color: #fff; }
-
-    .step-container-grid {
-      display: grid; grid-template-columns: 340px 1fr; gap: 20px; flex: 1; height: 100%; min-height: 420px;
-    }
-    
-    .camera-viewport {
-      background: radial-gradient(circle at center, rgba(30,50,38,0.8), rgba(10,18,14,0.95));
-      border: 2px solid #d4af37; border-radius: 18px; position: relative;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-    }
-    .camera-focus-target {
-      width: 270px; height: 510px; background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-      transform-origin: 52% 25%;
-    }
-
-    .camera-focus-target.view-overview {
-      transform: scale(0.9) translateY(20px);
-    }
-    .camera-focus-target.view-head {
-      transform: scale(2.2) translateY(85px);
-    }
-    .camera-focus-target.view-face {
-      transform: scale(3.2) translateY(115px);
-    }
-
-    .step-options-pane {
-      background: rgba(255,255,255,0.03); border: 1.5px solid rgba(212,175,55,0.3);
-      border-radius: 18px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
-    }
-    .step-panel-page { display: none; }
-    .step-panel-page.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .step-nav-footer {
-      display: flex; justify-content: space-between; align-items: center; padding-top: 14px;
-      border-top: 1.5px solid rgba(255,255,255,0.1); margin-top: 10px;
-    }
-    .btn-step-nav {
-      padding: 10px 24px; border-radius: 20px; font-weight: 800; font-size: 14px; cursor: pointer;
-      font-family: 'Lilita One', sans-serif; transition: 0.15s;
-    }
-    .btn-step-back { background: #2f3640; border: 1.5px solid #777; color: #fff; }
-    .btn-step-back:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-step-next { background: var(--gold); border: 2px solid #fff; color: #000; box-shadow: 0 4px 12px rgba(212,175,55,0.4); }
-
-    .pill-btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .pill-btn {
-      background: #1c2720; border: 1.5px solid #444; border-radius: 16px;
-      padding: 7px 16px; font-size: 13px; font-weight: bold; color: #ccc; cursor: pointer;
-    }
-    .pill-btn.active {
-      background: var(--gold); border-color: #fff; color: #000; box-shadow: 0 2px 8px rgba(241,196,15,0.4);
-    }
-    .color-dot {
-      width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid #fff; cursor: pointer;
-      display: inline-block; transition: transform 0.15s; margin-top: 6px;
-    }
-    .color-dot.active { transform: scale(1.25); border-color: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
-
-    .reward-card {
-      position: relative; border-radius: 16px; padding: 18px 14px;
-      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      transition: all 0.2s ease;
-    }
-    .reward-btn {
-      border-radius: 20px; padding: 6px 18px; font-weight: 800; font-size: 13px;
-      margin-top: 10px; font-family: 'Lilita One', sans-serif;
-    }
-
-    .trophy-road-track { position: relative; display: flex; flex-direction: column; gap: 24px; padding: 20px 0; }
-    .trophy-road-line {
-      position: absolute; left: 48px; top: 30px; bottom: 30px; width: 6px;
-      background: linear-gradient(180deg, #f1c40f 0%, #e67e22 50%, #333 100%);
-      border-radius: 3px; z-index: 0;
-    }
-    .trophy-step { position: relative; display: flex; align-items: center; gap: 20px; z-index: 1; }
-    .trophy-node {
-      width: 60px; height: 60px; border-radius: 50%; background: #000; border: 3px solid #555;
-      display: flex; align-items: center; justify-content: center; font-size: 26px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.8);
-    }
-    .trophy-step.unlocked .trophy-node {
-      border-color: #f1c40f; background: linear-gradient(135deg, #f1c40f, #d35400);
-      box-shadow: 0 0 16px rgba(241,196,15,0.6);
-    }
-    .trophy-card-info {
-      flex: 1; background: rgba(255,255,255,0.05); border: 2px solid rgba(212,175,55,0.4);
-      border-radius: 16px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
-    }
-    .trophy-card-info.claimable {
-      border-color: #2ecc71; background: linear-gradient(90deg, rgba(46,204,113,0.2), transparent);
-    }
-
+    /* 遊戲對戰畫面 */
     .game-match-view {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
-                  url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
-      z-index: 120; display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
-    }
-    .players-status { display: flex; justify-content: space-between; align-items: center; }
-    .battle-avatar-card {
-      background: rgba(0,0,0,0.85); border: 2px solid #d4af37; padding: 8px 18px; border-radius: 16px;
-      display: flex; align-items: center; gap: 12px; width: 230px; box-shadow: var(--shadow-3d);
+      position: fixed; inset: 0; background: #08120e; z-index: 200;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 25px 40px;
     }
     .card-board {
-      border: 3px dashed rgba(212,175,55,0.4); border-radius: 20px; flex: 1; margin: 20px 0;
-      display: flex; flex-direction: column; justify-content: space-around; position: relative;
-      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      border: 3px dashed rgba(212,175,55,0.5); border-radius: 20px; flex: 1; margin: 20px 0;
+      display: flex; flex-direction: column; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.4);
     }
-    .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
+    .hand-cards { display: flex; gap: 15px; }
     .poker-card {
       width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between;
-      padding: 8px; font-weight: bold; color: #1e272e;
-      animation: dealCard 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      display: flex; flex-direction: column; justify-content: space-between; padding: 8px; font-weight: bold; color: #1e272e;
     }
     .poker-card.red { color: #e74c3c; }
-    .poker-card.back {
-      background: linear-gradient(135deg, #c0392b, #962d22); border: 3px solid #fff;
-      display: flex; align-items: center; justify-content: center; color: #fff;
-    }
-
-    @keyframes dealCard {
-      0% { opacity: 0; transform: translateY(-160px) rotate(-25deg) scale(0.6); }
-      70% { transform: translateY(8px) rotate(4deg) scale(1.04); }
-      100% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); box-shadow: 0 8px 16px rgba(0,0,0,0.5); }
-    }
 
     .hidden { display: none !important; }
-
-    /* 遊戲模式跳出方格選單 */
-    .game-mode-modal {
-      position: absolute; bottom: 140px; right: 0; width: 260px;
-      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 18px;
-      padding: 12px; display: flex; flex-direction: column; gap: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-      z-index: 130; opacity: 0; pointer-events: none; transform: translateY(10px) scale(0.95);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .game-mode-modal.active { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
-    
-    .mode-option-card {
-      background: linear-gradient(135deg, rgba(30,46,36,0.9), rgba(16,25,20,0.95));
-      border: 2px solid rgba(212,175,55,0.4); border-radius: 12px; padding: 12px 16px;
-      cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.15s;
-    }
-    .mode-option-card:active { transform: scale(0.96); }
-    .mode-option-card.selected { border-color: #f1c40f; background: linear-gradient(135deg, rgba(212,175,55,0.3), rgba(16,25,20,0.95)); }
-    .mode-option-card span { font-size: 26px; }
-    .mode-option-card h4 { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 15px; margin-bottom: 2px; }
-    .mode-option-card p { font-size: 11px; color: #aaa; font-family: 'Outfit', sans-serif; }
   </style>
 </head>
 <body>
 
   <canvas id="particlesCanvas"></canvas>
-  <canvas id="clickCanvas" style="pointer-events: none;"></canvas>
-
-  <script>
-    // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒且具備安全防護)
-    // ==========================================
-    const AudioEngine = {
-      ctx: null,
-      init() {
-        if (!this.ctx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContextClass();
-        }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      },
-      playBubblePop() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const startFreq = 480 + (Math.random() * 160);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(startFreq * 2.2, now + 0.045);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.06);
-      },
-      playCoinClink() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        [1950, 2400].forEach((freq, i) => {
-          const delay = i * 0.035;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.22, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.09);
-        });
-      },
-      playMagicChime() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        [1318, 1760, 2093].forEach((freq, idx) => {
-          const delay = idx * 0.04;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.2, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.16);
-        });
-      },
-      playMutedTap() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.05);
-      },
-      playFeltThud() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.08);
-      },
-      playCloseSound() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(260, now + 0.055);
-        gain.gain.setValueAtTime(0.28, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.065);
-      },
-      playBubbleStream() {
-        this.init();
-        if (!this.ctx) return;
-        [520, 750, 1020].forEach((freq, idx) => {
-          const delay = idx * 0.035;
-          const now = this.ctx.currentTime + delay;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now);
-          osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + 0.04);
-          gain.gain.setValueAtTime(0.24, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.055);
-        });
-      }
-    };
-
-    function playContextSound(target) {
-      if (!target) return AudioEngine.playBubblePop();
-      let el = target.nodeType === 3 ? target.parentElement : target;
-      if (!el || typeof el.closest !== 'function') return AudioEngine.playBubblePop();
-
-      if (el.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
-      if (el.closest('#shopScreen')) return AudioEngine.playCoinClink();
-      if (el.closest('#taskScreen') || el.closest('#passScreen') || el.closest('#giftScreen') || el.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (el.closest('#friendsScreen') || el.closest('#teamScreen') || el.closest('#clanScreen') || el.closest('#profileScreen') || el.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
-      if (el.closest('#gameMatchView')) return AudioEngine.playFeltThud();
-      AudioEngine.playBubblePop();
-    }
-
-    window.addEventListener('pointerdown', (e) => {
-      AudioEngine.init();
-      playContextSound(e.target);
-      clickRings.push(new ClickRing(e.clientX, e.clientY));
-      for (let i = 0; i < 16; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
-    });
-
-    function renderClickEffects() {
-      cCtx.clearRect(0, 0, clickCanvas.width, clickCanvas.height);
-      for (let i = clickRings.length - 1; i >= 0; i--) {
-        clickRings[i].update(); clickRings[i].draw();
-        if (clickRings[i].alpha <= 0) clickRings.splice(i, 1);
-      }
-      for (let i = clickParticles.length - 1; i >= 0; i--) {
-        clickParticles[i].update(); clickParticles[i].draw();
-        if (clickParticles[i].alpha <= 0) clickParticles.splice(i, 1);
-      }
-      requestAnimationFrame(renderClickEffects);
-    }
-    renderClickEffects();
-  </script>
+  <canvas id="clickCanvas"></canvas>
 
   <!-- 頂部 HUD -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
-      <div id="playerAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
+      <div class="avatar">♠️</div>
       <div>
         <div id="playerNameText" class="player-name">Rockyhsu</div>
-        <div class="trophy-badge" onclick="event.stopPropagation(); openScreen('trophyScreen');">
-          🏆 <span id="hudTrophyCount">650</span> 杯 <span>(點擊領獎)</span>
-        </div>
+        <div class="trophy-badge">🏆 <span id="hudTrophyCount">650</span> 杯</div>
       </div>
     </div>
     
     <div class="brawl-hud-right">
-      <div class="brawl-pill">
-        <div class="brawl-icon">
-          <svg viewBox="0 0 36 36" width="30" height="30">
-            <defs>
-              <linearGradient id="rainbowStar" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ff7675"/><stop offset="35%" stop-color="#fdcb6e"/>
-                <stop offset="70%" stop-color="#55efc4"/><stop offset="100%" stop-color="#a29bfe"/>
-              </linearGradient>
-            </defs>
-            <circle cx="18" cy="18" r="15" fill="url(#rainbowStar)" stroke="#000" stroke-width="2.5"/>
-            <polygon points="18,5 21,14 31,14 23,20 26,30 18,24 10,30 13,20 5,14 15,14" fill="#fff" stroke="#000" stroke-width="1.5"/>
-          </svg>
-        </div>
-        <span class="brawl-num">0</span>
-      </div>
-
-      <div id="goldHudPill" class="brawl-pill">
-        <div class="brawl-icon">
-          <svg viewBox="0 0 36 36" width="30" height="30">
-            <circle cx="18" cy="18" r="15" fill="#f1c40f" stroke="#000" stroke-width="2.5"/>
-            <circle cx="18" cy="18" r="11" fill="#e67e22" opacity="0.4"/>
-            <ellipse cx="18" cy="16" rx="6.5" ry="5.5" fill="#d35400"/>
-            <circle cx="15.5" cy="15" r="1.8" fill="#f1c40f"/>
-            <circle cx="20.5" cy="15" r="1.8" fill="#f1c40f"/>
-            <rect x="15.5" y="21" width="5" height="3" rx="1.5" fill="#d35400"/>
-          </svg>
-        </div>
-        <span id="goldCountText" class="brawl-num">2950</span>
-      </div>
-
-      <div id="gemHudPill" class="brawl-pill">
-        <div class="brawl-icon">
-          <svg viewBox="0 0 36 36" width="30" height="30">
-            <polygon points="18,4 30,10 30,26 18,32 6,26 6,10" fill="#2ecc71" stroke="#000" stroke-width="2.5"/>
-            <polygon points="18,8 26,12 26,24 18,28 10,24 10,12" fill="#27ae60"/>
-            <polygon points="18,8 26,12 18,17 10,12" fill="#a8e6cf"/>
-          </svg>
-        </div>
-        <span id="gemCountText" class="brawl-num">1000000</span>
-      </div>
-
-      <div class="brawl-menu-btn" onclick="openScreen('menuScreen')">
-        <span></span><span></span><span></span>
-      </div>
+      <div class="brawl-pill">🪙 <span id="goldCountText">2950</span></div>
+      <div class="brawl-pill">💎 <span id="gemCountText">1000000</span></div>
     </div>
   </div>
 
@@ -679,30 +166,12 @@
     <div class="menu-btn" onclick="openScreen('trophyScreen')"><span>🏆</span><label>盃數路</label></div>
   </div>
 
-  <!-- 通行證按鈕 -->
-  <div class="pass-container" onclick="openScreen('passScreen')">
-    <div class="pass-badge">🎫</div>
-    <div class="pass-progress">
-      <div style="font-size: 12px; font-weight: 800; color: #ffe066;">冒險通行證 (Battle Pass)</div>
-      <div class="pass-bar"><div class="pass-fill"></div></div>
-    </div>
-    <div style="font-size: 24px;">🎁</div>
-  </div>
-
-  <!-- 每日任務與禮物 -->
-  <div class="daily-tasks-row">
-    <button class="daily-btn" onclick="openScreen('taskScreen')">📋 每日任務</button>
-    <button class="daily-btn" onclick="openScreen('giftScreen')">🎁 每日禮物</button>
-  </div>
-
-  <!-- 中央大廳舞台：完美置中並附帶皮卡丘小夥伴與圓形草坪底座 -->
+  <!-- 中央大廳舞台 -->
   <div class="center-visual">
     <div class="logo-glow">POKER ARENA</div>
-    <div class="hero-stage-podium"></div>
-    <div class="hero-fullbody-wrapper">
-      <div id="mainHeroFullBody" class="hero-anime-figure" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
-      <div class="companion-pet">⚡</div>
-      <div id="heroOutfitBadge" class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
+    <div class="hero-card-box" onclick="openScreen('stepCustomScreen')">
+      <div style="font-size: 60px; margin-bottom: 10px;">🃏</div>
+      <h3 style="color:#f1c40f; font-family:'Cinzel',serif;">點擊進入造角中心</h3>
     </div>
   </div>
 
@@ -710,319 +179,65 @@
   <div class="right-menu">
     <button class="side-tag-btn" onclick="openScreen('friendsScreen')"><span>👥</span>好友</button>
     <button class="side-tag-btn" onclick="openScreen('teamScreen')"><span>🏠</span>小隊</button>
-    <button class="side-tag-btn" onclick="openScreen('clanScreen')"><span>🏅</span>戰隊</button>
   </div>
 
-  <!-- 右下對戰按鈕與上方模式選擇 Bar -->
+  <!-- 右下對戰按鈕 -->
   <div class="battle-center">
-    <!-- 遊戲模式跳出方格選單 -->
-    <div id="gameModeModal" class="game-mode-modal">
-      <div id="optPoker" class="mode-option-card selected" onclick="selectGameMode('poker')">
-        <span>🃏</span>
-        <div>
-          <h4>德州撲克</h4>
-          <p>聯機對戰大廳</p>
-        </div>
-      </div>
-      <div id="optBj" class="mode-option-card" onclick="selectGameMode('blackjack')">
-        <span>🎲</span>
-        <div>
-          <h4>21點 (Blackjack)</h4>
-          <p>真人匹配 / 100秒人機補位</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 上方模式切換 Bar -->
-    <div class="battle-mode-bar" onclick="toggleGameModeModal(event)">
+    <div class="battle-mode-bar" onclick="toggleGameMode()">
       <div>
-        <small style="color:#aaa; font-size:10px;">目前模式 (點擊切換)</small>
+        <small style="color:#aaa; font-size:10px;">點擊切換模式</small>
         <span id="modeTitleText">德州撲克</span>
       </div>
-      <span style="font-size:16px;">▼</span>
+      <span>🔄</span>
     </div>
-
-    <!-- 主遊玩按鈕 -->
-    <button id="matchBtn" class="play-btn" onclick="startCurrentGameSession()">
+    <button class="play-btn" onclick="startCurrentGameMode()">
       <span id="btnMainText">開始對戰</span>
       <label id="btnSubLabel">ENTER MATCH</label>
     </button>
   </div>
 
-  <!-- 步驟引導式角色塑形中心 -->
-  <div id="stepCustomScreen" class="app-screen-overlay">
-    <div class="screen-window">
-      <div class="screen-header">
-        <div class="screen-title">✂️ 角色外觀塑形中心 (3D CLAY STYLED)</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content">
-        <div class="step-progress-bar">
-          <div id="stepInd0" class="step-indicator active">
-            <span class="step-num-badge">1</span> 基礎性別
-          </div>
-          <span>➔</span>
-          <div id="stepInd1" class="step-indicator">
-            <span class="step-num-badge">2</span> 髮型髮色
-          </div>
-          <span>➔</span>
-          <div id="stepInd2" class="step-indicator">
-            <span class="step-num-badge">3</span> 眼睛瞳色
-          </div>
-          <span>➔</span>
-          <div id="stepInd3" class="step-indicator">
-            <span class="step-num-badge">4</span> 總覽確認
-          </div>
-        </div>
+  <!-- 各類彈窗畫面 -->
+  <div id="shopScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">潮流時裝商鋪</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>這裡可以購買專屬外觀與造型！</p></div></div></div>
+  <div id="stepCustomScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">角色外觀塑形</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>自訂您的專屬牌手外觀與風格！</p></div></div></div>
+  <div id="trophyScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">榮譽盃數之路</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>當前盃數：650 🏆，解鎖豐厚獎勵！</p></div></div></div>
+  <div id="profileScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>修改您的遊戲暱稱與個人資料。</p></div></div></div>
+  <div id="friendsScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">好友系統</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>查看在線好友與邀請組隊。</p></div></div></div>
+  <div id="teamScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">小隊大廳</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>與隊友一同準備進入競技場！</p></div></div></div>
 
-        <div class="step-container-grid">
-          <div class="camera-viewport">
-            <div id="stepCameraTarget" class="camera-focus-target view-overview" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
-            <div id="stepCameraHint" style="position:absolute; top:12px; left:14px; font-size:11px; color:#aaa; background:rgba(0,0,0,0.6); padding:3px 8px; border-radius:10px;">🎥 鏡頭：動態對位全身視角</div>
-          </div>
-
-          <div class="step-options-pane">
-            <div style="flex:1;">
-              <div id="stepPage0" class="step-panel-page active">
-                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 1：選擇基礎性別 (Gender)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">切換精緻 3D 黏土/日漫渲染微擬真體態。</p>
-                <div class="pill-btn-group">
-                  <button class="pill-btn active" onclick="Coordinator.SelectGender('male', this)">男性角色 (九頭身美式)</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectGender('female', this)">女性角色 (修長動態曲線)</button>
-                </div>
-              </div>
-
-              <div id="stepPage1" class="step-panel-page">
-                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 2：選擇髮型與髮色 (Hair & Color)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">立體雕塑感髮絲搭配柔和高光渲染。</p>
-                <div style="font-size:12px; color:#ddd; margin-bottom:4px;">髮型結構：</div>
-                <div class="pill-btn-group">
-                  <button class="pill-btn active" onclick="Coordinator.SelectHairStyle('short', this)">美式俐落側分</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('curly', this)">立體微捲髮束</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('ponytail', this)">競技高馬尾</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectHairStyle('bucket', this)">潮流街頭漁夫帽</button>
-                </div>
-
-                <div style="font-size:12px; color:#ddd; margin-top:14px; margin-bottom:4px;">髮色高光：</div>
-                <div style="display:flex; gap:12px;">
-                  <span class="color-dot active" style="background:#2d3436;" onclick="Coordinator.SelectHairColor('black', this)"></span>
-                  <span class="color-dot" style="background:#805230;" onclick="Coordinator.SelectHairColor('brown', this)"></span>
-                  <span class="color-dot" style="background:#f1c40f;" onclick="Coordinator.SelectHairColor('blonde', this)"></span>
-                  <span class="color-dot" style="background:#d63031;" onclick="Coordinator.SelectHairColor('red', this)"></span>
-                  <span class="color-dot" style="background:#dfe6e9;" onclick="Coordinator.SelectHairColor('silver', this)"></span>
-                </div>
-              </div>
-
-              <div id="stepPage2" class="step-panel-page">
-                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 3：眼形輪廓與瞳孔 (Eyes & Color)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:12px;">深邃眼窩、挺拔眉骨與美式動漫 3D 虹膜。</p>
-                <div style="font-size:12px; color:#ddd; margin-bottom:4px;">眼型五官：</div>
-                <div class="pill-btn-group">
-                  <button class="pill-btn active" onclick="Coordinator.SelectEyeShape('anime', this)">深邃歐美獵鷹眼</button>
-                  <button class="pill-btn" onclick="Coordinator.SelectEyeShape('sharp', this)">剛毅微型修長眼</button>
-                </div>
-
-                <div style="font-size:12px; color:#ddd; margin-top:14px; margin-bottom:4px;">瞳孔顏色：</div>
-                <div style="display:flex; gap:12px;">
-                  <span class="color-dot active" style="background:#0984e3;" onclick="Coordinator.SelectEyeColor('#0984e3', this)"></span>
-                  <span class="color-dot" style="background:#e84393;" onclick="Coordinator.SelectEyeColor('#e84393', this)"></span>
-                  <span class="color-dot" style="background:#00b894;" onclick="Coordinator.SelectEyeColor('#00b894', this)"></span>
-                  <span class="color-dot" style="background:#fdcb6e;" onclick="Coordinator.SelectEyeColor('#fdcb6e', this)"></span>
-                  <span class="color-dot" style="background:#2d3436;" onclick="Coordinator.SelectEyeColor('#2d3436', this)"></span>
-                </div>
-              </div>
-
-              <div id="stepPage3" class="step-panel-page">
-                <h3 style="color:#f1c40f; margin-bottom:6px;">步驟 4：造型總覽與確認 (Overview)</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:14px;">檢視最終動態對位成果，確認後扣除代幣完成保存。</p>
-                <div style="background:rgba(0,0,0,0.4); padding:12px 16px; border-radius:12px; border:1px solid rgba(212,175,55,0.3); font-size:13px; line-height:1.7;">
-                  <div>• 性別骨架：<span id="reviewGender" style="color:#f1c40f;">男性 (Contrapposto 九頭身)</span></div>
-                  <div>• 髮型款式：<span id="reviewHair" style="color:#f1c40f;">美式短髮</span></div>
-                  <div>• 髮色高光：<span id="reviewColor" style="color:#f1c40f;">黑色</span></div>
-                  <div>• 消耗費用：<span style="color:#2ecc71; font-weight:bold;">🪙 100 金幣</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="step-nav-footer">
-              <button id="btnStepBack" class="btn-step-nav btn-step-back" onclick="Coordinator.PreviousStep()" disabled>上一步</button>
-              <button id="btnStepNext" class="btn-step-nav btn-step-next" onclick="Coordinator.NextStep()">下一步 ➔</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 潮流時裝商城 -->
-  <div id="shopScreen" class="app-screen-overlay">
-    <div class="screen-window">
-      <div class="screen-header">
-        <div class="screen-title">🛒 潮流時裝專櫃 (3D BOUTIQUE)</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content">
-        <h3 style="color:#f1c40f;">👔 限時潮流時裝 (需寶石解鎖)</h3>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px;">
-          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
-            <div style="font-size:42px;">🕶️</div>
-            <h4>高街龐克西服</h4>
-            <p style="font-size:11px; color:#bbb;">黑曜石流光防風夾克</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('高街龐克西服', 250, 'punk')">💎 250 寶石</button>
-          </div>
-          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
-            <div style="font-size:42px;">🧥</div>
-            <h4>霓虹機能連帽衛衣</h4>
-            <p style="font-size:11px; color:#bbb;">街頭運動休閒機能裝</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('霓虹機能連帽衛衣', 450, 'cyber')">💎 450 寶石</button>
-          </div>
-          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
-            <div style="font-size:42px;">👑</div>
-            <h4>皇家頂級純金燕尾服</h4>
-            <p style="font-size:11px; color:#bbb;">純金手工刺繡奢華晚宴服</p>
-            <button class="reward-btn" style="background:#2ecc71; color:#fff; cursor:pointer;" onclick="buyOutfit('皇家頂級純金燕尾服', 800, 'royal')">💎 800 寶石</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 荒野榮譽盃數之路 -->
-  <div id="trophyScreen" class="app-screen-overlay">
-    <div class="screen-window">
-      <div class="screen-header">
-        <div class="screen-title">🏆 榮譽盃數之路 (TROPHY ROAD)</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content">
-        <div style="text-align:center; padding:10px 0;">
-          <div style="font-size:24px; color:#f1c40f; font-weight:800;">當前總盃數：<span id="currentTrophiesSpan">650</span> 🏆</div>
-        </div>
-        <div class="trophy-road-track">
-          <div class="trophy-road-line"></div>
-          <div class="trophy-step unlocked">
-            <div class="trophy-node">🏆</div>
-            <div class="trophy-card-info" style="opacity:0.5;">
-              <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇：解鎖 🪙 1,000 金幣</p></div>
-              <button class="reward-btn" style="background:#333; color:#777;" disabled>✔ 已領取</button>
-            </div>
-          </div>
-          <div class="trophy-step unlocked">
-            <div class="trophy-node">🎭</div>
-            <div class="trophy-card-info claimable" id="trophyStep500">
-              <div>
-                <h4 style="color:#2ecc71;">500 盃里程碑 (達成！)</h4>
-                <p style="font-size:12px; color:#fff;">解鎖限定造型：【賭神魔術風衣】+ 2,000 金幣</p>
-              </div>
-              <button class="reward-btn" style="background:linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; cursor:pointer;" onclick="claimTrophyReward(event, 500, '賭神魔術風衣', 'gold', 2000, document.getElementById('trophyStep500'))">立即領取</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 個人檔案 -->
-  <div id="profileScreen" class="app-screen-overlay">
-    <div class="screen-window" style="max-width: 500px; height:50vh;">
-      <div class="screen-header"><div class="screen-title">🎴 牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
-      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
-        <input type="text" id="usernameInput" style="width:80%; padding:10px; border:2px solid #d4af37; border-radius:10px; background:#000; color:#fff; text-align:center; font-weight:bold; font-size:15px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
-        <button class="reward-btn" style="background:var(--gold); color:#1a1202; margin-top:12px; cursor:pointer; padding:8px 24px;" onclick="savePlayerName()">儲存暱稱</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 其他子視窗 -->
-  <div id="passScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">🎫 通行證</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>通行證賽季火熱進行中！</p></div></div></div>
-  <div id="taskScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">📋 每日任務</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>每日任務領取金幣中！</p></div></div></div>
-  <div id="giftScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:480px; height:50vh;"><div class="screen-header"><div class="screen-title">🎁 每日禮物</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content" style="align-items:center; justify-content:center; text-align:center;"><div style="font-size:60px;">🪙</div><button class="reward-btn" style="background:var(--gold); color:#000; padding:10px 30px; font-size:16px; cursor:pointer;" onclick="claimRewardFly(event, 'gold', 1500, null); setTimeout(closeScreens, 1200);">領取 1,500 金幣</button></div></div></div>
-  <div id="friendsScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">👥 好友</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>在線好友：3 人</p></div></div></div>
-  <div id="teamScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">🏠 小隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>組隊出戰準備！</p></div></div></div>
-  <div id="clanScreen" class="app-screen-overlay"><div class="screen-window" style="max-width:500px;"><div class="screen-header"><div class="screen-title">🏅 戰隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>戰隊排名前 5。</p></div></div></div>
-
-  <!-- 配對彈窗 (支援人數顯示與100秒自動人機補位) -->
+  <!-- 配對彈窗 -->
   <div id="matchingModal" class="app-screen-overlay">
-    <div class="screen-window" style="width: 380px; height: 50vh; align-items:center; justify-content:center; text-align:center;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找遊戲對手中...</h2>
-      <div style="font-size: 38px; margin: 15px 0;" id="matchPlayerCountInfo">應有人數: 2 人 | 已配對: 1 / 2 人</div>
-      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:10px;" id="matchTimerText">剩餘配對時間: 100 秒</div>
-      <div style="font-size: 40px; margin: 10px 0;">♣️♥️♦️♠️</div>
+    <div class="screen-window" style="width: 380px; height: 45vh; align-items:center; justify-content:center; text-align:center;">
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;" id="matchingTitleText">尋找對手中...</h2>
+      <div style="font-size: 26px; margin: 15px 0;" id="matchPlayerCountInfo">應有人數: 2 人 | 已配對: 1 / 2 人</div>
+      <div style="font-size: 15px; color:#e74c3c; font-weight:bold; margin-bottom:10px;" id="matchTimerText">剩餘配對時間: 100 秒</div>
       <button onclick="cancelMatchmaking()" style="margin-top:15px; background:#e74c3c; color:#fff; border:none; padding:8px 22px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 1v1 / 多人對戰畫面 (支援 德州撲克 與 21點 玩家匹配/人機) -->
+  <!-- 遊戲對局畫面 -->
   <div id="gameMatchView" class="game-match-view hidden">
-    <div class="players-status">
-      <div class="battle-avatar-card">
-        <div id="battleMyAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
-        <div>
-          <div id="battleMyName" style="font-weight: 800; font-size: 14px;">我方</div>
-          <div style="color:#4cd137; font-size:11px;" id="myScoreLabel">你的手牌</div>
-        </div>
-      </div>
-      <h2 id="roomTitle" style="color: #f1c40f; font-family:'Cinzel', serif; font-size: 20px;">🏆 對決大廳</h2>
-      <div class="battle-avatar-card" style="flex-direction: row-reverse; text-align: right; border-color: #e74c3c;">
-        <div id="battleOppAvatar" class="avatar" style="background-image: url('watermarked_img_3306472174093337687.jpg');"></div>
-        <div>
-          <div id="battleOppName" style="font-weight: 800; font-size: 14px; color:#ff7675;">對手 / 莊家</div>
-          <div style="color:#e74c3c; font-size:11px;" id="oppScoreLabel">在線牌手</div>
-        </div>
-      </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">競技對局</h3>
+      <button onclick="leaveGameSession()" style="background:#c0392b; color:#fff; border:none; padding:6px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">離開對局</button>
     </div>
-
     <div class="card-board">
-      <div style="text-align: center;">
-        <div id="opponentCards" class="hand-cards">
-          <div class="poker-card back">👑</div>
-        </div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;" id="oppAreaTitle">對手手牌區</div>
+      <div>
+        <div id="oppAreaTitle" style="color:#aaa; margin-bottom:5px; text-align:center;">對手區</div>
+        <div id="opponentCards" class="hand-cards"><div class="poker-card" style="background:#900; color:#fff; display:flex; align-items:center; justify-content:center;">?</div></div>
       </div>
-      <div style="text-align: center;">
-        <div style="display:inline-block; background:rgba(0,0,0,0.7); padding:4px 16px; border-radius:20px; border:1.5px solid #d4af37; color:#f1c40f; font-size:13px; font-weight:bold;" id="potLabel">🪙 賭池: 10,000</div>
-      </div>
-      <div style="text-align: center;">
+      <div style="font-size:16px; color:#f1c40f; font-weight:bold;" id="potLabel">🪙 桌面狀態</div>
+      <div>
+        <div id="myAreaTitle" style="color:#aaa; margin-bottom:5px; text-align:center;">你的手牌</div>
         <div id="myCards" class="hand-cards"></div>
-        <div style="font-size: 11px; color:#aaa; margin-top:8px;" id="myAreaTitle">你的手牌區</div>
       </div>
     </div>
-
-    <div style="display: flex; gap: 20px; justify-content: center;" id="gameActionButtons">
-      <button id="drawBtn" style="width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:var(--gold); border:2px solid #fff; cursor:pointer;" onclick="handleGameAction()">抽一張牌</button>
-      <button onclick="leaveGameSession()" style="background:transparent; border:2px solid #e74c3c; color:#e74c3c; padding:10px 24px; border-radius:12px; font-weight:bold; cursor:pointer;">離開對局</button>
+    <div style="display:flex; gap:15px; justify-content:center;">
+      <button id="actionBtn1" style="padding:12px 30px; font-size:16px; font-weight:bold; background:#f1c40f; border:none; border-radius:12px; cursor:pointer;" onclick="handleGameAction()">抽牌 / 要牌</button>
     </div>
   </div>
 
   <script>
-    // 背景金粉粒子
-    const canvas = document.getElementById('particlesCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 0.8, speedY: -(Math.random() * 0.4 + 0.15),
-        speedX: (Math.random() - 0.5) * 0.25, alpha: Math.random() * 0.7 + 0.2
-      });
-    }
-    function renderParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#f1c40f";
-      particles.forEach(p => {
-        ctx.globalAlpha = p.alpha;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-        p.y += p.speedY; p.x += p.speedX;
-        if (p.y < 0) { p.y = canvas.height; p.x = Math.random() * canvas.width; }
-      });
-      requestAnimationFrame(renderParticles);
-    }
-    renderParticles();
-
-    // 點擊粒子特效
+    // 點擊特效 Canvas
     const clickCanvas = document.getElementById('clickCanvas');
     const cCtx = clickCanvas.getContext('2d');
     let clickParticles = [], clickRings = [];
@@ -1034,698 +249,229 @@
       constructor(x, y) {
         this.x = x; this.y = y;
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 6 + 2;
-        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed - 1.5;
-        this.size = Math.random() * 4 + 2;
-        this.color = Math.random() > 0.3 ? '#fce072' : '#ffffff';
-        this.alpha = 1; this.decay = Math.random() * 0.03 + 0.02;
-        this.isDiamond = Math.random() > 0.6;
+        const speed = Math.random() * 5 + 2;
+        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed - 1;
+        this.size = Math.random() * 3 + 2;
+        this.alpha = 1; this.decay = 0.03;
       }
-      update() { this.x += this.vx; this.y += this.vy; this.vy += 0.18; this.alpha -= this.decay; }
+      update() { this.x += this.vx; this.y += this.vy; this.alpha -= this.decay; }
       draw() {
         cCtx.save(); cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.fillStyle = this.color; cCtx.shadowColor = '#d4af37'; cCtx.shadowBlur = 8;
-        if (this.isDiamond) { cCtx.font = `${this.size * 3}px serif`; cCtx.fillText('♦', this.x, this.y); }
-        else { cCtx.beginPath(); cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); cCtx.fill(); }
-        cCtx.restore();
-      }
-    }
-    class ClickRing {
-      constructor(x, y) { this.x = x; this.y = y; this.radius = 3; this.alpha = 0.9; }
-      update() { this.radius += 3.2; this.alpha -= 0.045; }
-      draw() {
-        cCtx.save(); cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.strokeStyle = '#f1c40f'; cCtx.lineWidth = 2.5;
-        cCtx.shadowColor = '#ffe066'; cCtx.shadowBlur = 10;
-        cCtx.beginPath(); cCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); cCtx.stroke();
+        cCtx.fillStyle = '#f1c40f'; cCtx.beginPath(); cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); cCtx.fill();
         cCtx.restore();
       }
     }
 
-    // ==========================================
-    // 頂層點擊音效引擎 (自動喚醒且具備安全防護)
-    // ==========================================
+    // 音效引擎
     const AudioEngine = {
       ctx: null,
       init() {
         if (!this.ctx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContextClass();
+          const AC = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AC();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       },
-      playBubblePop() {
+      playPop() {
         this.init();
         if (!this.ctx) return;
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        const startFreq = 480 + (Math.random() * 160);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(startFreq * 2.2, now + 0.045);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.06);
-      },
-      playCoinClink() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        [1950, 2400].forEach((freq, i) => {
-          const delay = i * 0.035;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.22, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.09);
-        });
-      },
-      playMagicChime() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        [1318, 1760, 2093].forEach((freq, idx) => {
-          const delay = idx * 0.04;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now + delay);
-          gain.gain.setValueAtTime(0.2, now + delay);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now + delay);
-          osc.stop(now + delay + 0.16);
-        });
-      },
-      playMutedTap() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.04);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.05);
-      },
-      playFeltThud() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.07);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.08);
-      },
-      playCloseSound() {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(260, now + 0.055);
-        gain.gain.setValueAtTime(0.28, now);
+        osc.frequency.setValueAtTime(500, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.05);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.065);
-      },
-      playBubbleStream() {
-        this.init();
-        if (!this.ctx) return;
-        [520, 750, 1020].forEach((freq, idx) => {
-          const delay = idx * 0.035;
-          const now = this.ctx.currentTime + delay;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, now);
-          osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + 0.04);
-          gain.gain.setValueAtTime(0.24, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(now);
-          osc.stop(now + 0.055);
-        });
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.07);
       }
     };
 
-    function playContextSound(target) {
-      if (!target) return AudioEngine.playBubblePop();
-      let el = target.nodeType === 3 ? target.parentElement : target;
-      if (!el || typeof el.closest !== 'function') return AudioEngine.playBubblePop();
-
-      if (el.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
-      if (el.closest('#shopScreen')) return AudioEngine.playCoinClink();
-      if (el.closest('#taskScreen') || el.closest('#passScreen') || el.closest('#giftScreen') || el.closest('#trophyScreen')) return AudioEngine.playMagicChime();
-      if (el.closest('#friendsScreen') || el.closest('#teamScreen') || el.closest('#clanScreen') || el.closest('#profileScreen') || el.closest('#stepCustomScreen')) return AudioEngine.playMutedTap();
-      if (el.closest('#gameMatchView')) return AudioEngine.playFeltThud();
-      AudioEngine.playBubblePop();
-    }
-
     window.addEventListener('pointerdown', (e) => {
-      AudioEngine.init();
-      playContextSound(e.target);
-      clickRings.push(new ClickRing(e.clientX, e.clientY));
-      for (let i = 0; i < 16; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
+      AudioEngine.playPop();
+      for (let i = 0; i < 10; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
     });
 
-    function renderClickEffects() {
+    function renderEffects() {
       cCtx.clearRect(0, 0, clickCanvas.width, clickCanvas.height);
-      for (let i = clickRings.length - 1; i >= 0; i--) {
-        clickRings[i].update(); clickRings[i].draw();
-        if (clickRings[i].alpha <= 0) clickRings.splice(i, 1);
-      }
       for (let i = clickParticles.length - 1; i >= 0; i--) {
         clickParticles[i].update(); clickParticles[i].draw();
         if (clickParticles[i].alpha <= 0) clickParticles.splice(i, 1);
       }
-      requestAnimationFrame(renderClickEffects);
+      requestAnimationFrame(renderEffects);
     }
-    renderClickEffects();
+    renderEffects();
 
-    // ==========================================
-    // 遊戲模式切換邏輯與配對系統（支援 21點 玩家匹配、人數顯示、100秒自動人機補位）
-    // ==========================================
+    // 遊戲模式與配對系統
     let currentGameMode = 'poker'; // 'poker' 或 'blackjack'
-    let matchTimerInterval = null;
-    let matchSecondsLeft = 100;
+    let matchTimer = null;
+    let secondsLeft = 100;
 
     function toggleGameMode() {
-      AudioEngine.playMutedTap();
       if (currentGameMode === 'poker') {
         currentGameMode = 'blackjack';
         document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
-        document.getElementById('btnSubtitle').innerText = '玩家匹配 / 100秒人機';
+        document.getElementById('btnMainText').innerText = '21點對決';
+        document.getElementById('btnSubLabel').innerText = '匹配 / 100秒人機';
       } else {
         currentGameMode = 'poker';
         document.getElementById('modeTitleText').innerText = '德州撲克';
-        document.getElementById('btnSubtitle').innerText = '德州撲克大廳';
+        document.getElementById('btnMainText').innerText = '德州撲克';
+        document.getElementById('btnSubLabel').innerText = 'ENTER MATCH';
       }
     }
 
-    const SERVER_URL = "https://game-server-mike.onrender.com";
-    const socket = io(SERVER_URL);
-    let activeRoomId = null;
+    const socket = io("https://game-server-mike.onrender.com");
 
     function startCurrentGameMode() {
-      AudioEngine.playBubbleStream();
+      secondsLeft = 100;
+      document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
+      
       if (currentGameMode === 'poker') {
-        socket.emit('start_match', { playerName: currentUsername });
         document.getElementById('matchingTitleText').innerText = '尋找德州撲克對手中...';
         document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
         openScreen('matchingModal');
+        socket.emit('start_match', { playerName: document.getElementById('playerNameText').innerText });
       } else {
-        matchSecondsLeft = 100;
         document.getElementById('matchingTitleText').innerText = '尋找 21點 對戰玩家...';
         document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 1 / 2 人';
-        document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
         openScreen('matchingModal');
 
-        if (matchTimerInterval) clearInterval(matchTimerInterval);
-        matchTimerInterval = setInterval(() => {
-          matchSecondsLeft--;
-          document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
-          
-          if (matchSecondsLeft === 85) {
+        if (matchTimer) clearInterval(matchTimer);
+        matchTimer = setInterval(() => {
+          secondsLeft--;
+          document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
+
+          if (secondsLeft === 85) {
             document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 2 人 | 已配對: 2 / 2 人 (配對成功！)';
           }
 
-          if (matchSecondsLeft <= 0) {
-            clearInterval(matchTimerInterval);
-            document.getElementById('matchTimerText').innerText = '超時！已自動為您安排高級 AI 人機補位！';
-            setTimeout(() => {
-              closeScreens();
-              startBlackjackGame(true);
-            }, 1200);
-          } else if (matchSecondsLeft === 83) {
-            clearInterval(matchTimerInterval);
+          if (secondsLeft <= 0) {
+            clearInterval(matchTimer);
+            document.getElementById('matchTimerText').innerText = '超時！已自動安排 AI 人機補位！';
+            setTimeout(() => { closeScreens(); startBlackjackMatch(true); }, 1000);
+          } else if (secondsLeft === 83) {
+            clearInterval(matchTimer);
             closeScreens();
-            startBlackjackGame(false);
+            startBlackjackMatch(false);
           }
         }, 1000);
       }
     }
 
     function cancelMatchmaking() {
-      AudioEngine.playCloseSound();
-      if (matchTimerInterval) clearInterval(matchTimerInterval);
+      if (matchTimer) clearInterval(matchTimer);
       closeScreens();
     }
 
-    // 21點 遊戲狀態
-    let bjPlayerCards = [];
-    let bjDealerCards = [];
-    let isVsBot = false;
-
-    function startBlackjackGame(vsBot = false) {
-      isVsBot = vsBot;
+    socket.on('game_start', (data) => {
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = vsBot ? '♠️ 21點對決 (人機補位賽)' : '♠️ 21點對決 (真人匹配)';
-      document.getElementById('oppAreaTitle').innerText = vsBot ? 'AI 莊家手牌區' : '對手 / 莊家手牌區';
-      document.getElementById('myAreaTitle').innerText = '你的手牌區 (目標 21點)';
-      document.getElementById('battleOppName').innerText = vsBot ? 'AI 智能莊家' : 'Casino 莊家';
-      document.getElementById('potLabel').innerText = '🪙 21點 競技場';
-      document.getElementById('drawBtn').innerText = '要牌 (Hit)';
+      document.getElementById('roomTitle').innerText = `🏆 德州撲克聯機對決`;
+      renderPokerBoard(data.players);
+    });
+
+    function renderPokerBoard(players) {
+      const myCards = document.getElementById('myCards');
+      const oppCards = document.getElementById('opponentCards');
+      myCards.innerHTML = ''; oppCards.innerHTML = '';
       
-      const actionContainer = document.getElementById('gameActionButtons');
-      if (!document.getElementById('standBtn')) {
-        const standBtn = document.createElement('button');
-        standBtn.id = 'standBtn';
-        standBtn.style.cssText = 'width:160px; height:50px; font-size:18px; font-weight:800; border-radius:12px; background:#e67e22; border:2px solid #fff; cursor:pointer; color:#fff;';
-        standBtn.innerText = '停牌 (Stand)';
-        standBtn.onclick = handleBlackjackStand;
-        actionContainer.insertBefore(standBtn, actionContainer.lastElementChild);
+      const myId = socket.id;
+      for (let id in players) {
+        if (id === myId) {
+          players[id].cards.forEach(v => {
+            myCards.innerHTML += `<div class="poker-card"><span>${v}</span><span style="font-size:22px;align-self:center;">♠️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
+          });
+        } else {
+          oppCards.innerHTML = `<div class="poker-card" style="background:#500; color:#fff; display:flex; align-items:center; justify-content:center;">對手</div>`;
+        }
       }
-
-      bjPlayerCards = [getRandomCardVal(), getRandomCardVal()];
-      bjDealerCards = [getRandomCardVal(), getRandomCardVal()];
-      renderBlackjackBoard();
     }
 
-    function getRandomCardVal() {
-      const vals = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-      return vals[Math.floor(Math.random() * vals.length)];
+    // 21點單人/匹配對局邏輯
+    let bjPlayer = [];
+    let bjDealer = [];
+
+    function startBlackjackMatch(isBot) {
+      closeScreens();
+      document.getElementById('gameMatchView').classList.remove('hidden');
+      document.getElementById('roomTitle').innerText = isBot ? '♠️ 21點 (人機補位賽)' : '♠️ 21點 (玩家匹配賽)';
+      document.getElementById('oppAreaTitle').innerText = isBot ? 'AI 莊家' : '對手莊家';
+      document.getElementById('myAreaTitle').innerText = '你的手牌 (目標 21點)';
+      document.getElementById('actionBtn1').innerText = '要牌 (Hit)';
+
+      bjPlayer = [getBJCard(), getBJCard()];
+      bjDealer = [getBJCard(), getBJCard()];
+      renderBJBoard(true);
     }
 
-    function getCardNumericValue(cards) {
-      let sum = 0;
-      let aces = 0;
+    function getBJCard() {
+      const v = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+      return v[Math.floor(Math.random() * v.length)];
+    }
+
+    function calcBJ(cards) {
+      let sum = 0, aces = 0;
       cards.forEach(c => {
-        if (c === 'A') { aces += 1; sum += 11; }
-        else if (['K', 'Q', 'J', '10'].includes(c)) { sum += 10; }
-        else { sum += parseInt(c); }
+        if (c === 'A') { aces++; sum += 11; }
+        else if (['K','Q','J','10'].includes(c)) sum += 10;
+        else sum += parseInt(c);
       });
-      while (sum > 21 && aces > 0) {
-        sum -= 10;
-        aces -= 1;
-      }
+      while (sum > 21 && aces > 0) { sum -= 10; aces--; }
       return sum;
     }
 
-    function renderBlackjackBoard(dealerHidden = true) {
-      const myCardsArea = document.getElementById('myCards');
-      const oppCardsArea = document.getElementById('opponentCards');
-      myCardsArea.innerHTML = '';
-      oppCardsArea.innerHTML = '';
+    function renderBJBoard(hidden) {
+      const myC = document.getElementById('myCards');
+      const oppC = document.getElementById('opponentCards');
+      myC.innerHTML = ''; oppC.innerHTML = '';
 
-      bjPlayerCards.forEach(val => {
-        const isRed = Math.random() > 0.5;
-        const cardEl = document.createElement('div');
-        cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
-        cardEl.innerHTML = `
-          <div style="font-size:18px;">${val}</div>
-          <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-          <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
-        `;
-        myCardsArea.appendChild(cardEl);
+      bjPlayer.forEach(v => {
+        myC.innerHTML += `<div class="poker-card"><span>${v}</span><span style="font-size:22px;align-self:center;">♥️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
       });
-      document.getElementById('myScoreLabel').innerText = `點數: ${getCardNumericValue(bjPlayerCards)}`;
 
-      bjDealerCards.forEach((val, idx) => {
-        if (dealerHidden && idx === 1) {
-          const cardBack = document.createElement('div');
-          cardBack.className = 'poker-card back';
-          cardBack.innerHTML = '👑';
-          oppCardsArea.appendChild(cardBack);
+      bjDealer.forEach((v, idx) => {
+        if (hidden && idx === 1) {
+          oppC.innerHTML += `<div class="poker-card" style="background:#222; color:#fff; display:flex;align-items:center;justify-content:center;">?</div>`;
         } else {
-          const isRed = Math.random() > 0.5;
-          const cardEl = document.createElement('div');
-          cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
-          cardEl.innerHTML = `
-            <div style="font-size:18px;">${val}</div>
-            <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-            <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
-          `;
-          oppCardsArea.appendChild(cardEl);
+          oppC.innerHTML += `<div class="poker-card"><span>${v}</span><span style="font-size:22px;align-self:center;">♦️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
         }
       });
-      document.getElementById('oppScoreLabel').innerText = dealerHidden ? `明牌點數: ${getCardNumericValue([bjDealerCards[0]])}` : `總點數: ${getCardNumericValue(bjDealerCards)}`;
+      document.getElementById('myScoreLabel').innerText = `點數: ${calcBJ(bjPlayer)}`;
     }
 
     function handleGameAction() {
-      AudioEngine.playBubbleStream();
       if (currentGameMode === 'blackjack') {
-        bjPlayerCards.push(getRandomCardVal());
-        renderBlackjackBoard(true);
-        const pScore = getCardNumericValue(bjPlayerCards);
-        if (pScore > 21) {
-          alert('💥 爆牌了 (Bust)！你輸掉了這一局。');
+        bjPlayer.push(getBJCard());
+        renderBJBoard(true);
+        if (calcBJ(bjPlayer) > 21) {
+          alert('💥 爆牌了！輸掉這一局。');
           leaveGameSession();
-        } else if (pScore === 21) {
-          handleBlackjackStand();
         }
       } else {
         socket.emit('draw_card', { roomId: activeRoomId });
       }
     }
 
-    function handleBlackjackStand() {
-      AudioEngine.playFeltThud();
-      let dScore = getCardNumericValue(bjDealerCards);
-      while (dScore < 17) {
-        bjDealerCards.push(getRandomCardVal());
-        dScore = getCardNumericValue(bjDealerCards);
-      }
-      renderBlackjackBoard(false);
-
-      const pScore = getCardNumericValue(bjPlayerCards);
-      setTimeout(() => {
-        if (dScore > 21) {
-          alert(`🎉 莊家爆牌 (${dScore}點)！你贏了 2,000 金幣！`);
-          userGold += 2000;
-        } else if (pScore > dScore) {
-          alert(`🏆 恭喜獲勝！你的點數 (${pScore}) 大於莊家 (${dScore})！`);
-          userGold += 2000;
-        } else if (pScore === dScore) {
-          alert(`🤝 平手 (Push)！點數皆為 ${pScore}。`);
-          userGold += 500;
-        } else {
-          alert(`😢 莊家獲勝！莊家點數 (${dScore}) 大於你 (${pScore})。`);
-        }
-        document.getElementById('goldCountText').innerText = userGold;
-        leaveGameSession();
-      }, 300);
-    }
-
     function leaveGameSession() {
       document.getElementById('gameMatchView').classList.add('hidden');
-      const standBtn = document.getElementById('standBtn');
-      if (standBtn) standBtn.remove();
-      document.getElementById('drawBtn').innerText = '抽一張牌';
     }
 
-    // 狀態機與流程中樞
-    let CharacterData = { gender: 'male', hairStyle: 'bucket', hairColor: 'black', outfitName: '👕 經典黑潮街頭短 T', outfitCode: 'default' };
-
-    const CustomizationStep = { Gender: 0, Hair: 1, Eyes: 2, Review: 3 };
-
-    const Coordinator = {
-      currentStep: CustomizationStep.Gender,
-
-      EnterStep(step) {
-        this.currentStep = step;
-        for (let i = 0; i <= 3; i++) {
-          const page = document.getElementById(`stepPage${i}`);
-          const ind = document.getElementById(`stepInd${i}`);
-          if (page) page.classList.toggle('active', i === step);
-          if (ind) {
-            ind.classList.toggle('active', i === step);
-            ind.classList.toggle('done', i < step);
-          }
-        }
-        const backBtn = document.getElementById('btnStepBack');
-        const nextBtn = document.getElementById('btnStepNext');
-        backBtn.disabled = (step === CustomizationStep.Gender);
-        nextBtn.innerText = (step === CustomizationStep.Review) ? "完成並儲存 (🪙 100)" : "下一步 ➔";
-
-        const cameraTarget = document.getElementById('stepCameraTarget');
-        const cameraHint = document.getElementById('stepCameraHint');
-        cameraTarget.className = "camera-focus-target";
-
-        if (step === CustomizationStep.Gender || step === CustomizationStep.Review) {
-          cameraTarget.classList.add('view-overview');
-          cameraHint.innerText = "🎥 鏡頭：動態對位全身視角";
-        } else if (step === CustomizationStep.Hair) {
-          cameraTarget.classList.add('view-head');
-          cameraHint.innerText = "🎥 鏡頭：頭部髮型特寫";
-        } else if (step === CustomizationStep.Eyes) {
-          cameraTarget.classList.add('view-face');
-          cameraHint.innerText = "🎥 鏡頭：面部五官特寫";
-        }
-      },
-
-      NextStep() {
-        if (this.currentStep === CustomizationStep.Review) {
-          this.FinalizeCustomization();
-        } else {
-          this.EnterStep(this.currentStep + 1);
-        }
-      },
-
-      PreviousStep() {
-        if (this.currentStep > CustomizationStep.Gender) {
-          this.EnterStep(this.currentStep - 1);
-        }
-      },
-
-      SelectGender(gender, btn) {
-        CharacterData.gender = gender;
-        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
-      },
-
-      SelectHairStyle(style, btn) {
-        CharacterData.hairStyle = style;
-        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
-      },
-
-      SelectHairColor(color, dot) {
-        CharacterData.hairColor = color;
-        dot.parentElement.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
-        dot.classList.add('active');
-      },
-
-      SelectEyeShape(shape, btn) {
-        CharacterData.eyeShape = shape;
-        btn.parentElement.querySelectorAll('.pill-btn').forEach(el => el.classList.remove('active'));
-        btn.classList.add('active');
-      },
-
-      SelectEyeColor(color, dot) {
-        CharacterData.eyeColor = color;
-        dot.parentElement.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
-        dot.classList.add('active');
-      },
-
-      FinalizeCustomization() {
-        if (userGold < 100) return alert("❌ 金幣不足 100，無法完成客製化！");
-        userGold -= 100;
-        document.getElementById('goldCountText').innerText = userGold;
-        AudioEngine.playCoinClink();
-        alert("🎉 角色自訂成功！已扣除 100 金幣並儲存形象。");
-        closeScreens();
-      }
-    };
-
-    function buyOutfit(name, cost, code) {
-      if (userGems < cost) return alert("❌ 綠寶石不足！");
-      userGems -= cost;
-      document.getElementById('gemCountText').innerText = userGems;
-      CharacterData.outfitName = `✨ ${name}`;
-      document.getElementById('heroOutfitBadge').innerText = CharacterData.outfitName;
-      alert(`🎉 恭喜解鎖並換穿潮流時裝：【${name}】！`);
-    }
-
-    function claimTrophyReward(e, trophyThreshold, skinName, rewardType, rewardAmount, container) {
-      container.className = 'trophy-card-info';
-      container.style.opacity = '0.5';
-      const btn = container.querySelector('button');
-      btn.innerText = '✔ 已領取';
-      btn.disabled = true;
-      btn.style.background = '#333';
-      btn.style.color = '#777';
-
-      claimRewardFly(e, rewardType, rewardAmount, null);
-      alert(`🏆 榮譽達成！恭喜領取限定造型：【${skinName}】及 ${rewardAmount} 金幣！`);
-    }
-
-    let userGold = 2950;
-    let userGems = 1000000;
-    let userTrophies = 650;
-
-    function claimRewardFly(e, type, amount, targetContainer) {
-      if (e) e.stopPropagation();
-      AudioEngine.playMagicChime();
-
-      if (targetContainer) {
-        targetContainer.className = 'reward-card status-claimed';
-        const btn = targetContainer.querySelector('button');
-        if (btn) { btn.innerText = '✔ 已領取'; btn.disabled = true; }
-      }
-
-      const rect = e ? e.target.getBoundingClientRect() : { left: window.innerWidth/2, top: window.innerHeight/2, width: 0, height: 0 };
-      const startX = rect.left + rect.width / 2;
-      const startY = rect.top + rect.height / 2;
-
-      const destTarget = type === 'gem' ? document.getElementById('gemHudPill') : document.getElementById('goldHudPill');
-      const destRect = destTarget.getBoundingClientRect();
-      const destX = destRect.left + destRect.width / 2;
-      const destY = destRect.top + destRect.height / 2;
-
-      const particleCount = 10;
-      const iconSymbol = type === 'gem' ? '💎' : '🪙';
-
-      for (let i = 0; i < particleCount; i++) {
-        createFlyParticle(startX, startY, destX, destY, iconSymbol, destTarget, i, particleCount, type, amount);
-      }
-    }
-
-    function createFlyParticle(startX, startY, destX, destY, symbol, targetHudPill, index, total, type, amount) {
-      const el = document.createElement('div');
-      el.className = 'flying-reward-particle';
-      el.innerText = symbol;
-      document.body.appendChild(el);
-
-      const angle = (Math.PI * 2 / total) * index + (Math.random() * 0.4 - 0.2);
-      const scatterDist = Math.random() * 55 + 35;
-      const scatterX = startX + Math.cos(angle) * scatterDist;
-      const scatterY = startY + Math.sin(angle) * scatterDist;
-
-      el.style.transform = `translate(${startX - 14}px, ${startY - 14}px) scale(1.4)`;
-      el.style.opacity = '1';
-
-      setTimeout(() => {
-        el.style.transition = 'transform 0.28s cubic-bezier(0.1, 0.9, 0.2, 1)';
-        el.style.transform = `translate(${scatterX - 14}px, ${scatterY - 14}px) scale(0.9)`;
-
-        setTimeout(() => {
-          el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease';
-          el.style.transform = `translate(${destX - 14}px, ${destY - 14}px) scale(0.4)`;
-
-          setTimeout(() => {
-            el.remove();
-            AudioEngine.playCoinClink();
-            targetHudPill.classList.remove('bump');
-            void targetHudPill.offsetWidth;
-            targetHudPill.classList.add('bump');
-            setTimeout(() => targetHudPill.classList.remove('bump'), 180);
-
-            if (index === total - 1) {
-              if (type === 'gem') {
-                userGems += amount;
-                document.getElementById('gemCountText').innerText = userGems;
-              } else {
-                userGold += amount;
-                document.getElementById('goldCountText').innerText = userGold;
-              }
-            }
-          }, 480);
-        }, 160 + index * 25);
-      }, 20);
-    }
-
-    function openScreen(screenId) {
+    function openScreen(id) {
       closeScreens();
-      const screen = document.getElementById(screenId);
-      if (screen) screen.classList.add('active');
-      if (screenId === 'stepCustomScreen') {
-        Coordinator.EnterStep(CustomizationStep.Gender);
-      }
+      document.getElementById(id).classList.add('active');
     }
+
     function closeScreens() {
       document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
     }
 
-    let currentUsername = localStorage.getItem('poker_player_name') || "Rockyhsu";
     function savePlayerName() {
-      const name = document.getElementById('usernameInput').value.trim();
-      if (!name) return alert("暱稱不能為空！");
-      currentUsername = name;
-      localStorage.setItem('poker_player_name', currentUsername);
-      document.getElementById('playerNameText').innerText = currentUsername;
-      document.getElementById('battleMyName').innerText = currentUsername;
-      alert("暱稱修改成功！");
+      const n = document.getElementById('usernameInput').value.trim();
+      if (!n) return alert('暱稱不能為空！');
+      document.getElementById('playerNameText').innerText = n;
+      alert('暱稱修改成功！');
       closeScreens();
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('playerNameText').innerText = currentUsername;
-      document.getElementById('usernameInput').value = currentUsername;
-      document.getElementById('battleMyName').innerText = currentUsername;
-      document.getElementById('hudTrophyCount').innerText = userTrophies;
-      document.getElementById('currentTrophiesSpan').innerText = userTrophies;
-    });
-
-    // 德州撲克聯機對戰
-    const SERVER_URL = "https://game-server-mike.onrender.com";
-    const socket = io(SERVER_URL);
-    let activeRoomId = null;
-
-    socket.on('game_start', (data) => {
-      activeRoomId = data.roomId;
-      closeScreens();
-      document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = `🏆 德州撲克對決 (${activeRoomId})`;
-      document.getElementById('oppAreaTitle').innerText = '對手手牌區';
-      document.getElementById('myAreaTitle').innerText = '你的手牌區';
-      document.getElementById('drawBtn').innerText = '抽一張牌';
-
-      for (const id in data.players) {
-        if (id !== socket.id) {
-          const oppName = data.players[id].name || "神秘牌手";
-          document.getElementById('battleOppName').innerText = oppName;
-          document.getElementById('battleOppAvatar').style.backgroundImage = "url('watermarked_img_3306472174093337687.jpg')";
-        }
-      }
-      AudioEngine.playBubbleStream();
-      renderBoard(data.players);
-    });
-
-    socket.on('update_board', (data) => {
-      AudioEngine.playBubbleStream();
-      renderBoard(data.players);
-    });
-
-    function renderBoard(players) {
-      const myId = socket.id;
-      const myCardsArea = document.getElementById('myCards');
-      const oppCardsArea = document.getElementById('opponentCards');
-      myCardsArea.innerHTML = '';
-      oppCardsArea.innerHTML = '';
-
-      for (const id in players) {
-        if (id === myId) {
-          players[id].cards.forEach(val => {
-            const isRed = Math.random() > 0.5;
-            const cardEl = document.createElement('div');
-            cardEl.className = `poker-card ${isRed ? 'red' : ''}`;
-            cardEl.innerHTML = `
-              <div style="font-size:18px;">${val}</div>
-              <div style="font-size:26px; align-self:center;">${isRed ? '♥️' : '♠️'}</div>
-              <div style="font-size:18px; transform:rotate(180deg); align-self:flex-end;">${val}</div>
-            `;
-            myCardsArea.appendChild(cardEl);
-          });
-        } else {
-          players[id].cards.forEach(() => {
-            const cardBack = document.createElement('div');
-            cardBack.className = 'poker-card back';
-            cardBack.innerHTML = '👑';
-            oppCardsArea.appendChild(cardBack);
-          });
-        }
-      }
     }
   </script>
 </body>

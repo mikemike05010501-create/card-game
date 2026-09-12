@@ -38,16 +38,10 @@
       pointer-events: none; z-index: 1;
     }
 
-    #particlesCanvas {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 2;
-    }
+    #particlesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+    #clickCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
-    #clickCanvas {
-      position: fixed; inset: 0; width: 100%; height: 100%;
-      pointer-events: none; z-index: 9999;
-    }
-
+    /* 頂部 HUD */
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
       padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
@@ -57,8 +51,9 @@
       display: flex; align-items: center; gap: 12px;
       background: rgba(10,20,15,0.85); padding: 5px 20px 5px 6px;
       border-radius: 40px; border: 2px solid #d4af37; box-shadow: var(--shadow-3d);
-      cursor: pointer; backdrop-filter: blur(8px);
+      cursor: pointer; backdrop-filter: blur(8px); transition: transform 0.15s;
     }
+    .player-profile:active { transform: scale(0.96); }
     .avatar {
       width: 44px; height: 44px; border-radius: 50%; border: 2px solid #d4af37;
       background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
@@ -67,13 +62,18 @@
     .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; }
     .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; font-family: 'Outfit', sans-serif; }
 
-    /* 荒野亂鬥風 右上角資源欄位 */
-    .brawl-hud-right { display: flex; align-items: center; gap: 10px; }
+    /* 荒野亂鬥風 資源條 */
+    .brawl-hud-right { display: flex; align-items: center; gap: 10px; z-index: 1000; }
     .brawl-pill {
       position: relative; display: flex; align-items: center;
       background: #000; border: 2.5px solid #2b2b2b;
       height: 34px; border-radius: 17px; padding: 0 14px 0 34px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.12);
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .brawl-pill.bump {
+      transform: scale(1.22);
+      border-color: #f1c40f;
     }
     .brawl-pill .brawl-icon {
       position: absolute; left: -4px; width: 38px; height: 38px;
@@ -93,6 +93,14 @@
     }
     .brawl-menu-btn:active { transform: scale(0.92); }
     .brawl-menu-btn span { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
+
+    /* 飛行動畫小物件專用元素 */
+    .flying-reward-particle {
+      position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+      transition: none;
+    }
 
     /* 左側選單 */
     .left-menu {
@@ -133,9 +141,9 @@
     .pass-badge { font-size: 34px; }
     .pass-progress { flex: 1; }
     .pass-bar { height: 12px; background: #000; border-radius: 6px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.15); margin-top: 4px; }
-    .pass-fill { width: 35%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
+    .pass-fill { width: 45%; height: 100%; background: linear-gradient(90deg, #f39c12, #f1c40f); }
 
-    /* 每日任務與禮物 */
+    /* 每日按鈕 */
     .daily-tasks-row {
       position: absolute; left: 110px; bottom: 105px; display: flex; gap: 12px; z-index: 5;
     }
@@ -179,7 +187,7 @@
     .play-btn:active { transform: scale(0.95); }
     .play-btn label { font-size: 12px; font-weight: 800; font-family: 'Outfit', sans-serif; opacity: 0.9; color: #111; }
 
-    /* 全螢幕視窗 */
+    /* 通用彈窗系統 */
     .app-screen-overlay {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
       display: flex; justify-content: center; align-items: center; z-index: 150;
@@ -188,7 +196,7 @@
     }
     .app-screen-overlay.active { opacity: 1; pointer-events: auto; transform: scale(1); }
     .screen-window {
-      width: 90vw; max-width: 780px; height: 82vh; background: #0e1712;
+      width: 90vw; max-width: 800px; height: 82vh; background: #0e1712;
       border: 3px solid #d4af37; border-radius: 24px; box-shadow: 0 0 50px rgba(212,175,55,0.4);
       display: flex; flex-direction: column; overflow: hidden; position: relative;
     }
@@ -209,22 +217,97 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; }
-    .shop-item {
-      background: rgba(255,255,255,0.05); border: 2px solid rgba(212,175,55,0.5); border-radius: 16px;
-      padding: 18px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    /* 獎勵深淺視覺層次 */
+    .reward-card {
+      position: relative; border-radius: 16px; padding: 18px 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      transition: all 0.2s ease;
     }
-    .shop-item-icon { font-size: 42px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8)); }
-    .shop-item-btn {
-      background: var(--gold); border: none; border-radius: 20px; padding: 6px 18px; font-weight: 900;
-      color: #1a1202; cursor: pointer; font-size: 14px; margin-top: 6px;
+    .reward-card.status-claimable {
+      background: linear-gradient(145deg, rgba(39,174,96,0.3) 0%, rgba(14,48,28,0.85) 100%);
+      border: 2px solid #2ecc71;
+      box-shadow: 0 0 16px rgba(46,204,113,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
+      cursor: pointer;
+    }
+    .reward-card.status-claimable:hover { transform: translateY(-3px); }
+    .reward-card.status-claimable .reward-btn {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: #fff; border: 1.5px solid #fff; box-shadow: 0 4px 12px rgba(46,204,113,0.6);
+      cursor: pointer;
     }
 
-    .task-item {
-      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(212,175,55,0.4); border-radius: 14px;
-      padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+    .reward-card.status-claimed {
+      background: rgba(0,0,0,0.55);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      opacity: 0.55; cursor: default;
+    }
+    .reward-card.status-claimed .reward-btn {
+      background: #333; color: #888; border: 1px solid #444; cursor: not-allowed;
     }
 
+    .reward-card.status-locked {
+      background: linear-gradient(145deg, rgba(30,15,10,0.6) 0%, rgba(15,8,5,0.85) 100%);
+      border: 1.5px dashed rgba(212,175,55,0.3);
+      filter: grayscale(40%); cursor: not-allowed;
+    }
+    .reward-card.status-locked .reward-btn {
+      background: #252525; color: #666; border: 1px solid #333; cursor: not-allowed;
+    }
+
+    .reward-btn {
+      border-radius: 20px; padding: 6px 18px; font-weight: 800; font-size: 13px;
+      margin-top: 10px; font-family: 'Lilita One', sans-serif;
+    }
+
+    /* 任務橫條狀態深淺 */
+    .task-row {
+      border-radius: 14px; padding: 14px 20px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .task-row.status-claimable {
+      background: linear-gradient(90deg, rgba(39,174,96,0.25) 0%, rgba(14,48,28,0.6) 100%);
+      border: 2px solid #2ecc71; box-shadow: 0 0 14px rgba(46,204,113,0.35);
+    }
+    .task-row.status-claimed {
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); opacity: 0.5;
+    }
+    .task-row.status-locked {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25);
+    }
+
+    /* 個人檔案專屬樣式 */
+    .profile-window {
+      display: grid; grid-template-columns: 260px 1fr; gap: 24px; height: 100%;
+    }
+    .profile-left {
+      background: rgba(0,0,0,0.6); border: 2px solid rgba(212,175,55,0.4); border-radius: 18px;
+      padding: 24px 18px; display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .profile-avatar-large {
+      width: 96px; height: 96px; border-radius: 50%; border: 3px solid #f1c40f;
+      background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
+      box-shadow: 0 0 20px rgba(241,196,15,0.6); margin-bottom: 14px;
+    }
+    .avatar-selector {
+      display: flex; gap: 10px; margin-top: 14px; justify-content: center;
+    }
+    .avatar-option {
+      width: 42px; height: 42px; border-radius: 50%; border: 2px solid #555;
+      cursor: pointer; transition: 0.15s;
+    }
+    .avatar-option:hover, .avatar-option.selected { border-color: #f1c40f; transform: scale(1.1); }
+
+    .stats-card-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.04); border: 1.5px solid rgba(212,175,55,0.3);
+      border-radius: 14px; padding: 14px 18px;
+    }
+    .stat-box .stat-label { font-size: 12px; color: #aaa; margin-bottom: 4px; }
+    .stat-box .stat-val { font-size: 22px; color: #f1c40f; font-family: 'Lilita One', sans-serif; }
+
+    /* 1v1 對戰畫面 */
     .game-match-view {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, rgba(14,56,38,0.92) 0%, rgba(3,15,9,0.98) 100%),
@@ -242,7 +325,6 @@
       background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
     }
     .hand-cards { display: flex; justify-content: center; gap: 15px; margin-top: 10px; min-height: 105px; }
-    
     .poker-card {
       width: 75px; height: 105px; background: #fff; border-radius: 8px; border: 2px solid #000;
       box-shadow: 0 8px 16px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between;
@@ -269,7 +351,7 @@
   <canvas id="particlesCanvas"></canvas>
   <canvas id="clickCanvas"></canvas>
 
-  <!-- 頂部 HUD -->
+  <!-- 頂部 HUD (包含金幣與寶石目標 ID) -->
   <div class="hud-bar">
     <div class="player-profile" onclick="openScreen('profileScreen')">
       <div id="playerAvatar" class="avatar"></div>
@@ -298,7 +380,8 @@
         <span class="brawl-num">0</span>
       </div>
 
-      <div class="brawl-pill">
+      <!-- 金幣欄位 (ID: goldHudPill) -->
+      <div id="goldHudPill" class="brawl-pill">
         <div class="brawl-icon">
           <svg viewBox="0 0 36 36" width="30" height="30">
             <circle cx="18" cy="18" r="15" fill="#f1c40f" stroke="#000" stroke-width="2.5"/>
@@ -309,10 +392,11 @@
             <rect x="15.5" y="21" width="5" height="3" rx="1.5" fill="#d35400"/>
           </svg>
         </div>
-        <span class="brawl-num">20000</span>
+        <span id="goldCountText" class="brawl-num">20000</span>
       </div>
 
-      <div class="brawl-pill">
+      <!-- 綠寶石欄位 (ID: gemHudPill) -->
+      <div id="gemHudPill" class="brawl-pill">
         <div class="brawl-icon">
           <svg viewBox="0 0 36 36" width="30" height="30">
             <polygon points="18,4 30,10 30,26 18,32 6,26 6,10" fill="#2ecc71" stroke="#000" stroke-width="2.5"/>
@@ -320,13 +404,11 @@
             <polygon points="18,8 26,12 18,17 10,12" fill="#a8e6cf"/>
           </svg>
         </div>
-        <span class="brawl-num">1000000</span>
+        <span id="gemCountText" class="brawl-num">1000000</span>
       </div>
 
       <div class="brawl-menu-btn" onclick="openScreen('menuScreen')">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </div>
   </div>
@@ -334,7 +416,7 @@
   <!-- 左側選單 -->
   <div class="left-menu">
     <div class="menu-btn" onclick="openScreen('shopScreen')"><span>🛒</span><label>商店</label></div>
-    <div class="menu-btn" onclick="openScreen('profileScreen')"><span>🎴</span><label>改名</label></div>
+    <div class="menu-btn" onclick="openScreen('profileScreen')"><span>🎴</span><label>檔案</label></div>
     <div class="menu-btn" onclick="openScreen('newsScreen')"><span>📰</span><label>新聞</label></div>
   </div>
 
@@ -379,40 +461,113 @@
     </button>
   </div>
 
-  <!-- 1. 商店畫面 (金幣撞擊聲) -->
-  <div id="shopScreen" class="app-screen-overlay">
-    <div class="screen-window">
+  <!-- 彈窗 1：個人牌手檔案 -->
+  <div id="profileScreen" class="app-screen-overlay">
+    <div class="screen-window" style="max-width: 760px;">
       <div class="screen-header">
-        <div class="screen-title">🛒 賭城黑市商店</div>
+        <div class="screen-title">🎴 牌手個人檔案 (PLAYER DOSSIER)</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content">
-        <h3 style="color:#f1c40f;">每日限時特惠</h3>
-        <div class="shop-grid">
-          <div class="shop-item">
-            <div class="shop-item-icon">🪙</div>
-            <h4>金幣大禮包</h4>
-            <p style="font-size:12px; color:#bbb;">獲得 50,000 金幣</p>
-            <button class="shop-item-btn" onclick="alert('購買成功！')">💎 50 寶石</button>
+        <div class="profile-window">
+          <div class="profile-left">
+            <div id="profileBigAvatar" class="profile-avatar-large"></div>
+            <div style="font-size: 11px; color:#aaa; margin-bottom: 6px;">選擇頭像代碼</div>
+            <div class="avatar-selector">
+              <div class="avatar-option selected" style="background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') center/cover;" onclick="selectAvatar('kato', this)"></div>
+              <div class="avatar-option" style="background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=sam') center/cover;" onclick="selectAvatar('sam', this)"></div>
+              <div class="avatar-option" style="background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=leo') center/cover;" onclick="selectAvatar('leo', this)"></div>
+              <div class="avatar-option" style="background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=mia') center/cover;" onclick="selectAvatar('mia', this)"></div>
+            </div>
+
+            <div style="width:100%; margin-top: 20px;">
+              <div style="font-size: 11px; color:#aaa; text-align:left; margin-bottom:4px;">牌手暱稱</div>
+              <input type="text" id="usernameInput" style="width:100%; padding:10px; border:2px solid #d4af37; border-radius:10px; background:#000; color:#fff; text-align:center; font-weight:bold; font-size:15px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
+              <button class="reward-btn" style="width:100%; background:var(--gold); color:#1a1202; margin-top:8px; cursor:pointer;" onclick="savePlayerProfile()">儲存檔案設定</button>
+            </div>
           </div>
-          <div class="shop-item">
-            <div class="shop-item-icon">💎</div>
-            <h4>寶石手提箱</h4>
-            <p style="font-size:12px; color:#bbb;">獲得 500 寶石</p>
-            <button class="shop-item-btn" onclick="alert('儲值功能建置中！')">NT$ 150</button>
-          </div>
-          <div class="shop-item">
-            <div class="shop-item-icon">🎴</div>
-            <h4>黑金尊榮卡背</h4>
-            <p style="font-size:12px; color:#bbb;">獨特發光黑曜石質感</p>
-            <button class="shop-item-btn" onclick="alert('已裝備新卡背！')">💎 120 寶石</button>
+
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="background:linear-gradient(90deg, rgba(241,196,15,0.15) 0%, transparent 100%); border-left:4px solid #f1c40f; padding:12px 16px; border-radius:8px;">
+              <h3 style="color:#f1c40f;">💎 鑽石榮譽會籍</h3>
+              <p style="font-size:12px; color:#ccc; margin-top:3px;">全賭城排位賽前 5% 高級貴賓牌手，享牌局收益 1.2 倍加成。</p>
+            </div>
+
+            <div class="stats-card-grid">
+              <div class="stat-box">
+                <div class="stat-label">生涯總勝率</div>
+                <div class="stat-val">68.4%</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">歷史對戰次數</div>
+                <div class="stat-val">142 場</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">最高連勝記錄</div>
+                <div class="stat-val">9 連勝 🔥</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">累積贏取金幣</div>
+                <div class="stat-val">2.8M 🪙</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 2. 每日任務畫面 (魔法星光微鈴) -->
+  <!-- 彈窗 2：VIP 通行證 (支援小物件爆散並飛向右上角) -->
+  <div id="passScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header">
+        <div class="screen-title">🎫 VIP 尊榮賽事通行證</div>
+        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+      </div>
+      <div class="screen-content">
+        <div style="text-align:center; padding:10px 0 15px;">
+          <div style="font-size:18px; color:#f1c40f; font-weight:800;">第 1 賽季：百萬豪賭 (等級 3 / 50)</div>
+          <div style="width:80%; margin:8px auto; height:12px; background:#000; border-radius:6px; overflow:hidden; border:1px solid #d4af37;">
+            <div style="width:45%; height:100%; background:linear-gradient(90deg, #f39c12, #f1c40f);"></div>
+          </div>
+        </div>
+
+        <h4 style="color:#f1c40f; margin-bottom:6px;">通行證獎勵軌道</h4>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:14px;">
+          <div class="reward-card status-claimed">
+            <span style="font-size:11px; color:#888;">等級 1</span>
+            <div style="font-size:36px; margin:8px 0;">🪙</div>
+            <div style="font-size:13px; color:#aaa;">1,000 金幣</div>
+            <button class="reward-btn" disabled>✔ 已領取</button>
+          </div>
+
+          <div class="reward-card status-claimed">
+            <span style="font-size:11px; color:#888;">等級 2</span>
+            <div style="font-size:36px; margin:8px 0;">💎</div>
+            <div style="font-size:13px; color:#aaa;">20 寶石</div>
+            <button class="reward-btn" disabled>✔ 已領取</button>
+          </div>
+
+          <!-- 點擊領取後分裂成 10 顆小金幣飛入右上角金幣欄 -->
+          <div class="reward-card status-claimable" id="passLevel3Card" onclick="claimRewardFly(event, 'gold', 5000, this)">
+            <span style="font-size:11px; color:#2ecc71; font-weight:bold;">等級 3 (可領取)</span>
+            <div class="reward-main-icon" style="font-size:40px; margin:8px 0; filter: drop-shadow(0 0 10px #2ecc71);">🪙</div>
+            <div style="font-size:14px; font-weight:bold; color:#fff;">5,000 金幣</div>
+            <button class="reward-btn">點擊領取</button>
+          </div>
+
+          <div class="reward-card status-locked">
+            <span style="font-size:11px; color:#777;">等級 4 🔒</span>
+            <div style="font-size:36px; margin:8px 0; opacity:0.4;">👑</div>
+            <div style="font-size:13px; color:#666;">尊榮黑金頭銜</div>
+            <button class="reward-btn" disabled>尚未解鎖</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 彈窗 3：每日任務 (支援小物件爆散並飛向右上角) -->
   <div id="taskScreen" class="app-screen-overlay">
     <div class="screen-window">
       <div class="screen-header">
@@ -420,25 +575,35 @@
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
       <div class="screen-content">
-        <div class="task-item">
+        <!-- 點擊領取後分裂成小金幣飛向右上角 -->
+        <div class="task-row status-claimable" id="task1">
           <div>
-            <h4>牌神首勝</h4>
-            <p style="font-size:12px; color:#aaa;">在 1v1 對決中擊敗 1 位線上對手 (0/1)</p>
+            <h4 style="color:#2ecc71;">牌神首勝 (達成 1/1)</h4>
+            <p style="font-size:12px; color:#ccc;">在 1v1 線上對決中擊敗 1 位線上對手</p>
           </div>
-          <button class="shop-item-btn" onclick="alert('任務尚未達成！')">領取 🪙 1,000</button>
+          <button class="reward-btn" style="background:linear-gradient(135deg, #2ecc71, #27ae60); color:#fff; cursor:pointer;" onclick="claimRewardFly(event, 'gold', 1000, document.getElementById('task1'))">領取 🪙 1,000</button>
         </div>
-        <div class="task-item">
+
+        <div class="task-row status-locked">
           <div>
-            <h4>要牌狂熱</h4>
-            <p style="font-size:12px; color:#aaa;">累計抽牌達 5 次 (2/5)</p>
+            <h4 style="color:#f1c40f;">要牌狂熱 (進度 2/5) 🔒</h4>
+            <p style="font-size:12px; color:#888;">累計在牌局中抽牌達 5 次</p>
           </div>
-          <button class="shop-item-btn" onclick="alert('任務尚未達成！')">領取 💎 10</button>
+          <button class="reward-btn" style="background:#222; color:#666;" disabled>進行中 (2/5)</button>
+        </div>
+
+        <div class="task-row status-claimed">
+          <div>
+            <h4 style="color:#888;">每日登入巡禮</h4>
+            <p style="font-size:12px; color:#555;">登入遊戲大廳</p>
+          </div>
+          <button class="reward-btn" style="background:#222; color:#555;" disabled>✔ 已領取</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 3. 每日禮物畫面 -->
+  <!-- 彈窗 4：每日禮物 (分裂成 12 顆小金幣飛向右上角) -->
   <div id="giftScreen" class="app-screen-overlay">
     <div class="screen-window" style="max-width:500px; height:55vh;">
       <div class="screen-header">
@@ -447,20 +612,44 @@
       </div>
       <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
         <div style="font-size: 70px;">🪙</div>
-        <h3 style="color:#f1c40f; margin-top:10px;">今日補給箱</h3>
+        <h3 style="color:#f1c40f; margin-top:10px;">今日底金箱</h3>
         <p style="color:#ccc; font-size:14px; margin: 10px 0 20px;">歡迎回到高額賭桌，收下你的每日底金！</p>
-        <button class="shop-item-btn" style="padding:10px 30px; font-size:16px;" onclick="alert('成功領取 1,500 金幣！'); closeScreens();">領取獎勵</button>
+        <button id="giftClaimBtn" class="reward-btn" style="background:var(--gold); color:#000; padding:10px 30px; font-size:16px; cursor:pointer;" onclick="claimDailyGift(event)">領取 1,500 金幣</button>
       </div>
     </div>
   </div>
 
-  <!-- 4. 新聞快訊畫面 -->
-  <div id="newsScreen" class="app-screen-overlay">
+  <!-- 商店畫面 -->
+  <div id="shopScreen" class="app-screen-overlay">
     <div class="screen-window">
       <div class="screen-header">
-        <div class="screen-title">📰 賭城巡迴賽快訊</div>
+        <div class="screen-title">🛒 賭城黑市商店</div>
         <div class="screen-close-btn" onclick="closeScreens()">✕</div>
       </div>
+      <div class="screen-content">
+        <h3 style="color:#f1c40f;">每日限時特惠</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
+            <div style="font-size:42px;">🪙</div>
+            <h4>金幣大禮包</h4>
+            <p style="font-size:12px; color:#bbb;">獲得 50,000 金幣</p>
+            <button class="reward-btn" style="background:var(--gold); color:#000; cursor:pointer;" onclick="claimRewardFly(event, 'gold', 50000, null)">💎 50 寶石</button>
+          </div>
+          <div class="reward-card" style="background:rgba(255,255,255,0.05); border:2px solid #d4af37;">
+            <div style="font-size:42px;">💎</div>
+            <h4>寶石手提箱</h4>
+            <p style="font-size:12px; color:#bbb;">獲得 500 寶石</p>
+            <button class="reward-btn" style="background:var(--gold); color:#000; cursor:pointer;" onclick="claimRewardFly(event, 'gem', 500, null)">NT$ 150</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新聞畫面 -->
+  <div id="newsScreen" class="app-screen-overlay">
+    <div class="screen-window">
+      <div class="screen-header"><div class="screen-title">📰 賭城巡迴賽快訊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
       <div class="screen-content">
         <div style="background:rgba(255,255,255,0.05); padding:16px; border-radius:12px; border-left:4px solid #f1c40f;">
           <h3 style="color:#f1c40f;">第 1 賽季：撲克爭霸錦標賽開打</h3>
@@ -470,52 +659,25 @@
     </div>
   </div>
 
-  <!-- 5. 通行證畫面 (魔法星光) -->
-  <div id="passScreen" class="app-screen-overlay">
-    <div class="screen-window">
-      <div class="screen-header">
-        <div class="screen-title">🎫 VIP 尊榮賽事通行證</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content">
-        <div style="text-align:center; padding:15px 0;">
-          <div style="font-size:18px; color:#f1c40f; font-weight:800;">第 1 賽季 (等級 8 / 50)</div>
-          <div style="width:80%; margin:10px auto; height:14px; background:#000; border-radius:7px; overflow:hidden; border:1px solid #d4af37;">
-            <div style="width:35%; height:100%; background:linear-gradient(90deg, #f39c12, #f1c40f);"></div>
-          </div>
-        </div>
-        <div style="display:flex; gap:12px; overflow-x:auto; padding-bottom:10px;">
-          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">🪙</div>Lv.1 (已領)</div>
-          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">💎</div>Lv.2 (已領)</div>
-          <div class="shop-item" style="min-width:130px; border-color:#f1c40f;"><div style="font-size:30px;">🎁</div>Lv.3 (可領)</div>
-          <div class="shop-item" style="min-width:130px;"><div style="font-size:30px;">👑</div>Lv.4</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. 好友 / 小隊 / 戰隊 (軟木塞微頓音) -->
+  <!-- 好友、小隊、戰隊 -->
   <div id="friendsScreen" class="app-screen-overlay">
     <div class="screen-window" style="max-width:550px;">
       <div class="screen-header"><div class="screen-title">👥 在線好友</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
       <div class="screen-content">
-        <div class="task-item"><div><h4>賭聖阿發</h4><p style="font-size:12px; color:#2ecc71;">● 正在遊戲中</p></div><button class="shop-item-btn" onclick="alert('邀請已送出！')">觀戰</button></div>
-        <div class="task-item"><div><h4>賭王九哥</h4><p style="font-size:12px; color:#aaa;">○ 離線 (2小時前)</p></div><button class="shop-item-btn">邀請</button></div>
+        <div class="task-row status-claimable"><div><h4>賭聖阿發</h4><p style="font-size:12px; color:#2ecc71;">● 正在遊戲中</p></div><button class="reward-btn" style="background:var(--gold); color:#000;" onclick="alert('邀請已送出！')">觀戰</button></div>
       </div>
     </div>
   </div>
-
   <div id="teamScreen" class="app-screen-overlay">
     <div class="screen-window" style="max-width:550px; height:50vh;">
       <div class="screen-header"><div class="screen-title">🏠 雙人小隊</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
       <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
         <h3>組隊大廳</h3>
         <p style="color:#aaa; font-size:13px; margin: 10px 0;">目前隊伍僅有你一人，點擊發送邀請連結給好友。</p>
-        <button class="shop-item-btn" onclick="alert('小隊連結已複製！')">複製小隊代碼</button>
+        <button class="reward-btn" style="background:var(--gold); color:#000;" onclick="alert('小隊連結已複製！')">複製小隊代碼</button>
       </div>
     </div>
   </div>
-
   <div id="clanScreen" class="app-screen-overlay">
     <div class="screen-window" style="max-width:550px;">
       <div class="screen-header"><div class="screen-title">🏅 戰隊俱樂部</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
@@ -528,19 +690,7 @@
     </div>
   </div>
 
-  <!-- 7. 改名 / 牌手設定 -->
-  <div id="profileScreen" class="app-screen-overlay">
-    <div class="screen-window" style="max-width:440px; height:50vh;">
-      <div class="screen-header"><div class="screen-title">🎴 牌手設定</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div>
-      <div class="screen-content" style="align-items:center; justify-content:center; text-align:center;">
-        <p style="color: #bbb; font-size: 14px;">請輸入你的遊戲暱稱：</p>
-        <input type="text" id="usernameInput" style="width:80%; padding:12px; margin:15px 0; border:2px solid #d4af37; border-radius:12px; background:#000; color:#fff; text-align:center; font-size:16px; outline:none;" placeholder="輸入暱稱..." maxlength="12">
-        <button class="shop-item-btn" style="padding:10px 30px; font-size:16px;" onclick="savePlayerName()">確定修改</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 8. 配對中彈窗 -->
+  <!-- 配對彈窗 -->
   <div id="matchingModal" class="app-screen-overlay">
     <div class="screen-window" style="width: 360px; height: 45vh; align-items:center; justify-content:center; text-align:center;">
       <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:20px;">尋找對手中...</h2>
@@ -550,7 +700,7 @@
     </div>
   </div>
 
-  <!-- 9. 1v1 對戰畫面 (桌面皮革氈布聲) -->
+  <!-- 1v1 對戰牌桌 -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div class="players-status">
       <div class="battle-avatar-card">
@@ -595,9 +745,7 @@
   </div>
 
   <script>
-    // ==========================================
-    // 多情境多音頻原生音效引擎 (Contextual Audio Engine)
-    // ==========================================
+    // 多情境音效引擎
     const AudioEngine = {
       ctx: null,
       init() {
@@ -605,11 +753,8 @@
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioContextClass();
         }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (this.ctx.state === 'suspended') this.ctx.resume();
       },
-      // 1. 大廳主畫面：水滴微泡泡聲
       playBubblePop() {
         this.init();
         const now = this.ctx.currentTime;
@@ -626,7 +771,6 @@
         osc.start(now);
         osc.stop(now + 0.06);
       },
-      // 2. 商店畫面：硬幣金幣敲擊聲
       playCoinClink() {
         this.init();
         const now = this.ctx.currentTime;
@@ -644,7 +788,6 @@
           osc.stop(now + delay + 0.09);
         });
       },
-      // 3. 任務 / 通行證：魔法星光風鈴
       playMagicChime() {
         this.init();
         const now = this.ctx.currentTime;
@@ -662,7 +805,6 @@
           osc.stop(now + delay + 0.16);
         });
       },
-      // 4. 社群 / 好友 / 小隊：軟木塞微頓音
       playMutedTap() {
         this.init();
         const now = this.ctx.currentTime;
@@ -678,7 +820,6 @@
         osc.start(now);
         osc.stop(now + 0.05);
       },
-      // 5. 牌桌對決畫面：厚實毛氈落桌鈍響
       playFeltThud() {
         this.init();
         const now = this.ctx.currentTime;
@@ -694,7 +835,6 @@
         osc.start(now);
         osc.stop(now + 0.08);
       },
-      // 6. 關閉介面：泡泡滑落消散聲
       playCloseSound() {
         this.init();
         const now = this.ctx.currentTime;
@@ -710,7 +850,6 @@
         osc.start(now);
         osc.stop(now + 0.065);
       },
-      // 發牌流暢音
       playBubbleStream() {
         this.init();
         [520, 750, 1020].forEach((freq, idx) => {
@@ -846,29 +985,12 @@
       }
     }
 
-    // 依據目前點擊所在的畫面分派不同的專屬音效
     function playContextSound(target) {
-      if (target.closest('.screen-close-btn')) {
-        AudioEngine.playCloseSound();
-        return;
-      }
-      if (target.closest('#shopScreen')) {
-        AudioEngine.playCoinClink();
-        return;
-      }
-      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen')) {
-        AudioEngine.playMagicChime();
-        return;
-      }
-      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen')) {
-        AudioEngine.playMutedTap();
-        return;
-      }
-      if (target.closest('#gameMatchView')) {
-        AudioEngine.playFeltThud();
-        return;
-      }
-      // 預設大廳泡泡聲
+      if (target.closest('.screen-close-btn')) return AudioEngine.playCloseSound();
+      if (target.closest('#shopScreen')) return AudioEngine.playCoinClink();
+      if (target.closest('#taskScreen') || target.closest('#passScreen') || target.closest('#giftScreen')) return AudioEngine.playMagicChime();
+      if (target.closest('#friendsScreen') || target.closest('#teamScreen') || target.closest('#clanScreen') || target.closest('#profileScreen')) return AudioEngine.playMutedTap();
+      if (target.closest('#gameMatchView')) return AudioEngine.playFeltThud();
       AudioEngine.playBubblePop();
     }
 
@@ -903,6 +1025,105 @@
     }
     renderClickEffects();
 
+    // =========================================================
+    // 全新：獎勵物體爆散成多個小物件並飛向右上角 HUD 系統
+    // =========================================================
+    let userGold = 20000;
+    let userGems = 1000000;
+
+    function claimRewardFly(e, type, amount, targetContainer) {
+      e.stopPropagation();
+      AudioEngine.playMagicChime();
+
+      // 1. 如果有容器，標記為已領取深色狀態
+      if (targetContainer) {
+        targetContainer.className = targetContainer.classList.contains('task-row') ? 'task-row status-claimed' : 'reward-card status-claimed';
+        const btn = targetContainer.querySelector('button');
+        if (btn) {
+          btn.innerText = '✔ 已領取';
+          btn.disabled = true;
+        }
+      }
+
+      // 2. 起點座標 (點擊處或物體中心)
+      const rect = e.target.getBoundingClientRect();
+      const startX = rect.left + rect.width / 2;
+      const startY = rect.top + rect.height / 2;
+
+      // 3. 終點座標 (右上角金幣或寶石欄位)
+      const destTarget = type === 'gem' ? document.getElementById('gemHudPill') : document.getElementById('goldHudPill');
+      const destRect = destTarget.getBoundingClientRect();
+      const destX = destRect.left + destRect.width / 2;
+      const destY = destRect.top + destRect.height / 2;
+
+      const particleCount = 10;
+      const iconSymbol = type === 'gem' ? '💎' : '🪙';
+
+      for (let i = 0; i < particleCount; i++) {
+        createFlyParticle(startX, startY, destX, destY, iconSymbol, destTarget, i, particleCount, type, amount);
+      }
+    }
+
+    function createFlyParticle(startX, startY, destX, destY, symbol, targetHudPill, index, total, type, amount) {
+      const el = document.createElement('div');
+      el.className = 'flying-reward-particle';
+      el.innerText = symbol;
+      document.body.appendChild(el);
+
+      // 第一階段：先隨機四散彈開 (爆散效果)
+      const angle = (Math.PI * 2 / total) * index + (Math.random() * 0.4 - 0.2);
+      const scatterDist = Math.random() * 55 + 35;
+      const scatterX = startX + Math.cos(angle) * scatterDist;
+      const scatterY = startY + Math.sin(angle) * scatterDist;
+
+      el.style.transform = `translate(${startX - 14}px, ${startY - 14}px) scale(1.4)`;
+      el.style.opacity = '1';
+
+      // 播放向外散開
+      setTimeout(() => {
+        el.style.transition = 'transform 0.28s cubic-bezier(0.1, 0.9, 0.2, 1)';
+        el.style.transform = `translate(${scatterX - 14}px, ${scatterY - 14}px) scale(0.9)`;
+
+        // 第二階段：從散開位置加速衝向右上角目標
+        setTimeout(() => {
+          el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease';
+          el.style.transform = `translate(${destX - 14}px, ${destY - 14}px) scale(0.4)`;
+
+          // 到達吸收
+          setTimeout(() => {
+            el.remove();
+            AudioEngine.playCoinClink();
+            targetHudPill.classList.remove('bump');
+            void targetHudPill.offsetWidth; // 強制重繪
+            targetHudPill.classList.add('bump');
+            setTimeout(() => targetHudPill.classList.remove('bump'), 180);
+
+            // 當最後一顆吸收完畢，更新數字顯示
+            if (index === total - 1) {
+              if (type === 'gem') {
+                userGems += amount;
+                document.getElementById('gemCountText').innerText = userGems;
+              } else {
+                userGold += amount;
+                document.getElementById('goldCountText').innerText = userGold;
+              }
+            }
+          }, 480);
+        }, 160 + index * 25);
+      }, 20);
+    }
+
+    // 每日禮物專屬領取
+    function claimDailyGift(e) {
+      claimRewardFly(e, 'gold', 1500, null);
+      const btn = document.getElementById('giftClaimBtn');
+      btn.innerText = '今日已領取';
+      btn.disabled = true;
+      btn.style.background = '#333';
+      btn.style.color = '#888';
+      setTimeout(closeScreens, 1200);
+    }
+
     // 介面開啟與關閉切換
     function openScreen(screenId) {
       closeScreens();
@@ -914,41 +1135,48 @@
       document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
     }
 
-    // 遊戲連線與 HUD 邏輯
-    const SERVER_URL = "https://game-server-mike.onrender.com";
-    const socket = io(SERVER_URL);
+    // 牌手檔案管理
+    let currentUsername = localStorage.getItem('poker_player_name') || "VIP 牌手";
+    let currentAvatarSeed = localStorage.getItem('poker_avatar_seed') || "kato";
 
-    let currentUsername = "";
-    let activeRoomId = null;
+    function selectAvatar(seed, el) {
+      currentAvatarSeed = seed;
+      document.querySelectorAll('.avatar-option').forEach(item => item.classList.remove('selected'));
+      el.classList.add('selected');
+      const url = `https://api.dicebear.com/7.x/adventurer/svg?seed=${seed}`;
+      document.getElementById('profileBigAvatar').style.backgroundImage = `url('${url}')`;
+    }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedName = localStorage.getItem('poker_player_name');
-      if (savedName) {
-        setPlayer(savedName);
-      } else {
-        openScreen('profileScreen');
-      }
-    });
-
-    function savePlayerName() {
+    function savePlayerProfile() {
       const name = document.getElementById('usernameInput').value.trim();
       if (!name) return alert("暱稱不能為空！");
-      localStorage.setItem('poker_player_name', name);
-      setPlayer(name);
+      currentUsername = name;
+      localStorage.setItem('poker_player_name', currentUsername);
+      localStorage.setItem('poker_avatar_seed', currentAvatarSeed);
+      updateProfileDisplay();
       closeScreens();
     }
 
-    function setPlayer(name) {
-      currentUsername = name;
-      document.getElementById('playerNameText').innerText = name;
-      const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`;
-      document.getElementById('playerAvatar').style.backgroundImage = `url('${avatarUrl}')`;
-      document.getElementById('battleMyAvatar').style.backgroundImage = `url('${avatarUrl}')`;
-      document.getElementById('battleMyName').innerText = name;
+    function updateProfileDisplay() {
+      document.getElementById('playerNameText').innerText = currentUsername;
+      document.getElementById('usernameInput').value = currentUsername;
+      const url = `https://api.dicebear.com/7.x/adventurer/svg?seed=${currentAvatarSeed}`;
+      document.getElementById('playerAvatar').style.backgroundImage = `url('${url}')`;
+      document.getElementById('profileBigAvatar').style.backgroundImage = `url('${url}')`;
+      document.getElementById('battleMyAvatar').style.backgroundImage = `url('${url}')`;
+      document.getElementById('battleMyName').innerText = currentUsername;
     }
 
+    window.addEventListener('DOMContentLoaded', () => {
+      updateProfileDisplay();
+    });
+
+    // 遊戲連線與對戰邏輯
+    const SERVER_URL = "https://game-server-mike.onrender.com";
+    const socket = io(SERVER_URL);
+    let activeRoomId = null;
+
     document.getElementById('matchBtn').addEventListener('click', () => {
-      if (!currentUsername) return openScreen('profileScreen');
       socket.emit('start_match', { playerName: currentUsername });
       openScreen('matchingModal');
     });

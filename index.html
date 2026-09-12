@@ -11,7 +11,7 @@
 
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;900&family=Lilita+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
     :root {
@@ -23,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: transparent; }
     
     body {
-      font-family: 'Outfit', -apple-system, sans-serif;
+      font-family: 'Lilita One', 'Outfit', sans-serif;
       background: 
         radial-gradient(circle at 50% 25%, rgba(212,175,55,0.2) 0%, transparent 60%),
         radial-gradient(circle at center, rgba(14,56,38,0.75) 0%, rgba(3,15,9,0.95) 100%),
@@ -50,7 +50,7 @@
 
     .hud-bar {
       height: 65px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 30px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      padding: 0 25px; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
       z-index: 10; position: relative;
     }
     .player-profile {
@@ -64,23 +64,41 @@
       background: url('https://api.dicebear.com/7.x/adventurer/svg?seed=kato') no-repeat center/cover;
       box-shadow: 0 0 10px rgba(212,175,55,0.6);
     }
-    .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
-    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+    .player-name { font-weight: 800; font-size: 16px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; }
+    .trophy-badge { font-size: 12px; color: #f1c40f; display: flex; align-items: center; gap: 4px; font-weight: 600; font-family: 'Outfit', sans-serif; }
 
-    /* 右上角：寶石與金幣欄位 */
-    .currencies { display: flex; gap: 14px; }
-    .currency-chip {
-      background: rgba(10,20,15,0.85); border: 2px solid #d4af37;
-      padding: 4px 16px 4px 8px; border-radius: 22px; font-weight: 800; font-size: 16px;
-      display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-3d);
-      font-family: 'Bebas Neue', sans-serif; backdrop-filter: blur(8px);
+    /* ==========================================
+       荒野亂鬥風 右上角資源欄位
+       ========================================== */
+    .brawl-hud-right {
+      display: flex; align-items: center; gap: 10px;
     }
-    .currency-chip .icon {
-      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 15px; color: #fff;
+    .brawl-pill {
+      position: relative; display: flex; align-items: center;
+      background: #000; border: 2.5px solid #2b2b2b;
+      height: 34px; border-radius: 17px; padding: 0 14px 0 34px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.12);
     }
-    .chip-gem .icon { background: linear-gradient(135deg, #00c6ff, #0072ff); border: 1.5px solid #fff; box-shadow: 0 0 8px rgba(0,198,255,0.6); }
-    .chip-gold .icon { background: linear-gradient(135deg, #f1c40f, #e67e22); border: 1.5px solid #fff; box-shadow: 0 0 8px rgba(241,196,15,0.6); }
+    .brawl-pill .brawl-icon {
+      position: absolute; left: -4px; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    }
+    .brawl-pill .brawl-num {
+      font-family: 'Lilita One', sans-serif; font-size: 18px; color: #fff;
+      letter-spacing: 0.5px; line-height: 1;
+      text-shadow: 2px 2px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000;
+    }
+    .brawl-menu-btn {
+      width: 44px; height: 36px; background: #2f3640; border: 2.5px solid #000;
+      border-radius: 8px; display: flex; flex-direction: column; justify-content: space-around;
+      align-items: center; padding: 6px 8px; cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.7), inset 0 2px 0 rgba(255,255,255,0.25);
+    }
+    .brawl-menu-btn:active { transform: scale(0.92); }
+    .brawl-menu-btn span {
+      width: 100%; height: 3px; background: #fff; border-radius: 2px;
+    }
 
     .left-menu {
       position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 5;
@@ -139,7 +157,7 @@
     .battle-mode-bar {
       width: 260px; background: rgba(0,0,0,0.85); border: 2px solid #d4af37;
       padding: 8px 14px; border-radius: 12px; text-align: center; color: #e1b12c; font-size: 12px; font-weight: bold;
-      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-3d); backdrop-filter: blur(8px); font-family: 'Outfit', sans-serif;
     }
     .battle-mode-bar span { font-family: 'Cinzel', serif; font-size: 16px; color: #fff; display: block; margin-bottom: 2px; }
 
@@ -238,10 +256,61 @@
       </div>
     </div>
     
-    <!-- 右上角：寶石與金幣 -->
-    <div class="currencies">
-      <div class="currency-chip chip-gem"><div class="icon">💎</div><span>1,280</span></div>
-      <div class="currency-chip chip-gold"><div class="icon">🪙</div><span>23,189</span></div>
+    <!-- 右上角：荒野亂鬥風 (彩虹徽章、黃金幣、綠寶石、清單按鍵) -->
+    <div class="brawl-hud-right">
+      <!-- 點數 / 徽章 -->
+      <div class="brawl-pill">
+        <div class="brawl-icon">
+          <svg viewBox="0 0 36 36" width="30" height="30">
+            <defs>
+              <linearGradient id="rainbowStar" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff7675"/>
+                <stop offset="35%" stop-color="#fdcb6e"/>
+                <stop offset="70%" stop-color="#55efc4"/>
+                <stop offset="100%" stop-color="#a29bfe"/>
+              </linearGradient>
+            </defs>
+            <circle cx="18" cy="18" r="15" fill="url(#rainbowStar)" stroke="#000" stroke-width="2.5"/>
+            <polygon points="18,5 21,14 31,14 23,20 26,30 18,24 10,30 13,20 5,14 15,14" fill="#fff" stroke="#000" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <span class="brawl-num">0</span>
+      </div>
+
+      <!-- 金幣 (骷髏黃金幣) -->
+      <div class="brawl-pill">
+        <div class="brawl-icon">
+          <svg viewBox="0 0 36 36" width="30" height="30">
+            <circle cx="18" cy="18" r="15" fill="#f1c40f" stroke="#000" stroke-width="2.5"/>
+            <circle cx="18" cy="18" r="11" fill="#e67e22" opacity="0.4"/>
+            <!-- 荒野骷髏印記 -->
+            <ellipse cx="18" cy="16" rx="6.5" ry="5.5" fill="#d35400"/>
+            <circle cx="15.5" cy="15" r="1.8" fill="#f1c40f"/>
+            <circle cx="20.5" cy="15" r="1.8" fill="#f1c40f"/>
+            <rect x="15.5" y="21" width="5" height="3" rx="1.5" fill="#d35400"/>
+          </svg>
+        </div>
+        <span class="brawl-num">20000</span>
+      </div>
+
+      <!-- 綠寶石 (六角綠寶石) -->
+      <div class="brawl-pill">
+        <div class="brawl-icon">
+          <svg viewBox="0 0 36 36" width="30" height="30">
+            <polygon points="18,4 30,10 30,26 18,32 6,26 6,10" fill="#2ecc71" stroke="#000" stroke-width="2.5"/>
+            <polygon points="18,8 26,12 26,24 18,28 10,24 10,12" fill="#27ae60"/>
+            <polygon points="18,8 26,12 18,17 10,12" fill="#a8e6cf"/>
+          </svg>
+        </div>
+        <span class="brawl-num">1000000</span>
+      </div>
+
+      <!-- 右上漢堡選單鈕 -->
+      <div class="brawl-menu-btn" onclick="alert('選單功能建置中')">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
   </div>
 

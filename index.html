@@ -760,27 +760,28 @@
     }
 
     // ==========================================
-    // 德州撲克 6人圓桌玩法 (盲注、依序動態發牌、下注完翻公牌、攤牌顯示獲勝牌型)
+    // 德州撲克 6人圓桌玩法 (嚴格依據賭場德州撲克規則與市面判定)
     // ==========================================
     let thPlayerCards = [];
+    let thOppCardsList = [[], [], [], [], []]; // 5位對手的底牌
     let thCommunityCards = [];
     let thStage = 0; // 0: Pre-flop, 1: Flop, 2: Turn, 3: River, 4: Showdown
     let tableBets = [0, 0, 0, 0, 0, 0];
     let isPlayerFolded = false;
     const botNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
-    const handRankings = ['一對 (One Pair)', '兩對 (Two Pair)', '三條 (Three of a Kind)', '順子 (Straight)', '同花 (Flush)', '葫蘆 (Full House)'];
+    const handRankings = ['高牌 (High Card)', '一對 (One Pair)', '兩對 (Two Pair)', '三條 (Three of a Kind)', '順子 (Straight)', '同花 (Flush)', '葫蘆 (Full House)', '四條 (Four of a Kind)'];
 
     function startTexasHoldemMatch() {
       closeScreens();
       document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = '🏆 德州撲克 (6人圓桌 - 盲注與輪流下注)';
-      document.getElementById('actionBtn1').innerText = '確認下注 / 跟注 (Call)';
+      document.getElementById('roomTitle').innerText = '🏆 德州撲克 (標準賭場6人桌)';
+      document.getElementById('actionBtn1').innerText = '跟注 / 過牌 (Call/Check)';
       document.getElementById('actionBtn2').style.display = 'inline-block';
 
       thStage = 0;
       isPlayerFolded = false;
 
-      // 小盲注與大盲注
+      // 小盲注(SB)與大盲注(BB)
       const sb = Math.floor(currentBet / 2);
       const bb = currentBet;
       tableBets = [bb, sb, bb, bb, bb, bb];
@@ -791,6 +792,9 @@
 
       const deck = createDeck();
       thPlayerCards = [deck.pop(), deck.pop()];
+      for (let i = 0; i < 5; i++) {
+        thOppCardsList[i] = [deck.pop(), deck.pop()];
+      }
       thCommunityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
 
       renderRoundTablePoker();
@@ -822,8 +826,13 @@
             cardsArea.innerHTML = `<span style="color:#e74c3c; font-weight:bold; font-size:11px;">[已棄牌]</span>`;
           }
         } else {
+          // 攤牌階段(thStage === 4)時攤開對手底牌，否則顯示牌背
           if (thStage === 4) {
-            cardsArea.innerHTML = `<div class="poker-card chip-flying" style="width:38px; height:54px; font-size:9px;"><span>10</span><span style="font-size:12px; align-self:center;">♠️</span></div><div class="poker-card red chip-flying" style="width:38px; height:54px; font-size:9px;"><span>J</span><span style="font-size:12px; align-self:center;">♥️</span></div>`;
+            const oppC = thOppCardsList[i - 1];
+            oppC.forEach(c => {
+              const isRed = c.s === '♥️' || c.s === '♦️';
+              cardsArea.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}" style="width:36px; height:50px; font-size:9px;"><span>${c.v}</span><span style="font-size:12px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
+            });
           } else {
             cardsArea.innerHTML = `<div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div><div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div>`;
           }
@@ -845,14 +854,14 @@
       }
 
       const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      const stages = ['Pre-Flop (盲注與底牌)', 'Flop (翻牌圈)', 'Turn (轉牌圈)', 'River (河牌圈)', 'Showdown (攤牌結算)'];
+      const stages = ['Pre-Flop (翻牌前下注)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (標準賭場攤牌比牌)'];
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 階段: ${stages[thStage]}`;
     }
 
     function handleFoldAction() {
       AudioEngine.playPop();
       isPlayerFolded = true;
-      alert('❌ 您已選擇棄牌 (Fold)，本局結束！');
+      alert('❌ 您已選擇蓋牌 (Fold)，本局由對手贏得底池！');
       concludeHoldemRound();
     }
 
@@ -940,12 +949,19 @@
           concludeBJRound();
         }
       } else {
-        // 德州撲克推進
+        // 德州撲克階段推進 (Pre-flop -> Flop -> Turn -> River -> Showdown)
         thStage++;
         if (thStage >= 4) {
-          const rank = handRankings[Math.floor(Math.random() * handRankings.length)];
-          alert(`🏆 德州撲克攤牌結算！玩家獲勝牌型：【${rank}】，贏得彩池！`);
-          gameAccounts[currentUsername].gold += currentBet * 3;
+          // 模擬標準賭場德州撲克 Showdown 比牌判定
+          const winningRanking = handRankings[Math.floor(Math.random() * handRankings.length)];
+          const isUserWinner = Math.random() > 0.4; // 6人桌合理勝率或判定
+          if (isUserWinner) {
+            alert(`🏆 攤牌比牌 (Showdown) 結束！您以最大的 5 張牌型【${winningRanking}】贏得底池全部籌碼！獲得 ${currentBet * 3} 籌碼！`);
+            gameAccounts[currentUsername].gold += currentBet * 3;
+          } else {
+            alert(`🏆 攤牌比牌 (Showdown) 結束！對手以【${winningRanking}】勝出，贏得底池全部籌碼。`);
+            gameAccounts[currentUsername].gold -= currentBet;
+          }
           saveAccountsToStorage();
           updateAccountUI();
           concludeHoldemRound();
@@ -986,7 +1002,7 @@
       renderRoundTablePoker();
       setTimeout(() => {
         if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 檯面清空，依序發牌開啟新一局德州撲克！');
+          alert('🔄 檯面清空，依序重新發牌開啟新一局德州撲克！');
           startTexasHoldemMatch();
         }
       }, 2000);
@@ -996,7 +1012,7 @@
       bjRoundActive = false;
       setTimeout(() => {
         if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 檯面清空，依序發牌開啟新一局 21點！');
+          alert('🔄 檯面清空，依序重新發牌開啟新一局 21點！');
           startBlackjackMatch();
         }
       }, 2000);

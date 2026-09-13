@@ -63,7 +63,7 @@
     .menu-btn span { font-size: 24px; }
     .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; margin-top: 2px; }
 
-    /* 左下角經驗值累積與分段點小工具 */
+    /* 左下角橫向經驗值累積與分段點小工具 */
     .bottom-left-exp-widget {
       position: absolute; left: 25px; bottom: 25px; width: 190px;
       background: rgba(10,20,15,0.92); border: 2px solid #d4af37; border-radius: 14px;
@@ -299,7 +299,7 @@
     <div class="menu-btn" onclick="openPage('taskPage')"><span>📋</span><label>任務</label></div>
   </div>
 
-  <!-- 左下角經驗值累積與分段點小工具 -->
+  <!-- 左下角橫向經驗值累積與分段點小工具 -->
   <div class="bottom-left-exp-widget" onclick="openPage('taskPage')">
     <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
       <span style="color:#f1c40f; font-weight:bold;">牌手等級 Lv.<span id="hudLevelText">1</span></span>
@@ -384,7 +384,7 @@
     </div>
   </div>
 
-  <!-- 2. 時裝店頁面 (每日至少 15 樣商品，並支援寶石買籌碼) -->
+  <!-- 2. 時裝店頁面 (15樣商品，寶石換籌碼) -->
   <div id="shopPage" class="app-full-page">
     <div class="page-header">
       <div class="page-title">🛒 潮流時裝與籌碼商鋪</div>
@@ -458,7 +458,7 @@
     </div>
   </div>
 
-  <!-- 7. 好友與獨一無二代碼加好友系統 (Fixing the request display bug) -->
+  <!-- 7. 好友與獨一無二代碼加好友系統 -->
   <div id="friendsPage" class="app-full-page">
     <div class="page-header">
       <div class="page-title">👥 好友與專屬代碼系統</div>
@@ -494,7 +494,7 @@
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
     <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;" id="teamFriendsListContainer">
-      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過獨一無二代碼新增好友！</p>
+      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過專屬代碼新增好友！</p>
     </div>
   </div>
 
@@ -586,7 +586,7 @@
   </div>
 
   <script>
-    // 點擊特效 Canvas
+    // 點擊特效 Canvas (包含金色圓點與紅色菱形)
     const clickCanvas = document.getElementById('clickCanvas');
     const cCtx = clickCanvas.getContext('2d');
     let clickParticles = [];
@@ -611,6 +611,45 @@
       }
     }
 
+    class ClickDiamond {
+      constructor(x, y) {
+        this.x = x; this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 4 + 1.5;
+        this.vx = Math.cos(angle) * speed; 
+        this.vy = Math.sin(angle) * speed - 1.2;
+        this.size = Math.random() * 6 + 6;
+        this.alpha = 1; this.decay = 0.025;
+        this.rot = Math.random() * Math.PI;
+        this.vrot = (Math.random() - 0.5) * 0.1;
+      }
+      update() { 
+        this.x += this.vx; 
+        this.y += this.vy; 
+        this.alpha -= this.decay;
+        this.rot += this.vrot;
+      }
+      draw() {
+        cCtx.save(); 
+        cCtx.globalAlpha = Math.max(0, this.alpha);
+        cCtx.translate(this.x, this.y);
+        cCtx.rotate(this.rot);
+        cCtx.fillStyle = '#e74c3c'; // 紅色菱形
+        cCtx.strokeStyle = '#f1c40f';
+        cCtx.lineWidth = 1.5;
+        cCtx.beginPath();
+        cCtx.moveTo(0, -this.size);
+        cCtx.lineTo(this.size * 0.7, 0);
+        cCtx.lineTo(0, this.size);
+        cCtx.lineTo(-this.size * 0.7, 0);
+        cCtx.closePath();
+        cCtx.fill();
+        cCtx.stroke();
+        cCtx.restore();
+      }
+    }
+
+    // 依據不同頁面使用不同音效
     const AudioEngine = {
       ctx: null,
       init() {
@@ -620,24 +659,44 @@
         }
         if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       },
-      playPop() {
+      playTone(freqStart, freqEnd, duration, type = 'sine') {
         this.init();
         if (!this.ctx) return;
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.frequency.setValueAtTime(500, now);
-        osc.frequency.exponentialRampToValueAtTime(900, now + 0.05);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freqStart, now);
+        osc.frequency.exponentialRampToValueAtTime(freqEnd, now + duration);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
         osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(now); osc.stop(now + 0.07);
+        osc.start(now); osc.stop(now + duration);
+      },
+      playClickSound() {
+        const activePage = document.querySelector('.app-full-page.active, .app-screen-overlay.active');
+        let id = activePage ? activePage.id : 'lobby';
+        if (id === 'shopPage') {
+          this.playTone(600, 1200, 0.08, 'triangle'); // 商城：高亢明亮三角波
+        } else if (id === 'trophyPage' || id === 'profilePage') {
+          this.playTone(400, 800, 0.08, 'sine'); // 榮譽/檔案：柔和正弦波
+        } else if (id === 'checkinPage' || id === 'taskPage') {
+          this.playTone(300, 600, 0.08, 'square'); // 簽到/任務：復古方波
+        } else if (id === 'friendsPage' || id === 'teamPage') {
+          this.playTone(500, 900, 0.08, 'sawtooth'); // 好友：鋸齒波
+        } else {
+          this.playTone(500, 900, 0.05, 'sine'); // 大廳預設
+        }
+      },
+      playPop() {
+        this.playClickSound();
       }
     };
 
     window.addEventListener('pointerdown', (e) => {
-      AudioEngine.playPop();
-      for (let i = 0; i < 10; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
+      AudioEngine.playClickSound();
+      for (let i = 0; i < 5; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
+      for (let i = 0; i < 3; i++) clickParticles.push(new ClickDiamond(e.clientX, e.clientY));
     });
 
     function renderEffects() {
@@ -650,7 +709,7 @@
     }
     renderEffects();
 
-    // 帳號與真實 Google 登入系統 (新帳號歸零所有物資僅留 1000 籌碼，並擁有獨一無二的 friendCode)
+    // 帳號與真實 Google 登入系統
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
       "Google User (John)": { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-1234' },
       "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, exp: 50, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 1, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-5678' }
@@ -658,7 +717,6 @@
     let currentUsername = localStorage.getItem('poker_active_account') || "Google User (John)";
     let currentBet = 100;
 
-    // 生成獨一無二的隨機好友代碼
     function generateUniqueFriendCode() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let code = 'PKA-';
@@ -668,7 +726,6 @@
       return code;
     }
 
-    // 每天更新 15 個任務生成器
     const taskTemplates = [
       { title: "贏得 1 場德州撲克對局", exp: 50, rewardGold: 200 },
       { title: "贏得 1 場 21點對決", exp: 50, rewardGold: 200 },
@@ -702,7 +759,6 @@
       }
     }
 
-    // 經驗值分段點獎勵配置
     const expMilestones = [
       { level: 1, reqExp: 100, reward: "500 籌碼", type: "gold", amount: 500 },
       { level: 2, reqExp: 300, reward: "1,500 籌碼 + 20 寶石", type: "mixed", gold: 1500, gems: 20 },
@@ -805,7 +861,6 @@
         if (progressText) progressText.innerText = `${acc.trophies} / 500 盃`;
       }
 
-      // 顯示專屬好友代碼
       const codeDisp = document.getElementById('myUniqueCodeDisplay');
       if (codeDisp) {
         codeDisp.innerText = acc.friendCode;
@@ -819,9 +874,7 @@
       renderTeamUI();
     }
 
-    // ==========================================
-    // 獨一無二代碼加好友系統 (修復請求無法正確顯示的 Bug)
-    // ==========================================
+    // 獨一無二代碼加好友系統
     function sendFriendRequestByCode() {
       const input = document.getElementById('friendCodeInput');
       const code = input.value.trim().toUpperCase();
@@ -829,7 +882,10 @@
 
       let targetUsername = null;
       for (let uname in gameAccounts) {
-        if (gameAccounts[uname].friendCode === code) {
+        if (!gameAccounts[uname].friendCode) {
+          gameAccounts[uname].friendCode = generateUniqueFriendCode();
+        }
+        if (gameAccounts[uname].friendCode.toUpperCase() === code) {
           targetUsername = uname;
           break;
         }

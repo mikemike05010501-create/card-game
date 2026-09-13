@@ -118,45 +118,25 @@
     }
     .play-btn:active { transform: scale(0.95); }
 
-    /* 下注量選擇面板 */
-    .bet-selector-panel {
-      position: absolute; right: 0; bottom: 145px; width: 260px;
-      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 14px;
-      padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 25;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    /* 全新頁面式系統 (Full-page views instead of modals) */
+    .app-full-page {
+      position: fixed; inset: 0; background: #08120e; z-index: 200;
+      display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      padding: 25px 40px; overflow-y: auto;
     }
-    .bet-option-btn {
-      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(212,175,55,0.4);
-      border-radius: 8px; padding: 6px; color: #fff; font-weight: bold; cursor: pointer;
-      text-align: center; font-family: 'Outfit', sans-serif; font-size: 13px;
+    .app-full-page.active { opacity: 1; pointer-events: auto; }
+    .page-header {
+      height: 70px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 2px solid #d4af37; margin-bottom: 20px;
     }
-    .bet-option-btn.selected { background: #f1c40f; color: #000; border-color: #fff; }
+    .page-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; font-weight: 900; letter-spacing: 2px; }
+    .page-back-btn {
+      background: #c0392b; color: #fff; border: 2px solid #fff; padding: 8px 20px;
+      border-radius: 20px; font-weight: bold; cursor: pointer; font-family: 'Outfit', sans-serif;
+    }
+    .page-back-btn:active { transform: scale(0.95); }
 
-    /* 彈窗系統 */
-    .app-screen-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      display: flex; justify-content: center; align-items: center; z-index: 150;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-    }
-    .app-screen-overlay.active { opacity: 1; pointer-events: auto; }
-    .screen-window {
-      width: 85vw; max-width: 600px; height: 75vh; background: #0e1712;
-      border: 3px solid #d4af37; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden;
-    }
-    .screen-header {
-      height: 55px; background: #15221b; border-bottom: 2px solid #d4af37;
-      display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-    }
-    .screen-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 20px; font-weight: 900; }
-    .screen-close-btn {
-      width: 32px; height: 32px; border-radius: 50%; background: #c0392b; border: 2px solid #fff;
-      color: #fff; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .screen-content { flex: 1; padding: 20px; overflow-y: auto; color: #fff; font-family: 'Outfit', sans-serif; }
-
-    /* ========================================================
-       圓桌式 6 人競技對局畫面
-       ======================================================== */
+    /* 圓桌式 6 人競技對局畫面 */
     .game-match-view {
       position: fixed; inset: 0; background: #05100b; z-index: 200;
       display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
@@ -232,26 +212,28 @@
 
   <!-- 頂部 HUD -->
   <div class="hud-bar">
-    <div class="player-profile" onclick="openScreen('profileScreen')">
+    <div class="player-profile" onclick="openPage('profilePage')">
       <div class="avatar"></div>
       <div>
-        <div id="playerNameText" class="player-name">Rockyhsu</div>
-        <div class="trophy-badge">🏆 <span id="hudTrophyCount">650</span> 杯</div>
+        <div id="playerNameText" class="player-name">未登入</div>
+        <div class="trophy-badge">🏆 <span id="hudTrophyCount">0</span> 杯</div>
       </div>
     </div>
     
     <div class="brawl-hud-right">
-      <div class="brawl-pill">🪙 <span id="goldCountText">2950</span> 籌碼</div>
-      <div class="brawl-pill">💎 <span id="gemCountText">1000000</span></div>
+      <div class="brawl-pill">🪙 <span id="goldCountText">1000</span> 籌碼</div>
+      <div class="brawl-pill">💎 <span id="gemCountText">0</span></div>
+      <button onclick="googleLogin()" style="background:#4285F4; color:#fff; border:none; padding:6px 14px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:12px;">Google 登入</button>
     </div>
   </div>
 
   <!-- 左側選單 -->
   <div class="left-menu">
-    <div class="menu-btn" onclick="openScreen('shopScreen')"><span>🛒</span><label>時裝店</label></div>
-    <div class="menu-btn" onclick="openScreen('stepCustomScreen')"><span>✂️</span><label>造角</label></div>
-    <div class="menu-btn" onclick="openScreen('trophyScreen')"><span>🏆</span><label>盃數路</label></div>
-    <div class="menu-btn" onclick="openScreen('accountScreen')"><span>👤</span><label>帳號切換</label></div>
+    <div class="menu-btn" onclick="openPage('shopPage')"><span>🛒</span><label>時裝店</label></div>
+    <div class="menu-btn" onclick="openPage('stepCustomPage')"><span>✂️</span><label>造角</label></div>
+    <div class="menu-btn" onclick="openPage('trophyPage')"><span>🏆</span><label>盃數路</label></div>
+    <div class="menu-btn" onclick="openPage('checkinPage')"><span>📅</span><label>簽到</label></div>
+    <div class="menu-btn" onclick="openPage('taskPage')"><span>📋</span><label>任務</label></div>
   </div>
 
   <!-- 中央大廳舞台 -->
@@ -267,25 +249,12 @@
 
   <!-- 右側選單 -->
   <div class="right-menu">
-    <button class="side-tag-btn" onclick="openScreen('friendsScreen')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="openScreen('teamScreen')"><span>🏠</span>小隊</button>
+    <button class="side-tag-btn" onclick="openPage('friendsPage')"><span>👥</span>好友</button>
+    <button class="side-tag-btn" onclick="openPage('teamPage')"><span>🏠</span>小隊</button>
   </div>
 
-  <!-- 右下對戰按鈕與下注選擇 -->
+  <!-- 右下對戰按鈕 -->
   <div class="battle-center">
-    <div class="bet-selector-panel">
-      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">大廳預設下注籌碼：</div>
-      <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-        <input type="range" id="lobbyBetSlider" min="50" max="2000" step="50" value="100" style="flex:1; accent-color:#f1c40f;" oninput="updateLobbyBet(this.value)">
-        <span id="sliderBetVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
-      </div>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-top:4px;">
-        <div class="bet-option-btn selected" onclick="setBetAmount(100, this)">100</div>
-        <div class="bet-option-btn" onclick="setBetAmount(500, this)">500</div>
-        <div class="bet-option-btn" onclick="setBetAmount(1000, this)">1,000</div>
-      </div>
-    </div>
-
     <div class="battle-mode-bar" onclick="toggleGameMode()">
       <div>
         <small style="color:#aaa; font-size:10px;">點擊切換模式 (6人桌)</small>
@@ -299,86 +268,171 @@
     </button>
   </div>
 
-  <!-- 各類彈窗 -->
-  <div id="shopScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">潮流時裝商鋪</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>這裡可以購買專屬外觀與造型！</p></div></div></div>
-  <div id="stepCustomScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">角色外觀塑形</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>自訂您的專屬牌手外觀與風格！</p></div></div></div>
-  <div id="trophyScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">榮譽盃數之路</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>當前盃數：650 🏆，解鎖豐厚獎勵！</p></div></div></div>
-  <div id="profileScreen" class="app-screen-overlay"><div class="screen-window"><div class="screen-header"><div class="screen-title">牌手檔案</div><div class="screen-close-btn" onclick="closeScreens()">✕</div></div><div class="screen-content"><p>修改您的遊戲暱稱與個人資料。</p></div></div></div>
-  
-  <!-- 好友系統彈窗 -->
-  <div id="friendsScreen" class="app-screen-overlay">
-    <div class="screen-window" style="width: 440px; height: 70vh;">
-      <div class="screen-header">
-        <div class="screen-title">👥 好友與世界玩家</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
-      </div>
-      <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:13px; color:#ccc;">點擊下方世界真玩家的「加好友」按鈕發送請求，對方確認後即成為好友：</div>
-        <div style="display:flex; gap:10px;">
-          <input type="text" id="friendNameInput" placeholder="輸入玩家名稱..." style="flex:1; padding:8px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
-          <button onclick="sendFriendRequest()" style="background:#f1c40f; color:#000; border:none; padding:0 14px; border-radius:8px; font-weight:bold; cursor:pointer;">發送請求</button>
+  <!-- ========================================================
+     全新頁面系統 (Full-page views instead of popups)
+     ======================================================== -->
+
+  <!-- 1. 頭像個人檔案與盃數進度條頁面 -->
+  <div id="profilePage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">🏆 牌手檔案與盃數條</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:20px; font-family:'Outfit',sans-serif; max-width:600px; margin:0 auto; width:100%;">
+      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
+        <div style="font-size:22px; color:#f1c40f; font-weight:bold; margin-bottom:8px;" id="profileNameDisplay">Google 使用者</div>
+        <div style="font-size:16px; margin-bottom:15px;">當前總盃數：<span id="profileTrophyDisplay" style="color:#f1c40f; font-weight:bold;">0</span> 🏆</div>
+        <div style="font-size:13px; color:#aaa; margin-bottom:6px;">段位盃數進度 (有色與無色區分)：</div>
+        <div style="width:100%; height:26px; background:#222; border-radius:13px; overflow:hidden; border:2px solid #d4af37; position:relative;">
+          <div id="trophyProgressBar" style="width:0%; height:100%; background: linear-gradient(90deg, #f1c40f, #e67e22); transition: width 0.5s;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; text-shadow:1px 1px 2px #000;" id="trophyProgressText">0 / 1000 盃</div>
         </div>
-
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:4px;">🌐 世界上的真人玩家列表：</div>
-        <div id="globalPlayersContainer" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:8px; border-radius:8px;"></div>
-
-        <hr style="border-color:rgba(212,175,55,0.3); margin:2px 0;">
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">待處理的好友請求 (點擊接受)：</div>
-        <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
-
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px; margin-top:2px;">我的好友列表：</div>
-        <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
+      </div>
+      <div style="background:rgba(0,0,0,0.5); border:2px solid rgba(212,175,55,0.4); border-radius:18px; padding:20px;">
+        <h4 style="color:#f1c40f; margin-bottom:10px;">📊 賽局戰績記錄</h4>
+        <p style="font-size:14px; color:#ccc;">• 勝場獎勵：每贏一局 +4 🏆</p>
+        <p style="font-size:14px; color:#ccc; margin-top:5px;">• 敗場懲罰：每輸一局 -3 🏆</p>
       </div>
     </div>
   </div>
 
-  <!-- 小隊大廳彈窗 -->
-  <div id="teamScreen" class="app-screen-overlay">
-    <div class="screen-window" style="width: 400px; height: 60vh;">
-      <div class="screen-header">
-        <div class="screen-title">🏠 小隊大廳 (邀請好友組隊)</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+  <!-- 2. 時裝店頁面 -->
+  <div id="shopPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">🛒 潮流時裝商鋪</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px; max-width:800px; margin:0 auto; width:100%;">
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
+        <div style="font-size:50px;">🕶️</div>
+        <h4>高街龐克西服</h4>
+        <p style="font-size:12px; color:#bbb; margin:8px 0;">黑曜石流光防風夾克</p>
+        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 20px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('解鎖成功！')">💎 250 寶石</button>
       </div>
-      <div class="screen-content" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="font-size:13px; color:#ccc;">您可以從好友列表中邀請線上好友加入小隊一同遊玩：</div>
-        <div style="font-weight:bold; color:#f1c40f; font-size:13px;">在線好友列表：</div>
-        <div id="teamFriendsListContainer" style="display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1;"></div>
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
+        <div style="font-size:50px;">👑</div>
+        <h4>皇家純金燕尾服</h4>
+        <p style="font-size:12px; color:#bbb; margin:8px 0;">純金手工刺繡奢華晚宴服</p>
+        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 20px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('解鎖成功！')">💎 800 寶石</button>
       </div>
     </div>
   </div>
 
-  <!-- 帳號切換彈窗 -->
-  <div id="accountScreen" class="app-screen-overlay">
-    <div class="screen-window" style="width: 400px; height: 60vh;">
-      <div class="screen-header">
-        <div class="screen-title">👤 帳號管理中心</div>
-        <div class="screen-close-btn" onclick="closeScreens()">✕</div>
+  <!-- 3. 造角頁面 -->
+  <div id="stepCustomPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">✂️ 角色外觀塑形中心</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; text-align:center; padding-top:40px; font-family:'Outfit',sans-serif;">
+      <h3 style="color:#f1c40f; margin-bottom:15px;">自訂您的 3D 黏土/日漫牌手外觀</h3>
+      <p style="color:#aaa;">選擇性別、髮型、瞳孔與高光配色，打造最潮牌手！</p>
+    </div>
+  </div>
+
+  <!-- 4. 盃數路頁面 -->
+  <div id="trophyPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">🏆 榮譽盃數之路</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;">
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:16px; padding:20px; display:flex; justify-content:space-between; align-items:center;">
+        <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇：獎勵 500 籌碼</p></div>
+        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 18px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('領取成功！')">立即領取</button>
       </div>
-      <div class="screen-content" style="display:flex; flex-direction:column; gap:15px;">
-        <div style="font-size:14px; color:#ccc;">當前登入帳號：<b id="currentAccountDisplay" style="color:#f1c40f;">Rockyhsu</b></div>
-        <div style="display:flex; gap:10px;">
-          <input type="text" id="newAccountInput" placeholder="輸入新帳號名稱..." style="flex:1; padding:10px; border-radius:10px; border:2px solid #d4af37; background:#000; color:#fff; outline:none;">
-          <button onclick="createNewAccount()" style="background:#2ecc71; color:#fff; border:none; padding:0 15px; border-radius:10px; font-weight:bold; cursor:pointer;">新增/登入</button>
+    </div>
+  </div>
+
+  <!-- 5. 簽到活動頁面 (New Check-in Activity) -->
+  <div id="checkinPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">📅 每日簽到活動</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; text-align:center;">
+      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:18px; padding:30px;">
+        <h3 style="color:#f1c40f; margin-bottom:15px;">連續簽到拿豪華籌碼！</h3>
+        <p style="color:#ccc; margin-bottom:25px;">每日登入即可簽到領取獎勵，7天全勤再送神祕大獎。</p>
+        <button style="background:linear-gradient(135deg, #f1c40f, #e67e22); color:#000; border:none; padding:14px 40px; border-radius:20px; font-size:18px; font-weight:bold; cursor:pointer; font-family:'Lilita One',sans-serif;" onclick="claimCheckin()">立即簽到領取 500 籌碼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 任務頁面 (More Tasks Added) -->
+  <div id="taskPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">📋 每日與成就任務</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; max-width:700px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:12px; font-family:'Outfit',sans-serif;">
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+        <div><b>新手登入任務</b><p style="font-size:12px; color:#aaa;">完成 Google 帳號登入與造角 (1/1)</p></div>
+        <button style="background:#2ecc71; color:#fff; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="alert('已領取獎勵 300 籌碼！')">領取獎勵</button>
+      </div>
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+        <div><b>牌局狂熱者</b><p style="font-size:12px; color:#aaa;">進行任意 3 場德州撲克或 21點對決 (0/3)</p></div>
+        <button style="background:#555; color:#aaa; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:not-allowed;" disabled>進行中</button>
+      </div>
+      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
+        <div><b>社交達人</b><p style="font-size:12px; color:#aaa;">透過 QR code 或搜尋新增 1 位好友 (0/1)</p></div>
+        <button style="background:#555; color:#aaa; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:not-allowed;" disabled>進行中</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 好友與 QR Code 掃描頁面 (QR Code method & scanner system) -->
+  <div id="friendsPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">👥 好友與 QR Code 掃描系統</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; max-width:650px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; font-family:'Outfit',sans-serif;">
+      <!-- QR Code 產生區 -->
+      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
+        <h4 style="color:#f1c40f; margin-bottom:8px;">📌 我的專屬好友 QR Code</h4>
+        <div style="width:120px; height:120px; background:#fff; margin:10px auto; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:14px; border:3px solid #d4af37;" id="myQrCodeDisplay">QR_CODE</div>
+        <p style="font-size:12px; color:#aaa;">讓好友掃描此碼或輸入您的 Google 帳號加好友</p>
+      </div>
+
+      <!-- QR Code 掃描模擬器 -->
+      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
+        <h4 style="color:#f1c40f; margin-bottom:8px;">📷 掃描好友 QR Code 系統</h4>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+          <input type="text" id="scanCodeInput" placeholder="輸入或掃描好友代碼..." style="padding:8px 12px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; width:260px; outline:none;">
+          <button style="background:#f1c40f; color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="scanAndAddFriend()">確認掃描加好友</button>
         </div>
-        <hr style="border-color:rgba(212,175,55,0.3); margin:5px 0;">
-        <div style="font-weight:bold; color:#f1c40f;">已儲存的帳號清單：</div>
-        <div id="accountListContainer" style="display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1;"></div>
       </div>
+
+      <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">待處理的好友請求：</div>
+      <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
+      <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">我的好友列表：</div>
+      <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
+    </div>
+  </div>
+
+  <!-- 8. 小隊頁面 -->
+  <div id="teamPage" class="app-full-page">
+    <div class="page-header">
+      <div class="page-title">🏠 小隊大廳</div>
+      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
+    </div>
+    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;" id="teamFriendsListContainer">
+      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過 QR code 或搜尋新增好友！</p>
     </div>
   </div>
 
   <!-- 20秒自動補位配對彈窗 (6人桌) -->
   <div id="matchingModal" class="app-screen-overlay">
-    <div class="screen-window" style="width: 390px; height: 48vh; align-items:center; justify-content:center; text-align:center;">
+    <div class="screen-window" style="width: 390px; height: 45vh; align-items:center; justify-content:center; text-align:center; background:#0e1712;">
       <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:15px;" id="matchingTitleText">尋找 6 人桌對手中...</h2>
       <div style="font-size: 22px; margin: 15px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 6 人 | 已配對: 1 / 6 人</div>
-      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:15px;" id="matchTimerText">剩餘配對時間: 20 秒</div>
-      <div style="font-size: 35px; margin: 5px 0;">♣️♥️♦️♠️</div>
+      <div style="font-size: 35px; margin: 10px 0;">♣️♥️♦️♠️</div>
       <button onclick="cancelMatchmaking()" style="margin-top:15px; background:#e74c3c; color:#fff; border:none; padding:8px 24px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 圓桌式 6 人競技對局畫面 -->
+  <!-- 圓桌式 6 人競技對局畫面 (包含遊戲內籌碼下注調整區域) -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">6人圓桌對決</h3>
@@ -397,7 +451,7 @@
       <!-- 6 人座位 (Seat 0 ~ Seat 5) -->
       <div class="seat seat-0">
         <div class="seat-avatar">我</div>
-        <div class="seat-info"><div style="font-weight:bold;" id="seat0-name">Rockyhsu</div></div>
+        <div class="seat-info"><div style="font-weight:bold;" id="seat0-name">玩家</div></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat0-bet">0</span></div>
         <div class="seat-cards" id="seat-0-cards"></div>
       </div>
@@ -438,10 +492,10 @@
       </div>
     </div>
 
-    <!-- 遊戲內下注量與動作面板 -->
+    <!-- 遊戲內下注量與動作面板 (移至遊戲內操作) -->
     <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
       <div class="in-game-bet-bar" style="display:flex; gap:12px; align-items:center; background:rgba(0,0,0,0.85); padding:8px 20px; border-radius:16px; border:2px solid #d4af37;">
-        <span style="font-size:12px; color:#f1c40f;">本局下注量調整：</span>
+        <span style="font-size:12px; color:#f1c40f;">遊戲內下注量調整：</span>
         <input type="range" id="gameBetSlider" min="50" max="2000" step="50" value="100" style="width:140px; accent-color:#f1c40f;" oninput="updateGameSlider(this.value)">
         <span id="gameSliderVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
       </div>
@@ -517,16 +571,49 @@
     }
     renderEffects();
 
-    // 帳號與好友系統
+    // 帳號與 Google 登入系統 (新帳號歸零所有物資僅留 1000 籌碼)
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
-      "Rockyhsu": { gold: 2950, gems: 1000000, trophies: 650, friends: [], friendRequests: [] },
-      "Guest01": { gold: 1000, gems: 500, trophies: 100, friends: [], friendRequests: [] },
-      "Alice": { gold: 5000, gems: 2000, trophies: 900, friends: [], friendRequests: [] },
-      "Bob": { gold: 1800, gems: 300, trophies: 320, friends: [], friendRequests: [] },
-      "Charlie": { gold: 3400, gems: 800, trophies: 550, friends: [], friendRequests: [] }
+      "Google User (John)": { gold: 1000, gems: 0, trophies: 0, friends: [], friendRequests: [], qrCode: 'QR_JOHN_123' },
+      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, friends: [], friendRequests: [], qrCode: 'QR_ALICE_456' },
+      "Google User (Bob)": { gold: 1000, gems: 0, trophies: 120, friends: [], friendRequests: [], qrCode: 'QR_BOB_789' }
     };
-    let currentUsername = localStorage.getItem('poker_active_account') || "Rockyhsu";
+    let currentUsername = localStorage.getItem('poker_active_account') || "Google User (John)";
     let currentBet = 100;
+
+    function googleLogin() {
+      let googleNames = ["Google User (John)", "Google User (Alice)", "Google User (Bob)"];
+      let selectedName = prompt("【Google 帳號登入模擬】\n請輸入或選擇 Google 帳號名稱 (例如: Google User (John) 或新建帳號):", "Google User (John)");
+      if (!selectedName) return;
+
+      currentUsername = selectedName;
+      if (!gameAccounts[currentUsername]) {
+        // 新帳號需先歸零所有物資只留下1000籌碼
+        gameAccounts[currentUsername] = {
+          gold: 1000,
+          gems: 0,
+          trophies: 0,
+          friends: [],
+          friendRequests: [],
+          qrCode: 'QR_' + Math.random().toString(36).substr(2, 6).toUpperCase()
+        };
+      }
+      saveAccountsToStorage();
+      updateAccountUI();
+      alert(`Google 帳號登入成功：${currentUsername} (初始籌碼: 1000)`);
+    }
+
+    function setBetAmount(amt, btn) {
+      currentBet = amt;
+      document.getElementById('lobbyBetSlider').value = amt;
+      document.getElementById('sliderBetVal').innerText = amt;
+      document.querySelectorAll('.bet-option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    function updateLobbyBet(val) {
+      currentBet = parseInt(val);
+      document.getElementById('sliderBetVal').innerText = currentBet;
+    }
 
     function updateGameSlider(val) {
       currentBet = parseInt(val);
@@ -540,81 +627,75 @@
 
     function updateAccountUI() {
       if (!gameAccounts[currentUsername]) {
-        gameAccounts[currentUsername] = { gold: 1500, gems: 100, trophies: 0, friends: [], friendRequests: [] };
+        gameAccounts[currentUsername] = { gold: 1000, gems: 0, trophies: 0, friends: [], friendRequests: [], qrCode: 'QR_NEW' };
       }
       const acc = gameAccounts[currentUsername];
       document.getElementById('playerNameText').innerText = currentUsername;
       document.getElementById('goldCountText').innerText = acc.gold;
       document.getElementById('gemCountText').innerText = acc.gems;
       document.getElementById('hudTrophyCount').innerText = acc.trophies;
-      document.getElementById('currentAccountDisplay').innerText = currentUsername;
       document.getElementById('seat0-name').innerText = currentUsername;
 
-      const listContainer = document.getElementById('accountListContainer');
-      if (listContainer) {
-        listContainer.innerHTML = '';
-        for (let name in gameAccounts) {
-          const isCurrent = name === currentUsername;
-          listContainer.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid ${isCurrent?'#2ecc71':'rgba(212,175,55,0.3)'};">
-              <div>
-                <b style="color:${isCurrent?'#2ecc71':'#fff'}">${name}</b>
-                <div style="font-size:11px; color:#aaa;">🪙 ${gameAccounts[name].gold} 籌碼 | 🏆 ${gameAccounts[name].trophies}</div>
-              </div>
-              ${isCurrent ? '<span style="color:#2ecc71; font-size:12px; font-weight:bold;">使用中</span>' : `<button onclick="switchAccount('${name}')" style="background:#d4af37; color:#000; border:none; padding:4px 12px; border-radius:6px; font-weight:bold; cursor:pointer;">切換</button>`}
-            </div>
-          `;
-        }
+      // Profile page info
+      const profileName = document.getElementById('profileNameDisplay');
+      const profileTrophy = document.getElementById('profileTrophyDisplay');
+      const progressBar = document.getElementById('trophyProgressBar');
+      const progressText = document.getElementById('trophyProgressText');
+      if (profileName) profileName.innerText = currentUsername;
+      if (profileTrophy) profileTrophy.innerText = acc.trophies;
+      if (progressBar) {
+        let percentage = Math.min(100, (acc.trophies / 500) * 100); // 500 trophies milestone
+        progressBar.style.width = percentage + '%';
+        if (progressText) progressText.innerText = `${acc.trophies} / 500 盃`;
+      }
+
+      // My QR code
+      const qrDisp = document.getElementById('myQrCodeDisplay');
+      if (qrDisp && acc.qrCode) {
+        qrDisp.innerText = acc.qrCode;
       }
 
       renderFriendsUI();
       renderTeamUI();
     }
 
-    function switchAccount(name) {
-      if (gameAccounts[name]) {
-        currentUsername = name;
-        saveAccountsToStorage();
-        updateAccountUI();
-        alert(`成功切換至帳號：${name}`);
-        closeScreens();
-      }
-    }
-
-    function createNewAccount() {
-      const input = document.getElementById('newAccountInput');
-      const name = input.value.trim();
-      if (!name) return alert('帳號名稱不能為空！');
-      if (!gameAccounts[name]) {
-        gameAccounts[name] = { gold: 2000, gems: 200, trophies: 50, friends: [], friendRequests: [] };
-      }
-      currentUsername = name;
-      input.value = '';
-      saveAccountsToStorage();
-      updateAccountUI();
-      alert(`已成功登入/新增帳號：${name}`);
-      closeScreens();
-    }
-
-    // 好友機制
+    // 好友機制與 QR Code 掃描系統
     function sendFriendRequest(targetName) {
       const input = document.getElementById('friendNameInput');
       const name = targetName || input.value.trim();
       if (!name) return alert('請輸入或選擇好友名字！');
       if (name === currentUsername) return alert('不能加自己為好友！');
-      if (!gameAccounts[name]) return alert(`找不到世界上的真實玩家 [${name}]！`);
+      if (!gameAccounts[name]) return alert(`找不到玩家 [${name}]！`);
 
       const targetAcc = gameAccounts[name];
       const myAcc = gameAccounts[currentUsername];
 
       if (myAcc.friends.includes(name)) return alert('對方已經是您的好友了！');
-      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了，請等待對方確認！');
+      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了！');
 
       targetAcc.friendRequests.push(currentUsername);
       saveAccountsToStorage();
       if (input) input.value = '';
-      alert(`已向真實玩家 [${name}] 發送好友請求！`);
+      alert(`已向 [${name}] 發送好友請求！`);
       updateAccountUI();
+    }
+
+    function scanAndAddFriend() {
+      const scanInput = document.getElementById('scanCodeInput');
+      const codeOrName = scanInput.value.trim();
+      if (!codeOrName) return alert('請輸入要掃描的 QR Code 或玩家名稱！');
+
+      let foundName = null;
+      for (let accName in gameAccounts) {
+        if (accName === codeOrName || gameAccounts[accName].qrCode === codeOrName) {
+          foundName = accName;
+          break;
+        }
+      }
+
+      if (!foundName) return alert('無效的 QR Code 或找不到該玩家！');
+      sendFriendRequest(foundName);
+      scanInput.value = '';
     }
 
     function acceptFriendRequest(fromName) {
@@ -627,7 +708,7 @@
 
       saveAccountsToStorage();
       updateAccountUI();
-      alert(`您已接受 [${fromName}] 的好友請求！雙方正式成為好友。`);
+      alert(`您已接受 [${fromName}] 的好友請求！`);
     }
 
     function renderFriendsUI() {
@@ -642,7 +723,7 @@
         if (name !== currentUsername && !myAcc.friends.includes(name)) {
           globalContainer.innerHTML += `
             <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:5px 10px; border-radius:6px;">
-              <span>🌐 ${name} (在線真人)</span>
+              <span>🌐 ${name} (在線)</span>
               <button onclick="sendFriendRequest('${name}')" style="background:#f1c40f; color:#000; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">加好友</button>
             </div>
           `;
@@ -675,7 +756,7 @@
       const teamContainer = document.getElementById('teamFriendsListContainer');
       if (!teamContainer) return;
 
-      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友系統確認加好友！</div>' : '';
+      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友頁面新增好友！</div>' : '';
       myAcc.friends.forEach(name => {
         teamContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
@@ -691,25 +772,34 @@
 
     function inviteFriendToPlay(friendName) {
       alert(`已成功邀請好友 [${friendName}] 進入小隊！即將開始 6 人桌配對。`);
-      closeScreens();
+      closePages();
       startCurrentGameMode();
+    }
+
+    // 簽到活動功能
+    function claimCheckin() {
+      gameAccounts[currentUsername].gold += 500;
+      saveAccountsToStorage();
+      updateAccountUI();
+      alert('📅 簽到成功！獲得 500 籌碼獎勵！');
+      closePages();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       updateAccountUI();
     });
 
-    // 遊戲模式與 20秒匹配系統 (6人桌)
+    // 遊戲模式與 30秒匹配系統 (不顯示數字倒數計時，改為等待匹配中指示)
     let currentGameMode = 'poker';
     let matchTimer = null;
-    let secondsLeft = 20;
+    let matchSecondsLeft = 30;
 
     function toggleGameMode() {
       if (currentGameMode === 'poker') {
         currentGameMode = 'blackjack';
         document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
         document.getElementById('btnMainText').innerText = '21點對決';
-        document.getElementById('btnSubLabel').innerText = '6人匹配 / 20秒人機';
+        document.getElementById('btnSubLabel').innerText = '6人匹配 / 30秒人機';
       } else {
         currentGameMode = 'poker';
         document.getElementById('modeTitleText').innerText = '德州撲克';
@@ -723,33 +813,27 @@
         return alert('❌ 您的籌碼不足以支付本局下注量！');
       }
 
-      secondsLeft = 20;
-      document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
-      
+      matchSecondsLeft = 30;
       const modeName = currentGameMode === 'poker' ? '德州撲克' : '21點';
-      document.getElementById('matchingTitleText').innerText = `尋找 6 人 ${modeName} 對戰玩家...`;
-      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 1 / 6 人';
+      document.getElementById('matchingTitleText').innerText = `正在尋找 6 人 ${modeName} 對戰玩家 (匹配中)...`;
+      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 配對狀態: 搜尋中...';
       openScreen('matchingModal');
 
       if (matchTimer) clearInterval(matchTimer);
       matchTimer = setInterval(() => {
-        secondsLeft--;
-        document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${secondsLeft} 秒`;
+        matchSecondsLeft--;
 
-        if (secondsLeft === 15) {
+        if (matchSecondsLeft === 20) {
           document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 3 / 6 人';
-        } else if (secondsLeft === 8) {
+        } else if (matchSecondsLeft === 10) {
           document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 5 / 6 人';
         }
 
-        if (secondsLeft <= 0) {
+        if (matchSecondsLeft <= 0) {
           clearInterval(matchTimer);
-          document.getElementById('matchTimerText').innerText = '超時！自動安排 AI 玩家補滿 6 人桌！';
-          setTimeout(() => {
-            closeScreens();
-            if (currentGameMode === 'poker') startTexasHoldemMatch();
-            else startBlackjackMatch();
-          }, 1000);
+          closeScreens();
+          if (currentGameMode === 'poker') startTexasHoldemMatch();
+          else startBlackjackMatch();
         }
       }, 1000);
     }
@@ -760,7 +844,7 @@
     }
 
     // ==========================================
-    // 德州撲克標準賭場 6 人規則實作 (盲注、Pre-flop, Flop, Turn, River, Showdown 攤牌比牌)
+    // 德州撲克標準規則 (盲注、底牌、Pre-flop, Flop, Turn, River, Showdown 盃數 ±4/±3)
     // ==========================================
     let thPlayerCards = [];
     let thOppCardsList = [[], [], [], [], []];
@@ -781,7 +865,6 @@
       thStage = 0;
       isPlayerFolded = false;
 
-      // 下小盲注(SB)與大盲注(BB)
       const sb = Math.floor(currentBet / 2);
       const bb = currentBet;
       tableBets = [bb, sb, bb, bb, bb, bb];
@@ -826,7 +909,6 @@
             cardsArea.innerHTML = `<span style="color:#e74c3c; font-weight:bold; font-size:11px;">[已棄牌]</span>`;
           }
         } else {
-          // 攤牌階段(thStage === 4)時攤開對手手牌，否則顯示牌背
           if (thStage === 4) {
             const oppC = thOppCardsList[i - 1];
             oppC.forEach(c => {
@@ -854,15 +936,18 @@
       }
 
       const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      const stages = ['Pre-Flop (翻牌前下注)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (標準賭場攤牌比牌)'];
+      const stages = ['Pre-Flop (槍口位UTG表態)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (攤牌比牌)'];
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 階段: ${stages[thStage]}`;
     }
 
     function handleFoldAction() {
       AudioEngine.playPop();
       isPlayerFolded = true;
-      alert('❌ 您已選擇蓋牌 (Fold)，本局由對手贏得底池！');
-      concludeHoldemRound();
+      gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3); // 輸一局扣3杯
+      saveAccountsToStorage();
+      updateAccountUI();
+      alert('❌ 您已選擇蓋牌 (Fold)，輸掉本局！ (-3 盃)');
+      concludeHoldemRound(false);
     }
 
     // ==========================================
@@ -933,7 +1018,6 @@
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 順序叫牌中`;
     }
 
-    // 統一遊戲動作分流
     function handleGameAction() {
       AudioEngine.playPop();
       if (currentGameMode === 'blackjack') {
@@ -942,8 +1026,9 @@
         renderRoundTableBJ(true);
         const pSum = calcBJ(bjPlayersHands[0]);
         if (pSum > 21) {
-          alert('💥 21點爆牌 (Bust)！');
+          alert('💥 21點爆牌 (Bust)！ (-3 盃)');
           gameAccounts[currentUsername].gold -= currentBet;
+          gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3);
           saveAccountsToStorage();
           updateAccountUI();
           concludeBJRound();
@@ -953,11 +1038,12 @@
         thStage++;
         if (thStage >= 4) {
           const rank = handRankings[Math.floor(Math.random() * handRankings.length)];
-          alert(`🏆 德州撲克攤牌比牌 (Showdown) 結束！最大牌型為【${rank}】，您贏得了底池全部籌碼！`);
+          alert(`🏆 德州撲克攤牌比牌 (Showdown) 結束！最大牌型為【${rank}】，您贏得了底池全部籌碼！ (+4 盃)`);
           gameAccounts[currentUsername].gold += currentBet * 3;
+          gameAccounts[currentUsername].trophies += 4; // 贏一局加4杯
           saveAccountsToStorage();
           updateAccountUI();
-          concludeHoldemRound();
+          concludeHoldemRound(true);
         } else {
           renderRoundTablePoker();
         }
@@ -976,13 +1062,15 @@
       const pSum = calcBJ(bjPlayersHands[0]);
       setTimeout(() => {
         if (dSum > 21 || pSum > dSum) {
-          alert(`🎉 21點獲勝！您的點數 (${pSum}) 大於莊家 (${dSum})，贏得 ${currentBet} 籌碼！`);
+          alert(`🎉 21點獲勝！您的點數 (${pSum}) 大於莊家 (${dSum})，贏得 ${currentBet} 籌碼！ (+4 盃)`);
           gameAccounts[currentUsername].gold += currentBet;
+          gameAccounts[currentUsername].trophies += 4;
         } else if (pSum === dSum) {
           alert(`🤝 21點平手 (Push)！`);
         } else {
-          alert(`😢 莊家獲勝 (${dSum}點)，輸掉 ${currentBet} 籌碼。`);
+          alert(`😢 莊家獲勝 (${dSum}點)，輸掉 ${currentBet} 籌碼。 (-3 盃)`);
           gameAccounts[currentUsername].gold -= currentBet;
+          gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3);
         }
         saveAccountsToStorage();
         updateAccountUI();
@@ -990,7 +1078,7 @@
       }, 300);
     }
 
-    function concludeHoldemRound() {
+    function concludeHoldemRound(won) {
       thStage = 4;
       renderRoundTablePoker();
       setTimeout(() => {
@@ -1020,13 +1108,21 @@
       if (comm) comm.innerHTML = '';
     }
 
-    function openScreen(id) {
-      closeScreens();
-      document.getElementById(id).classList.add('active');
+    // 全新頁面導航管理 (Full-page views instead of popups)
+    function openPage(pageId) {
+      closePages();
+      const page = document.getElementById(pageId);
+      if (page) page.classList.add('active');
     }
 
-    function closeScreens() {
+    function closePages() {
+      document.querySelectorAll('.app-full-page').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
+    }
+
+    function openScreen(id) {
+      const screen = document.getElementById(id);
+      if (screen) screen.classList.add('active');
     }
   </script>
 </body>

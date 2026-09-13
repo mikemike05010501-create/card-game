@@ -458,7 +458,7 @@
     </div>
   </div>
 
-  <!-- 7. 好友與獨一無二代碼加好友系統 -->
+  <!-- 7. 好友與獨一無二代碼加好友系統 (修復代碼查詢) -->
   <div id="friendsPage" class="app-full-page">
     <div class="page-header">
       <div class="page-title">👥 好友與專屬代碼系統</div>
@@ -537,35 +537,35 @@
 
       <div class="seat seat-1">
         <div class="seat-avatar">P1</div>
-        <div class="seat-info"><b id="seat1-name">玩家1</b></div>
+        <div class="seat-info"><b id="seat1-name">真實玩家1</b></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat1-bet">0</span></div>
         <div class="seat-cards" id="seat-1-cards"></div>
       </div>
 
       <div class="seat seat-2">
         <div class="seat-avatar">P2</div>
-        <div class="seat-info"><b id="seat2-name">玩家2</b></div>
+        <div class="seat-info"><b id="seat2-name">真實玩家2</b></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat2-bet">0</span></div>
         <div class="seat-cards" id="seat-2-cards"></div>
       </div>
 
       <div class="seat seat-3">
         <div class="seat-avatar">P3</div>
-        <div class="seat-info"><b id="seat3-name">玩家3</b></div>
+        <div class="seat-info"><b id="seat3-name">真實玩家3</b></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat3-bet">0</span></div>
         <div class="seat-cards" id="seat-3-cards"></div>
       </div>
 
       <div class="seat seat-4">
         <div class="seat-avatar">P4</div>
-        <div class="seat-info"><b id="seat4-name">玩家4</b></div>
+        <div class="seat-info"><b id="seat4-name">真實玩家4</b></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat4-bet">0</span></div>
         <div class="seat-cards" id="seat-4-cards"></div>
       </div>
 
       <div class="seat seat-5">
         <div class="seat-avatar">P5</div>
-        <div class="seat-info"><b id="seat5-name">玩家5</b></div>
+        <div class="seat-info"><b id="seat5-name">真實玩家5</b></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat5-bet">0</span></div>
         <div class="seat-cards" id="seat-5-cards"></div>
       </div>
@@ -586,7 +586,7 @@
   </div>
 
   <script>
-    // 點擊特效 Canvas (包含金色圓點與紅色菱形)
+    // 點擊特效 Canvas (金色圓點與紅色菱形)
     const clickCanvas = document.getElementById('clickCanvas');
     const cCtx = clickCanvas.getContext('2d');
     let clickParticles = [];
@@ -677,15 +677,15 @@
         const activePage = document.querySelector('.app-full-page.active, .app-screen-overlay.active');
         let id = activePage ? activePage.id : 'lobby';
         if (id === 'shopPage') {
-          this.playTone(600, 1200, 0.08, 'triangle'); // 商城：高亢明亮三角波
+          this.playTone(600, 1200, 0.08, 'triangle');
         } else if (id === 'trophyPage' || id === 'profilePage') {
-          this.playTone(400, 800, 0.08, 'sine'); // 榮譽/檔案：柔和正弦波
+          this.playTone(400, 800, 0.08, 'sine');
         } else if (id === 'checkinPage' || id === 'taskPage') {
-          this.playTone(300, 600, 0.08, 'square'); // 簽到/任務：復古方波
+          this.playTone(300, 600, 0.08, 'square');
         } else if (id === 'friendsPage' || id === 'teamPage') {
-          this.playTone(500, 900, 0.08, 'sawtooth'); // 好友：鋸齒波
+          this.playTone(500, 900, 0.08, 'sawtooth');
         } else {
-          this.playTone(500, 900, 0.05, 'sine'); // 大廳預設
+          this.playTone(500, 900, 0.05, 'sine');
         }
       },
       playPop() {
@@ -712,7 +712,8 @@
     // 帳號與真實 Google 登入系統
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
       "Google User (John)": { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-1234' },
-      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, exp: 50, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 1, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-5678' }
+      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, exp: 50, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 1, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-5678' },
+      "Google User (Bob)": { gold: 1500, gems: 10, trophies: 110, exp: 120, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 2, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-9876' }
     };
     let currentUsername = localStorage.getItem('poker_active_account') || "Google User (John)";
     let currentBet = 100;
@@ -874,7 +875,7 @@
       renderTeamUI();
     }
 
-    // 獨一無二代碼加好友系統
+    // 獨一無二代碼加好友系統 (確保跨帳號即時請求同步)
     function sendFriendRequestByCode() {
       const input = document.getElementById('friendCodeInput');
       const code = input.value.trim().toUpperCase();
@@ -972,7 +973,7 @@
       startCurrentGameMode();
     }
 
-    // 商店內容 15 樣與寶石換籌碼
+    // 商店 15 樣商品與寶石換籌碼
     const shopItemsData = [
       { id: 1, name: "新手籌碼包 (500)", priceGems: 10, rewardGold: 600, icon: "🪙", desc: "10 寶石換 600 籌碼" },
       { id: 2, name: "進階籌碼包 (3,000)", priceGems: 45, rewardGold: 3500, icon: "🪙", desc: "45 寶石換 3,500 籌碼" },

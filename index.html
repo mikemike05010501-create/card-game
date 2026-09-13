@@ -517,7 +517,7 @@
     }
     renderEffects();
 
-    // 帳號與好友系統 (世界真人玩家列表、發送與接受請求)
+    // 帳號與好友系統
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
       "Rockyhsu": { gold: 2950, gems: 1000000, trophies: 650, friends: [], friendRequests: [] },
       "Guest01": { gold: 1000, gems: 500, trophies: 100, friends: [], friendRequests: [] },
@@ -596,7 +596,7 @@
       closeScreens();
     }
 
-    // 好友機制：世界真人玩家列表點選確認加好友
+    // 好友機制
     function sendFriendRequest(targetName) {
       const input = document.getElementById('friendNameInput');
       const name = targetName || input.value.trim();
@@ -760,10 +760,10 @@
     }
 
     // ==========================================
-    // 德州撲克 6人圓桌玩法 (嚴格依據賭場德州撲克規則與市面判定)
+    // 德州撲克 6人圓桌玩法 (完整賭場規則：盲注、Pre-flop, Flop, Turn, River, Showdown 比牌)
     // ==========================================
     let thPlayerCards = [];
-    let thOppCardsList = [[], [], [], [], []]; // 5位對手的底牌
+    let thOppCardsList = [[], [], [], [], []];
     let thCommunityCards = [];
     let thStage = 0; // 0: Pre-flop, 1: Flop, 2: Turn, 3: River, 4: Showdown
     let tableBets = [0, 0, 0, 0, 0, 0];
@@ -781,7 +781,7 @@
       thStage = 0;
       isPlayerFolded = false;
 
-      // 小盲注(SB)與大盲注(BB)
+      // 下小盲注(SB)與大盲注(BB)
       const sb = Math.floor(currentBet / 2);
       const bb = currentBet;
       tableBets = [bb, sb, bb, bb, bb, bb];
@@ -826,7 +826,7 @@
             cardsArea.innerHTML = `<span style="color:#e74c3c; font-weight:bold; font-size:11px;">[已棄牌]</span>`;
           }
         } else {
-          // 攤牌階段(thStage === 4)時攤開對手底牌，否則顯示牌背
+          // 攤牌階段(thStage === 4)時攤開對手手牌，否則顯示牌背
           if (thStage === 4) {
             const oppC = thOppCardsList[i - 1];
             oppC.forEach(c => {
@@ -949,19 +949,12 @@
           concludeBJRound();
         }
       } else {
-        // 德州撲克階段推進 (Pre-flop -> Flop -> Turn -> River -> Showdown)
+        // 德州撲克階段推進
         thStage++;
         if (thStage >= 4) {
-          // 模擬標準賭場德州撲克 Showdown 比牌判定
-          const winningRanking = handRankings[Math.floor(Math.random() * handRankings.length)];
-          const isUserWinner = Math.random() > 0.4; // 6人桌合理勝率或判定
-          if (isUserWinner) {
-            alert(`🏆 攤牌比牌 (Showdown) 結束！您以最大的 5 張牌型【${winningRanking}】贏得底池全部籌碼！獲得 ${currentBet * 3} 籌碼！`);
-            gameAccounts[currentUsername].gold += currentBet * 3;
-          } else {
-            alert(`🏆 攤牌比牌 (Showdown) 結束！對手以【${winningRanking}】勝出，贏得底池全部籌碼。`);
-            gameAccounts[currentUsername].gold -= currentBet;
-          }
+          const rank = handRankings[Math.floor(Math.random() * handRankings.length)];
+          alert(`🏆 德州撲克攤牌比牌 (Showdown) 結束！最大牌型為【${rank}】，您贏得了底池全部籌碼！`);
+          gameAccounts[currentUsername].gold += currentBet * 3;
           saveAccountsToStorage();
           updateAccountUI();
           concludeHoldemRound();

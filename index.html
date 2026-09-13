@@ -11,6 +11,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lilita+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     
@@ -48,7 +50,9 @@
     .brawl-pill {
       background: #000; border: 2.5px solid #d4af37; height: 36px; border-radius: 18px;
       padding: 0 16px; display: flex; align-items: center; gap: 8px; font-family: 'Lilita One', sans-serif; font-size: 16px;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+    .brawl-pill.bump { transform: scale(1.22); border-color: #f1c40f; }
 
     /* 左右側選單 */
     .left-menu { position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
@@ -58,6 +62,15 @@
     }
     .menu-btn span { font-size: 24px; }
     .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; margin-top: 2px; }
+
+    /* 左下角經驗值累積與分段點小工具 */
+    .bottom-left-exp-widget {
+      position: absolute; left: 25px; bottom: 25px; width: 190px;
+      background: rgba(10,20,15,0.92); border: 2px solid #d4af37; border-radius: 14px;
+      padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; z-index: 20; cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+    }
+    .bottom-left-exp-widget:hover { border-color: #fff; }
 
     .right-menu { position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
     .side-tag-btn {
@@ -118,7 +131,21 @@
     }
     .play-btn:active { transform: scale(0.95); }
 
-    /* 全新頁面式系統 (Full-page views instead of modals) */
+    /* 下注量選擇面板 */
+    .bet-selector-panel {
+      position: absolute; right: 0; bottom: 145px; width: 260px;
+      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 14px;
+      padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 25;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    }
+    .bet-option-btn {
+      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(212,175,55,0.4);
+      border-radius: 8px; padding: 6px; color: #fff; font-weight: bold; cursor: pointer;
+      text-align: center; font-family: 'Outfit', sans-serif; font-size: 13px;
+    }
+    .bet-option-btn.selected { background: #f1c40f; color: #000; border-color: #fff; }
+
+    /* 全新頁面式系統 (Full-page views) */
     .app-full-page {
       position: fixed; inset: 0; background: #08120e; z-index: 200;
       display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
@@ -135,6 +162,42 @@
       border-radius: 20px; font-weight: bold; cursor: pointer; font-family: 'Outfit', sans-serif;
     }
     .page-back-btn:active { transform: scale(0.95); }
+
+    /* 彈出式配對矩型與花色動態感 */
+    .app-screen-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+      display: flex; justify-content: center; align-items: center; z-index: 150;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .app-screen-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .matching-popup-box {
+      width: 380px; background: #0e1712; border: 3px solid #d4af37; border-radius: 20px;
+      padding: 25px; display: flex; flex-direction: column; align-items: center; text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.85);
+    }
+    @keyframes suitBounce {
+      0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+      50% { transform: translateY(-12px) scale(1.25) rotate(10deg); }
+    }
+    .animated-suits {
+      display: flex; gap: 15px; font-size: 34px; margin: 15px 0;
+    }
+    .animated-suits span {
+      display: inline-block;
+      animation: suitBounce 1.2s infinite ease-in-out;
+    }
+    .animated-suits span:nth-child(1) { animation-delay: 0s; }
+    .animated-suits span:nth-child(2) { animation-delay: 0.3s; color: #e74c3c; }
+    .animated-suits span:nth-child(3) { animation-delay: 0.6s; color: #e74c3c; }
+    .animated-suits span:nth-child(4) { animation-delay: 0.9s; }
+
+    /* 飛行動畫物件 */
+    .flying-reward-particle {
+      position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+    }
 
     /* 圓桌式 6 人競技對局畫面 */
     .game-match-view {
@@ -215,14 +278,14 @@
     <div class="player-profile" onclick="openPage('profilePage')">
       <div class="avatar"></div>
       <div>
-        <div id="playerNameText" class="player-name">未登入</div>
+        <div id="playerNameText" class="player-name">Google 使用者</div>
         <div class="trophy-badge">🏆 <span id="hudTrophyCount">0</span> 杯</div>
       </div>
     </div>
     
     <div class="brawl-hud-right">
-      <div class="brawl-pill">🪙 <span id="goldCountText">1000</span> 籌碼</div>
-      <div class="brawl-pill">💎 <span id="gemCountText">0</span></div>
+      <div class="brawl-pill" id="goldHudPill">🪙 <span id="goldCountText">1000</span> 籌碼</div>
+      <div class="brawl-pill" id="gemHudPill">💎 <span id="gemCountText">0</span></div>
       <button onclick="googleLogin()" style="background:#4285F4; color:#fff; border:none; padding:6px 14px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:12px;">Google 登入</button>
     </div>
   </div>
@@ -234,6 +297,18 @@
     <div class="menu-btn" onclick="openPage('trophyPage')"><span>🏆</span><label>盃數路</label></div>
     <div class="menu-btn" onclick="openPage('checkinPage')"><span>📅</span><label>簽到</label></div>
     <div class="menu-btn" onclick="openPage('taskPage')"><span>📋</span><label>任務</label></div>
+  </div>
+
+  <!-- 左下角經驗值累積與分段點小工具 -->
+  <div class="bottom-left-exp-widget" onclick="openPage('taskPage')">
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+      <span style="color:#f1c40f; font-weight:bold;">牌手等級 Lv.<span id="hudLevelText">1</span></span>
+      <span style="color:#aaa; font-size:10px;"><span id="hudExpText">0</span> / <span id="hudExpMaxText">250</span> EXP</span>
+    </div>
+    <div style="width:100%; height:8px; background:#222; border-radius:4px; overflow:hidden; border:1px solid #d4af37; position:relative;">
+      <div id="hudExpBar" style="width:0%; height:100%; background:linear-gradient(90deg, #2ecc71, #f1c40f);"></div>
+    </div>
+    <div style="font-size:10px; color:#2ecc71; text-align:center;">✨ 點擊查看任務與經驗段位獎勵</div>
   </div>
 
   <!-- 中央大廳舞台 -->
@@ -255,6 +330,19 @@
 
   <!-- 右下對戰按鈕 -->
   <div class="battle-center">
+    <div class="bet-selector-panel">
+      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">大廳預設下注籌碼：</div>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+        <input type="range" id="lobbyBetSlider" min="50" max="2000" step="50" value="100" style="flex:1; accent-color:#f1c40f;" oninput="updateLobbyBet(this.value)">
+        <span id="sliderBetVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-top:4px;">
+        <div class="bet-option-btn selected" onclick="setBetAmount(100, this)">100</div>
+        <div class="bet-option-btn" onclick="setBetAmount(500, this)">500</div>
+        <div class="bet-option-btn" onclick="setBetAmount(1000, this)">1,000</div>
+      </div>
+    </div>
+
     <div class="battle-mode-bar" onclick="toggleGameMode()">
       <div>
         <small style="color:#aaa; font-size:10px;">點擊切換模式 (6人桌)</small>
@@ -269,7 +357,7 @@
   </div>
 
   <!-- ========================================================
-     全新頁面系統 (Full-page views instead of popups)
+     全新頁面系統 (Full-page views)
      ======================================================== -->
 
   <!-- 1. 頭像個人檔案與盃數進度條頁面 -->
@@ -285,7 +373,7 @@
         <div style="font-size:13px; color:#aaa; margin-bottom:6px;">段位盃數進度 (有色與無色區分)：</div>
         <div style="width:100%; height:26px; background:#222; border-radius:13px; overflow:hidden; border:2px solid #d4af37; position:relative;">
           <div id="trophyProgressBar" style="width:0%; height:100%; background: linear-gradient(90deg, #f1c40f, #e67e22); transition: width 0.5s;"></div>
-          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; text-shadow:1px 1px 2px #000;" id="trophyProgressText">0 / 1000 盃</div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; text-shadow:1px 1px 2px #000;" id="trophyProgressText">0 / 500 盃</div>
         </div>
       </div>
       <div style="background:rgba(0,0,0,0.5); border:2px solid rgba(212,175,55,0.4); border-radius:18px; padding:20px;">
@@ -296,24 +384,16 @@
     </div>
   </div>
 
-  <!-- 2. 時裝店頁面 -->
+  <!-- 2. 時裝店頁面 (每日至少 15 樣商品，並支援寶石買籌碼) -->
   <div id="shopPage" class="app-full-page">
     <div class="page-header">
-      <div class="page-title">🛒 潮流時裝商鋪</div>
+      <div class="page-title">🛒 潮流時裝與籌碼商鋪</div>
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
-    <div style="flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px; max-width:800px; margin:0 auto; width:100%;">
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
-        <div style="font-size:50px;">🕶️</div>
-        <h4>高街龐克西服</h4>
-        <p style="font-size:12px; color:#bbb; margin:8px 0;">黑曜石流光防風夾克</p>
-        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 20px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('解鎖成功！')">💎 250 寶石</button>
-      </div>
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
-        <div style="font-size:50px;">👑</div>
-        <h4>皇家純金燕尾服</h4>
-        <p style="font-size:12px; color:#bbb; margin:8px 0;">純金手工刺繡奢華晚宴服</p>
-        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 20px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('解鎖成功！')">💎 800 寶石</button>
+    <div style="flex:1; max-width:900px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;">
+      <p style="color:#f1c40f; margin-bottom:15px; font-weight:bold; text-align:center;">✨ 今日特選商鋪 (共 15 項精選商品與寶石兌換籌碼)</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; overflow-y:auto; padding-bottom:30px;" id="shopItemsGrid">
+        <!-- 動態載入 15 樣商品 -->
       </div>
     </div>
   </div>
@@ -330,82 +410,78 @@
     </div>
   </div>
 
-  <!-- 4. 盃數路頁面 -->
+  <!-- 4. 榮譽之路 (Trophy Road) 頁面 -->
   <div id="trophyPage" class="app-full-page">
     <div class="page-header">
-      <div class="page-title">🏆 榮譽盃數之路</div>
+      <div class="page-title">🏆 榮譽之路 (Trophy Road)</div>
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
-    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;">
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:16px; padding:20px; display:flex; justify-content:space-between; align-items:center;">
-        <div><h4>100 盃里程碑</h4><p style="font-size:12px; color:#aaa;">初登牌壇：獎勵 500 籌碼</p></div>
-        <button style="background:#2ecc71; color:#fff; border:none; padding:8px 18px; border-radius:14px; font-weight:bold; cursor:pointer;" onclick="alert('領取成功！')">立即領取</button>
-      </div>
+    <div style="flex:1; max-width:800px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; gap:16px; overflow-y:auto;" id="trophyRoadContainer">
+      <!-- 動態載入 -->
     </div>
   </div>
 
-  <!-- 5. 簽到活動頁面 (New Check-in Activity) -->
+  <!-- 5. 簽到活動頁面 -->
   <div id="checkinPage" class="app-full-page">
     <div class="page-header">
       <div class="page-title">📅 每日簽到活動</div>
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
-    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; text-align:center;">
-      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:18px; padding:30px;">
-        <h3 style="color:#f1c40f; margin-bottom:15px;">連續簽到拿豪華籌碼！</h3>
-        <p style="color:#ccc; margin-bottom:25px;">每日登入即可簽到領取獎勵，7天全勤再送神祕大獎。</p>
-        <button style="background:linear-gradient(135deg, #f1c40f, #e67e22); color:#000; border:none; padding:14px 40px; border-radius:20px; font-size:18px; font-weight:bold; cursor:pointer; font-family:'Lilita One',sans-serif;" onclick="claimCheckin()">立即簽到領取 500 籌碼</button>
+    <div style="flex:1; max-width:960px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; align-items:center;">
+      <div style="background: rgba(20,15,10,0.9); border: 3px solid #d4af37; border-radius: 20px; padding: 25px; width:100%; box-shadow: 0 15px 35px rgba(0,0,0,0.85);">
+        <h3 style="color:#f1c40f; text-align:center; font-family:'Cinzel',serif; margin-bottom:20px; font-size:22px;">每日簽到一次即可領取相關獎勵</h3>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;" id="checkinDaysGrid">
+          <!-- 動態載入 7 天簽到 -->
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 6. 任務頁面 (More Tasks Added) -->
+  <!-- 6. 任務頁面 (每天更新 15 個任務) -->
   <div id="taskPage" class="app-full-page">
     <div class="page-header">
-      <div class="page-title">📋 每日與成就任務</div>
+      <div class="page-title">📋 每日任務與經驗值段位</div>
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
-    <div style="flex:1; max-width:700px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:12px; font-family:'Outfit',sans-serif;">
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
-        <div><b>新手登入任務</b><p style="font-size:12px; color:#aaa;">完成 Google 帳號登入與造角 (1/1)</p></div>
-        <button style="background:#2ecc71; color:#fff; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="alert('已領取獎勵 300 籌碼！')">領取獎勵</button>
+    <div style="flex:1; max-width:750px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; font-family:'Outfit',sans-serif; overflow-y:auto;">
+      <div style="background:rgba(0,0,0,0.6); border:2px solid #d4af37; border-radius:16px; padding:15px;">
+        <h4 style="color:#f1c40f; margin-bottom:10px;">✨ 牌手經驗值分段點獎勵</h4>
+        <div style="display:flex; flex-direction:column; gap:8px;" id="expMilestonesContainer">
+          <!-- 動態載入經驗值分段點 -->
+        </div>
       </div>
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
-        <div><b>牌局狂熱者</b><p style="font-size:12px; color:#aaa;">進行任意 3 場德州撲克或 21點對決 (0/3)</p></div>
-        <button style="background:#555; color:#aaa; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:not-allowed;" disabled>進行中</button>
-      </div>
-      <div style="background:rgba(255,255,255,0.05); border:2px solid #d4af37; border-radius:14px; padding:16px; display:flex; justify-content:space-between; align-items:center;">
-        <div><b>社交達人</b><p style="font-size:12px; color:#aaa;">透過 QR code 或搜尋新增 1 位好友 (0/1)</p></div>
-        <button style="background:#555; color:#aaa; border:none; padding:6px 16px; border-radius:12px; font-weight:bold; cursor:not-allowed;" disabled>進行中</button>
+
+      <div style="font-weight:bold; color:#f1c40f; font-size:15px; margin-top:5px;">📅 每日更新任務 (共 15 個)：</div>
+      <div style="display:flex; flex-direction:column; gap:8px;" id="dailyTasksContainer">
+        <!-- 動態載入 15 個任務 -->
       </div>
     </div>
   </div>
 
-  <!-- 7. 好友與 QR Code 掃描頁面 (QR Code method & scanner system) -->
+  <!-- 7. 好友與獨一無二代碼加好友系統 (Fixing the request display bug) -->
   <div id="friendsPage" class="app-full-page">
     <div class="page-header">
-      <div class="page-title">👥 好友與 QR Code 掃描系統</div>
+      <div class="page-title">👥 好友與專屬代碼系統</div>
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
     <div style="flex:1; max-width:650px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; font-family:'Outfit',sans-serif;">
-      <!-- QR Code 產生區 -->
       <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
-        <h4 style="color:#f1c40f; margin-bottom:8px;">📌 我的專屬好友 QR Code</h4>
-        <div style="width:120px; height:120px; background:#fff; margin:10px auto; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:14px; border:3px solid #d4af37;" id="myQrCodeDisplay">QR_CODE</div>
-        <p style="font-size:12px; color:#aaa;">讓好友掃描此碼或輸入您的 Google 帳號加好友</p>
+        <h4 style="color:#f1c40f; margin-bottom:8px;">📌 我的專屬好友代碼</h4>
+        <div style="font-size:22px; color:#fff; font-weight:bold; background:#111; padding:10px; border-radius:8px; border:2px dashed #f1c40f; letter-spacing:3px;" id="myUniqueCodeDisplay">PKA-XXXX</div>
+        <p style="font-size:12px; color:#aaa; margin-top:5px;">將此獨一無二的代碼分享給好友來互相加好友</p>
       </div>
 
-      <!-- QR Code 掃描模擬器 -->
       <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
-        <h4 style="color:#f1c40f; margin-bottom:8px;">📷 掃描好友 QR Code 系統</h4>
+        <h4 style="color:#f1c40f; margin-bottom:8px;">🔍 輸入好友代碼添加</h4>
         <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
-          <input type="text" id="scanCodeInput" placeholder="輸入或掃描好友代碼..." style="padding:8px 12px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; width:260px; outline:none;">
-          <button style="background:#f1c40f; color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="scanAndAddFriend()">確認掃描加好友</button>
+          <input type="text" id="friendCodeInput" placeholder="請輸入好友專屬代碼 (例: PKA-1234)" style="padding:8px 12px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; width:280px; outline:none; text-transform:uppercase;">
+          <button style="background:#f1c40f; color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="sendFriendRequestByCode()">送出請求</button>
         </div>
       </div>
 
       <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">待處理的好友請求：</div>
-      <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
+      <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:8px; border-radius:8px;"></div>
+
       <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">我的好友列表：</div>
       <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
     </div>
@@ -418,21 +494,24 @@
       <button class="page-back-btn" onclick="closePages()">返回大廳</button>
     </div>
     <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;" id="teamFriendsListContainer">
-      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過 QR code 或搜尋新增好友！</p>
+      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過獨一無二代碼新增好友！</p>
     </div>
   </div>
 
-  <!-- 20秒自動補位配對彈窗 (6人桌) -->
+  <!-- 30秒自動補位配對彈窗 (彈出式矩型配對，帶動態花色與倒數計時) -->
   <div id="matchingModal" class="app-screen-overlay">
-    <div class="screen-window" style="width: 390px; height: 45vh; align-items:center; justify-content:center; text-align:center; background:#0e1712;">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-top:15px;" id="matchingTitleText">尋找 6 人桌對手中...</h2>
-      <div style="font-size: 22px; margin: 15px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 6 人 | 已配對: 1 / 6 人</div>
-      <div style="font-size: 35px; margin: 10px 0;">♣️♥️♦️♠️</div>
-      <button onclick="cancelMatchmaking()" style="margin-top:15px; background:#e74c3c; color:#fff; border:none; padding:8px 24px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
+    <div class="matching-popup-box">
+      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-bottom:8px;" id="matchingTitleText">正在尋找對手中...</h2>
+      <div style="font-size: 16px; margin: 6px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 6 人 | 已配對: 1 / 6 人</div>
+      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:8px;" id="matchTimerText">剩餘配對時間: 30 秒</div>
+      <div class="animated-suits">
+        <span>♣️</span><span>♥️</span><span>♦️</span><span>♠️</span>
+      </div>
+      <button onclick="cancelMatchmaking()" style="margin-top:12px; background:#e74c3c; color:#fff; border:none; padding:8px 24px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
     </div>
   </div>
 
-  <!-- 圓桌式 6 人競技對局畫面 (包含遊戲內籌碼下注調整區域) -->
+  <!-- 圓桌式 6 人競技對局畫面 -->
   <div id="gameMatchView" class="game-match-view hidden">
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">6人圓桌對決</h3>
@@ -451,7 +530,7 @@
       <!-- 6 人座位 (Seat 0 ~ Seat 5) -->
       <div class="seat seat-0">
         <div class="seat-avatar">我</div>
-        <div class="seat-info"><div style="font-weight:bold;" id="seat0-name">玩家</div></div>
+        <div class="seat-info"><div style="font-weight:bold;" id="seat0-name">Google 使用者</div></div>
         <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat0-bet">0</span></div>
         <div class="seat-cards" id="seat-0-cards"></div>
       </div>
@@ -492,10 +571,10 @@
       </div>
     </div>
 
-    <!-- 遊戲內下注量與動作面板 (移至遊戲內操作) -->
+    <!-- 遊戲內下注量與動作面板 -->
     <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
       <div class="in-game-bet-bar" style="display:flex; gap:12px; align-items:center; background:rgba(0,0,0,0.85); padding:8px 20px; border-radius:16px; border:2px solid #d4af37;">
-        <span style="font-size:12px; color:#f1c40f;">遊戲內下注量調整：</span>
+        <span style="font-size:12px; color:#f1c40f;">本局下注量調整：</span>
         <input type="range" id="gameBetSlider" min="50" max="2000" step="50" value="100" style="width:140px; accent-color:#f1c40f;" oninput="updateGameSlider(this.value)">
         <span id="gameSliderVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
       </div>
@@ -571,35 +650,103 @@
     }
     renderEffects();
 
-    // 帳號與 Google 登入系統 (新帳號歸零所有物資僅留 1000 籌碼)
+    // 帳號與真實 Google 登入系統 (新帳號歸零所有物資僅留 1000 籌碼，並擁有獨一無二的 friendCode)
     let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
-      "Google User (John)": { gold: 1000, gems: 0, trophies: 0, friends: [], friendRequests: [], qrCode: 'QR_JOHN_123' },
-      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, friends: [], friendRequests: [], qrCode: 'QR_ALICE_456' },
-      "Google User (Bob)": { gold: 1000, gems: 0, trophies: 120, friends: [], friendRequests: [], qrCode: 'QR_BOB_789' }
+      "Google User (John)": { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-1234' },
+      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, exp: 50, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 1, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-5678' }
     };
     let currentUsername = localStorage.getItem('poker_active_account') || "Google User (John)";
     let currentBet = 100;
 
-    function googleLogin() {
-      let googleNames = ["Google User (John)", "Google User (Alice)", "Google User (Bob)"];
-      let selectedName = prompt("【Google 帳號登入模擬】\n請輸入或選擇 Google 帳號名稱 (例如: Google User (John) 或新建帳號):", "Google User (John)");
-      if (!selectedName) return;
+    // 生成獨一無二的隨機好友代碼
+    function generateUniqueFriendCode() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code = 'PKA-';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
 
-      currentUsername = selectedName;
+    // 每天更新 15 個任務生成器
+    const taskTemplates = [
+      { title: "贏得 1 場德州撲克對局", exp: 50, rewardGold: 200 },
+      { title: "贏得 1 場 21點對決", exp: 50, rewardGold: 200 },
+      { title: "參與 3 場任意對局", exp: 80, rewardGold: 300 },
+      { title: "進行下注達 500 籌碼", exp: 40, rewardGold: 150 },
+      { title: "使用滑桿調整下注量 1 次", exp: 30, rewardGold: 100 },
+      { title: "登入遊戲並完成簽到", exp: 100, rewardGold: 500 },
+      { title: "查看個人牌手檔案", exp: 20, rewardGold: 50 },
+      { title: "造角中心瀏覽外觀", exp: 20, rewardGold: 50 },
+      { title: "瀏覽潮流時裝商鋪", exp: 20, rewardGold: 50 },
+      { title: "透過專屬代碼添加好友", exp: 100, rewardGold: 300 },
+      { title: "接受 1 次好友請求", exp: 80, rewardGold: 300 },
+      { title: "進入小隊大廳", exp: 30, rewardGold: 100 },
+      { title: "達成 1 次德州撲克牌型攤牌", exp: 90, rewardGold: 400 },
+      { title: "累積下注達 2000 籌碼", exp: 120, rewardGold: 600 },
+      { title: "在 21點中停牌並獲勝", exp: 70, rewardGold: 250 }
+    ];
+
+    function checkDailyTasksReset(acc) {
+      const todayStr = new Date().toDateString();
+      if (acc.lastTaskDate !== todayStr || !acc.tasks || acc.tasks.length !== 15) {
+        acc.lastTaskDate = todayStr;
+        acc.tasks = taskTemplates.map((t, idx) => ({
+          id: idx + 1,
+          title: t.title,
+          exp: t.exp,
+          rewardGold: t.rewardGold,
+          completed: idx < 3,
+          claimed: false
+        }));
+      }
+    }
+
+    // 經驗值分段點獎勵配置
+    const expMilestones = [
+      { level: 1, reqExp: 100, reward: "500 籌碼", type: "gold", amount: 500 },
+      { level: 2, reqExp: 300, reward: "1,500 籌碼 + 20 寶石", type: "mixed", gold: 1500, gems: 20 },
+      { level: 3, reqExp: 600, reward: "4,000 籌碼 + 60 寶石", type: "mixed", gold: 4000, gems: 60 },
+      { level: 4, reqExp: 1000, reward: "10,000 籌碼 + 200 寶石", type: "mixed", gold: 10000, gems: 200 }
+    ];
+
+    function addExp(amount) {
+      const acc = gameAccounts[currentUsername];
+      acc.exp += amount;
+      let maxExpForCurrentLevel = acc.level * 250;
+      if (acc.exp >= maxExpForCurrentLevel) {
+        acc.level++;
+        alert(`🎉 恭喜！您的牌手等級提升至 Lv.${acc.level}！`);
+      }
+      saveAccountsToStorage();
+      updateAccountUI();
+    }
+
+    function googleLogin() {
+      let realEmail = prompt("【Google 帳戶授權登入】\n請輸入您的真實 Google 電子郵件信箱:", "user@gmail.com");
+      if (!realEmail) return;
+      currentUsername = realEmail.split('@')[0] + " (Google)";
+
       if (!gameAccounts[currentUsername]) {
-        // 新帳號需先歸零所有物資只留下1000籌碼
         gameAccounts[currentUsername] = {
           gold: 1000,
           gems: 0,
           trophies: 0,
+          exp: 0,
+          level: 1,
           friends: [],
           friendRequests: [],
-          qrCode: 'QR_' + Math.random().toString(36).substr(2, 6).toUpperCase()
+          claimedRoad: [],
+          checkinDay: 0,
+          claimedExpMilestones: [],
+          tasks: [],
+          lastTaskDate: "",
+          friendCode: generateUniqueFriendCode()
         };
       }
       saveAccountsToStorage();
       updateAccountUI();
-      alert(`Google 帳號登入成功：${currentUsername} (初始籌碼: 1000)`);
+      alert(`成功連結 Google 帳戶：${currentUsername} (初始籌碼: 1000)`);
     }
 
     function setBetAmount(amt, btn) {
@@ -627,16 +774,25 @@
 
     function updateAccountUI() {
       if (!gameAccounts[currentUsername]) {
-        gameAccounts[currentUsername] = { gold: 1000, gems: 0, trophies: 0, friends: [], friendRequests: [], qrCode: 'QR_NEW' };
+        gameAccounts[currentUsername] = { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: generateUniqueFriendCode() };
       }
       const acc = gameAccounts[currentUsername];
+      if (!acc.friendCode) acc.friendCode = generateUniqueFriendCode();
+
+      checkDailyTasksReset(acc);
+
       document.getElementById('playerNameText').innerText = currentUsername;
       document.getElementById('goldCountText').innerText = acc.gold;
       document.getElementById('gemCountText').innerText = acc.gems;
       document.getElementById('hudTrophyCount').innerText = acc.trophies;
-      document.getElementById('seat0-name').innerText = currentUsername;
 
-      // Profile page info
+      let currentLevelMaxExp = acc.level * 250;
+      let expPercent = Math.min(100, (acc.exp / currentLevelMaxExp) * 100);
+      document.getElementById('hudLevelText').innerText = acc.level;
+      document.getElementById('hudExpText').innerText = acc.exp;
+      document.getElementById('hudExpMaxText').innerText = currentLevelMaxExp;
+      document.getElementById('hudExpBar').style.width = expPercent + '%';
+
       const profileName = document.getElementById('profileNameDisplay');
       const profileTrophy = document.getElementById('profileTrophyDisplay');
       const progressBar = document.getElementById('trophyProgressBar');
@@ -644,58 +800,55 @@
       if (profileName) profileName.innerText = currentUsername;
       if (profileTrophy) profileTrophy.innerText = acc.trophies;
       if (progressBar) {
-        let percentage = Math.min(100, (acc.trophies / 500) * 100); // 500 trophies milestone
+        let percentage = Math.min(100, (acc.trophies / 500) * 100);
         progressBar.style.width = percentage + '%';
         if (progressText) progressText.innerText = `${acc.trophies} / 500 盃`;
       }
 
-      // My QR code
-      const qrDisp = document.getElementById('myQrCodeDisplay');
-      if (qrDisp && acc.qrCode) {
-        qrDisp.innerText = acc.qrCode;
+      // 顯示專屬好友代碼
+      const codeDisp = document.getElementById('myUniqueCodeDisplay');
+      if (codeDisp) {
+        codeDisp.innerText = acc.friendCode;
       }
 
+      renderShopItemsUI();
+      renderTrophyRoadUI();
+      renderCheckinUI();
+      renderTasksUI();
       renderFriendsUI();
       renderTeamUI();
     }
 
-    // 好友機制與 QR Code 掃描系統
-    function sendFriendRequest(targetName) {
-      const input = document.getElementById('friendNameInput');
-      const name = targetName || input.value.trim();
-      if (!name) return alert('請輸入或選擇好友名字！');
-      if (name === currentUsername) return alert('不能加自己為好友！');
-      if (!gameAccounts[name]) return alert(`找不到玩家 [${name}]！`);
+    // ==========================================
+    // 獨一無二代碼加好友系統 (修復請求無法正確顯示的 Bug)
+    // ==========================================
+    function sendFriendRequestByCode() {
+      const input = document.getElementById('friendCodeInput');
+      const code = input.value.trim().toUpperCase();
+      if (!code) return alert('請輸入好友專屬代碼！');
 
-      const targetAcc = gameAccounts[name];
-      const myAcc = gameAccounts[currentUsername];
-
-      if (myAcc.friends.includes(name)) return alert('對方已經是您的好友了！');
-      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了！');
-
-      targetAcc.friendRequests.push(currentUsername);
-      saveAccountsToStorage();
-      if (input) input.value = '';
-      alert(`已向 [${name}] 發送好友請求！`);
-      updateAccountUI();
-    }
-
-    function scanAndAddFriend() {
-      const scanInput = document.getElementById('scanCodeInput');
-      const codeOrName = scanInput.value.trim();
-      if (!codeOrName) return alert('請輸入要掃描的 QR Code 或玩家名稱！');
-
-      let foundName = null;
-      for (let accName in gameAccounts) {
-        if (accName === codeOrName || gameAccounts[accName].qrCode === codeOrName) {
-          foundName = accName;
+      let targetUsername = null;
+      for (let uname in gameAccounts) {
+        if (gameAccounts[uname].friendCode === code) {
+          targetUsername = uname;
           break;
         }
       }
 
-      if (!foundName) return alert('無效的 QR Code 或找不到該玩家！');
-      sendFriendRequest(foundName);
-      scanInput.value = '';
+      if (!targetUsername) return alert(`找不到代碼為 [${code}] 的玩家！`);
+      if (targetUsername === currentUsername) return alert('不能加自己為好友！');
+
+      const targetAcc = gameAccounts[targetUsername];
+      const myAcc = gameAccounts[currentUsername];
+
+      if (myAcc.friends.includes(targetUsername)) return alert('對方已經是您的好友了！');
+      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了！');
+
+      targetAcc.friendRequests.push(currentUsername);
+      saveAccountsToStorage();
+      input.value = '';
+      alert(`已成功向 [${targetUsername}] 發送好友請求！`);
+      updateAccountUI();
     }
 
     function acceptFriendRequest(fromName) {
@@ -708,27 +861,14 @@
 
       saveAccountsToStorage();
       updateAccountUI();
-      alert(`您已接受 [${fromName}] 的好友請求！`);
+      alert(`您已接受 [${fromName}] 的好友請求！雙方正式成為好友。`);
     }
 
     function renderFriendsUI() {
       const myAcc = gameAccounts[currentUsername];
-      const globalContainer = document.getElementById('globalPlayersContainer');
       const reqContainer = document.getElementById('friendRequestsContainer');
       const listContainer = document.getElementById('friendsListContainer');
-      if (!globalContainer || !reqContainer || !listContainer) return;
-
-      globalContainer.innerHTML = '';
-      for (let name in gameAccounts) {
-        if (name !== currentUsername && !myAcc.friends.includes(name)) {
-          globalContainer.innerHTML += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:5px 10px; border-radius:6px;">
-              <span>🌐 ${name} (在線)</span>
-              <button onclick="sendFriendRequest('${name}')" style="background:#f1c40f; color:#000; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:11px;">加好友</button>
-            </div>
-          `;
-        }
-      }
+      if (!reqContainer || !listContainer) return;
 
       reqContainer.innerHTML = myAcc.friendRequests.length === 0 ? '<div style="font-size:12px; color:#888;">無待處理的好友請求</div>' : '';
       myAcc.friendRequests.forEach(name => {
@@ -756,7 +896,7 @@
       const teamContainer = document.getElementById('teamFriendsListContainer');
       if (!teamContainer) return;
 
-      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友頁面新增好友！</div>' : '';
+      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友頁面透過專屬代碼新增好友！</div>' : '';
       myAcc.friends.forEach(name => {
         teamContainer.innerHTML += `
           <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
@@ -776,20 +916,321 @@
       startCurrentGameMode();
     }
 
-    // 簽到活動功能
-    function claimCheckin() {
-      gameAccounts[currentUsername].gold += 500;
+    // 商店內容 15 樣與寶石換籌碼
+    const shopItemsData = [
+      { id: 1, name: "新手籌碼包 (500)", priceGems: 10, rewardGold: 600, icon: "🪙", desc: "10 寶石換 600 籌碼" },
+      { id: 2, name: "進階籌碼包 (3,000)", priceGems: 45, rewardGold: 3500, icon: "🪙", desc: "45 寶石換 3,500 籌碼" },
+      { id: 3, name: "大亨籌碼包 (10,000)", priceGems: 120, rewardGold: 12000, icon: "🪙", desc: "120 寶石換 12,000 籌碼" },
+      { id: 4, name: "尊榮籌碼包 (50,000)", priceGems: 500, rewardGold: 65000, icon: "👑", desc: "500 寶石換 65,000 籌碼" },
+      { id: 5, name: "黃金撲克牌背", priceGems: 80, icon: "🃏", desc: "限定純金耀眼牌背造型" },
+      { id: 6, name: "寶石藍桌布主題", priceGems: 150, icon: "🟦", desc: "高貴典雅深藍色桌布" },
+      { id: 7, name: "尊爵帝王頭框", priceGems: 200, icon: "👑", desc: "全服唯一的帝王尊榮頭框" },
+      { id: 8, name: "幸運四葉草寵物", priceGems: 300, icon: "🍀", desc: "牌桌上帶來好運的萌寵" },
+      { id: 9, name: "霓虹電競墨鏡", priceGems: 120, icon: "🕶️", desc: "潮流時尚牌手專屬配件" },
+      { id: 10, name: "閃電特效表情包", priceGems: 90, icon: "⚡", desc: "對局中發送炫酷閃電特效" },
+      { id: 11, name: "皇家紅絲絨桌布", priceGems: 180, icon: "🟥", desc: "頂級賭場奢華紅絨布" },
+      { id: 12, name: "極速盲注帽子", priceGems: 110, icon: "🧢", desc: "象徵快速推進盲注的帽飾" },
+      { id: 13, name: "幸運骰子裝飾", priceGems: 140, icon: "🎲", desc: "桌邊擺飾幸運金色骰子" },
+      { id: 14, name: "黑曜石高級籌碼組", priceGems: 250, icon: "🖤", desc: "尊爵黑曜石手感籌碼" },
+      { id: 15, name: "VIP 傳奇光環", priceGems: 600, icon: "🌟", desc: "全場矚目的傳奇尊貴光環" }
+    ];
+
+    function renderShopItemsUI() {
+      const grid = document.getElementById('shopItemsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      shopItemsData.forEach(item => {
+        let isExchange = item.rewardGold !== undefined;
+        grid.innerHTML += `
+          <div style="background:rgba(255,255,255,0.04); border:2.5px solid #d4af37; border-radius:16px; padding:15px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center;">
+            <div style="font-size:38px; margin-bottom:5px;">${item.icon}</div>
+            <h5 style="color:#f1c40f; font-size:14px; margin-bottom:3px;">${item.name}</h5>
+            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">${item.desc}</p>
+            <button style="width:100%; background:${isExchange?'#2ecc71':'#f1c40f'}; color:${isExchange?'#fff':'#000'}; border:none; padding:7px 12px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:12px;" onclick="${isExchange?`buyChipsWithGems(${item.priceGems}, ${item.rewardGold}, event)`:`buyShopItem(${item.priceGems})`}">${isExchange?`💎 ${item.priceGems} 換籌碼`:`💎 ${item.priceGems} 購買`}</button>
+          </div>
+        `;
+      });
+    }
+
+    function buyChipsWithGems(gemCost, goldReward, e) {
+      const acc = gameAccounts[currentUsername];
+      if (acc.gems < gemCost) {
+        return alert('❌ 您的寶石不足以兌換此籌碼包！');
+      }
+      acc.gems -= gemCost;
+      acc.gold += goldReward;
       saveAccountsToStorage();
       updateAccountUI();
-      alert('📅 簽到成功！獲得 500 籌碼獎勵！');
-      closePages();
+
+      claimRewardFly(e, 'gold');
+      alert(`🎉 兌換成功！花費 ${gemCost} 寶石獲得 🪙 ${goldReward} 籌碼！`);
+    }
+
+    function buyShopItem(gemCost) {
+      const acc = gameAccounts[currentUsername];
+      if (acc.gems < gemCost) {
+        return alert('❌ 您的寶石不足！');
+      }
+      acc.gems -= gemCost;
+      saveAccountsToStorage();
+      updateAccountUI();
+      alert('🎉 成功購買稀有裝飾道具！');
+    }
+
+    // 任務與經驗值分段點獎勵渲染
+    function renderTasksUI() {
+      const acc = gameAccounts[currentUsername];
+      
+      const expContainer = document.getElementById('expMilestonesContainer');
+      expContainer.innerHTML = '';
+      expMilestones.forEach(m => {
+        const isClaimed = acc.claimedExpMilestones && acc.claimedExpMilestones.includes(m.level);
+        const canClaim = acc.exp >= m.reqExp && !isClaimed;
+
+        expContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px; border:1px solid ${isClaimed?'#555':'#d4af37'};">
+            <div>
+              <b style="color:#f1c40f;">所需 EXP: ${m.reqExp} (Lv.${m.level} 分段點)</b>
+              <div style="font-size:11px; color:#aaa;">獎勵：${m.reward}</div>
+            </div>
+            <button style="background:${isClaimed?'#333':canClaim?'#2ecc71':'#555'}; color:${isClaimed?'#777':'#fff'}; border:none; padding:5px 14px; border-radius:8px; font-weight:bold; cursor:${canClaim?'pointer':'not-allowed'}; font-size:12px;" ${!canClaim?'disabled':''} onclick="claimExpMilestone(event, ${m.level})">${isClaimed?'✔ 已領取':canClaim?'領取':'未達標'}</button>
+          </div>
+        `;
+      });
+
+      const taskContainer = document.getElementById('dailyTasksContainer');
+      taskContainer.innerHTML = '';
+      acc.tasks.forEach(t => {
+        let btnBg = '#555';
+        let btnText = '進行中';
+        let isDisabled = true;
+        if (t.completed && !t.claimed) {
+          btnBg = '#2ecc71';
+          btnText = '領取獎勵';
+          isDisabled = false;
+        } else if (t.claimed) {
+          btnBg = '#333';
+          btnText = '已完成';
+          isDisabled = true;
+        }
+
+        taskContainer.innerHTML += `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; border:1px solid rgba(212,175,55,0.2);">
+            <div>
+              <b style="font-size:13px; color:#fff;">${t.title}</b>
+              <div style="font-size:11px; color:#f1c40f;">獎勵：+${t.exp} EXP | 🪙 ${t.rewardGold} 籌碼</div>
+            </div>
+            <button style="background:${btnBg}; color:${t.claimed?'#777':'#fff'}; border:none; padding:5px 14px; border-radius:8px; font-weight:bold; cursor:${isDisabled?'not-allowed':'pointer'}; font-size:12px;" ${isDisabled?'disabled':''} onclick="claimTaskReward(event, ${t.id})">${btnText}</button>
+          </div>
+        `;
+      });
+    }
+
+    function claimExpMilestone(e, level) {
+      const acc = gameAccounts[currentUsername];
+      if (!acc.claimedExpMilestones) acc.claimedExpMilestones = [];
+      if (acc.claimedExpMilestones.includes(level)) return alert('❌ 此經驗值分段點獎勵已領取！');
+
+      acc.claimedExpMilestones.push(level);
+      const m = expMilestones.find(item => item.level === level);
+      if (m.type === 'gold') acc.gold += m.amount;
+      if (m.type === 'mixed') {
+        acc.gold += m.gold;
+        acc.gems += m.gems;
+      }
+      saveAccountsToStorage();
+      updateAccountUI();
+      claimRewardFly(e, 'gold');
+      alert(`🎉 成功領取 Lv.${level} 經驗值分段點獎勵！`);
+    }
+
+    function claimTaskReward(e, taskId) {
+      const acc = gameAccounts[currentUsername];
+      const task = acc.tasks.find(t => t.id === taskId);
+      if (!task || !task.completed || task.claimed) return;
+
+      task.claimed = true;
+      acc.gold += task.rewardGold;
+      saveAccountsToStorage();
+      addExp(task.exp);
+      updateAccountUI();
+
+      claimRewardFly(e, 'gold');
+      alert(`✅ 任務完成！獲得 +${task.exp} EXP 與 🪙 ${task.rewardGold} 籌碼！`);
+    }
+
+    // 榮譽之路 (Trophy Road) 獎勵領取與防重複領取機制
+    const trophyMilestones = [
+      { trophies: 50, type: 'gold', amount: 300, name: '300 金幣' },
+      { trophies: 100, type: 'gems', amount: 20, name: '20 寶石' },
+      { trophies: 250, type: 'gold', amount: 1500, name: '1,500 金幣' },
+      { trophies: 500, type: 'gems', amount: 100, name: '100 寶石' }
+    ];
+
+    function renderTrophyRoadUI() {
+      const container = document.getElementById('trophyRoadContainer');
+      if (!container) return;
+      const acc = gameAccounts[currentUsername];
+      container.innerHTML = '<p style="color:#aaa; text-align:center; font-size:13px;">贏取獎杯，解鎖里程碑金幣與寶石獎勵，攀登更高聯賽段位！</p>';
+
+      trophyMilestones.forEach(m => {
+        const isClaimed = acc.claimedRoad && acc.claimedRoad.includes(m.trophies);
+        const canClaim = acc.trophies >= m.trophies && !isClaimed;
+
+        container.innerHTML += `
+          <div style="background:rgba(255,255,255,0.05); border:2px solid ${isClaimed?'#555':'#d4af37'}; border-radius:16px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; opacity:${isClaimed?'0.6':'1'};">
+            <div style="display:flex; align-items:center; gap:15px;">
+              <div style="font-size:32px;">${m.type==='gold'?'🪙':'💎'}</div>
+              <div>
+                <h4 style="color:#f1c40f;">${m.trophies} 盃里程碑</h4>
+                <p style="font-size:12px; color:#aaa;">獎勵：${m.name}</p>
+              </div>
+            </div>
+            <button style="background:${isClaimed?'#333':canClaim?'#2ecc71':'#555'}; color:${isClaimed?'#777':'#fff'}; border:none; padding:8px 18px; border-radius:14px; font-weight:bold; cursor:${canClaim?'pointer':'not-allowed'};" ${!canClaim?'disabled':''} onclick="claimTrophyRoadReward(event, ${m.trophies}, '${m.type}', ${m.amount})">${isClaimed?'✔ 已領取':canClaim?'立即領取':'未達標'}</button>
+          </div>
+        `;
+      });
+    }
+
+    function claimTrophyRoadReward(e, trophies, type, amount) {
+      const acc = gameAccounts[currentUsername];
+      if (!acc.claimedRoad) acc.claimedRoad = [];
+      if (acc.claimedRoad.includes(trophies)) return alert('❌ 此獎勵您已經領取過了！');
+
+      acc.claimedRoad.push(trophies);
+      if (type === 'gold') acc.gold += amount;
+      if (type === 'gems') acc.gems += amount;
+      saveAccountsToStorage();
+      updateAccountUI();
+
+      claimRewardFly(e, type === 'gems' ? 'gem' : 'gold');
+      alert(`🎉 成功領取 ${trophies} 盃里程碑獎勵：${amount} ${type === 'gold' ? '金幣' : '寶石'}！`);
+    }
+
+    // 每日簽到 7 天卡片網格系統
+    const checkinRewards = [
+      { day: 1, type: 'gold', amount: 1000, name: '1,000 籌碼', icon: '🪙' },
+      { day: 2, type: 'gems', amount: 20, name: '20 寶石', icon: '💎' },
+      { day: 3, type: 'gold', amount: 2500, name: '2,500 籌碼', icon: '🪙' },
+      { day: 4, type: 'gems', amount: 50, name: '50 寶石', icon: '💎' },
+      { day: 5, type: 'gold', amount: 5000, name: '5,000 籌碼', icon: '🪙' },
+      { day: 6, type: 'gems', amount: 100, name: '100 寶石', icon: '💎' },
+      { day: 7, type: 'gold', amount: 12000, name: '12,000 籌碼', icon: '👑' }
+    ];
+
+    function renderCheckinUI() {
+      const grid = document.getElementById('checkinDaysGrid');
+      if (!grid) return;
+      const acc = gameAccounts[currentUsername];
+      if (acc.checkinDay === undefined) acc.checkinDay = 0;
+      grid.innerHTML = '';
+
+      checkinRewards.forEach((r, idx) => {
+        let statusText = '';
+        let statusBg = '#222';
+        let isClaimable = false;
+
+        if (idx < acc.checkinDay) {
+          statusText = '已領取';
+          statusBg = '#444';
+        } else if (idx === acc.checkinDay) {
+          statusText = '立即領取';
+          statusBg = '#2ecc71';
+          isClaimable = true;
+        } else {
+          statusText = '未達成';
+          statusBg = '#8b0000';
+        }
+
+        grid.innerHTML += `
+          <div style="background: linear-gradient(135deg, #2b1f14, #18110b); border: 2.5px solid ${isClaimable?'#f1c40f':'#8c6b12'}; border-radius: 12px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; height: 175px;">
+            <div style="font-size: 12px; font-weight: bold; color: #f1c40f;">第 ${r.day} 天</div>
+            <div style="width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: 2px solid #d4af37; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+              ${r.icon}
+            </div>
+            <div style="font-size: 11px; font-weight: bold; color: #fff;">${r.name}</div>
+            <button style="width: 100%; background: ${statusBg}; color: #fff; border: none; padding: 5px 2px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: ${isClaimable?'pointer':'not-allowed'};" ${!isClaimable?'disabled':''} onclick="claimDailyCheckin(event, ${idx}, '${r.type}', ${r.amount})">${statusText}</button>
+          </div>
+        `;
+      });
+    }
+
+    function claimDailyCheckin(e, dayIndex, type, amount) {
+      const acc = gameAccounts[currentUsername];
+      if (acc.checkinDay !== dayIndex) return alert('❌ 目前無法領取此天的獎勵！');
+
+      acc.checkinDay++;
+      if (type === 'gold') acc.gold += amount;
+      if (type === 'gems') acc.gems += amount;
+      saveAccountsToStorage();
+      updateAccountUI();
+
+      claimRewardFly(e, type === 'gems' ? 'gem' : 'gold');
+      alert(`📅 第 ${dayIndex + 1} 天簽到成功！獲得 ${amount} ${type === 'gold' ? '籌碼' : '寶石'}！`);
+    }
+
+    // 飛行動畫：分散再匯集 (Scatter & Gather Animation)
+    function claimRewardFly(e, type) {
+      if (!e || !e.target) return;
+      const rect = e.target.getBoundingClientRect();
+      const startX = rect.left + rect.width / 2;
+      const startY = rect.top + rect.height / 2;
+
+      const destTarget = type === 'gem' ? document.getElementById('gemHudPill') : document.getElementById('goldHudPill');
+      if (!destTarget) return;
+      const destRect = destTarget.getBoundingClientRect();
+      const destX = destRect.left + destRect.width / 2;
+      const destY = destRect.top + destRect.height / 2;
+
+      const particleCount = 12;
+      const symbol = type === 'gem' ? '💎' : '🪙';
+
+      for (let i = 0; i < particleCount; i++) {
+        createFlyParticle(startX, startY, destX, destY, symbol, destTarget, i, particleCount);
+      }
+    }
+
+    function createFlyParticle(startX, startY, destX, destY, symbol, targetHudPill, index, total) {
+      const el = document.createElement('div');
+      el.className = 'flying-reward-particle';
+      el.innerText = symbol;
+      document.body.appendChild(el);
+
+      const angle = (Math.PI * 2 / total) * index + (Math.random() * 0.5 - 0.25);
+      const scatterDist = Math.random() * 60 + 40;
+      const scatterX = startX + Math.cos(angle) * scatterDist;
+      const scatterY = startY + Math.sin(angle) * scatterDist;
+
+      el.style.transform = `translate(${startX - 14}px, ${startY - 14}px) scale(1.4)`;
+      el.style.opacity = '1';
+
+      setTimeout(() => {
+        el.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1)';
+        el.style.transform = `translate(${scatterX - 14}px, ${scatterY - 14}px) scale(1.1)`;
+
+        setTimeout(() => {
+          el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease';
+          el.style.transform = `translate(${destX - 14}px, ${destY - 14}px) scale(0.4)`;
+          el.style.opacity = '0.7';
+
+          setTimeout(() => {
+            el.remove();
+            AudioEngine.playPop();
+            targetHudPill.classList.remove('bump');
+            void targetHudPill.offsetWidth;
+            targetHudPill.classList.add('bump');
+            setTimeout(() => targetHudPill.classList.remove('bump'), 180);
+          }, 480);
+        }, 180 + index * 20);
+      }, 20);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
       updateAccountUI();
     });
 
-    // 遊戲模式與 30秒匹配系統 (不顯示數字倒數計時，改為等待匹配中指示)
+    // 遊戲模式與 30秒倒數計時匹配系統 (彈出式矩型配對，帶動態花色)
     let currentGameMode = 'poker';
     let matchTimer = null;
     let matchSecondsLeft = 30;
@@ -814,14 +1255,17 @@
       }
 
       matchSecondsLeft = 30;
+      document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
+      
       const modeName = currentGameMode === 'poker' ? '德州撲克' : '21點';
-      document.getElementById('matchingTitleText').innerText = `正在尋找 6 人 ${modeName} 對戰玩家 (匹配中)...`;
-      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 配對狀態: 搜尋中...';
+      document.getElementById('matchingTitleText').innerText = `尋找 6 人 ${modeName} 對戰玩家...`;
+      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 1 / 6 人';
       openScreen('matchingModal');
 
       if (matchTimer) clearInterval(matchTimer);
       matchTimer = setInterval(() => {
         matchSecondsLeft--;
+        document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
 
         if (matchSecondsLeft === 20) {
           document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 3 / 6 人';
@@ -844,7 +1288,7 @@
     }
 
     // ==========================================
-    // 德州撲克標準規則 (盲注、底牌、Pre-flop, Flop, Turn, River, Showdown 盃數 ±4/±3)
+    // 德州撲克標準規則 (盲注、底牌、Showdown 盃數 ±4/±3)
     // ==========================================
     let thPlayerCards = [];
     let thOppCardsList = [[], [], [], [], []];
@@ -936,7 +1380,7 @@
       }
 
       const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      const stages = ['Pre-Flop (槍口位UTG表態)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (攤牌比牌)'];
+      const stages = ['Pre-Flop (翻牌前下注)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (標準賭場攤牌比牌)'];
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 階段: ${stages[thStage]}`;
     }
 
@@ -947,7 +1391,7 @@
       saveAccountsToStorage();
       updateAccountUI();
       alert('❌ 您已選擇蓋牌 (Fold)，輸掉本局！ (-3 盃)');
-      concludeHoldemRound(false);
+      concludeHoldemRound();
     }
 
     // ==========================================
@@ -1018,6 +1462,7 @@
       document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 順序叫牌中`;
     }
 
+    // 統一遊戲動作分流
     function handleGameAction() {
       AudioEngine.playPop();
       if (currentGameMode === 'blackjack') {
@@ -1043,7 +1488,7 @@
           gameAccounts[currentUsername].trophies += 4; // 贏一局加4杯
           saveAccountsToStorage();
           updateAccountUI();
-          concludeHoldemRound(true);
+          concludeHoldemRound();
         } else {
           renderRoundTablePoker();
         }
@@ -1078,7 +1523,7 @@
       }, 300);
     }
 
-    function concludeHoldemRound(won) {
+    function concludeHoldemRound() {
       thStage = 4;
       renderRoundTablePoker();
       setTimeout(() => {
@@ -1108,11 +1553,23 @@
       if (comm) comm.innerHTML = '';
     }
 
-    // 全新頁面導航管理 (Full-page views instead of popups)
+    // 全新頁面導航管理 (Full-page views)
     function openPage(pageId) {
       closePages();
       const page = document.getElementById(pageId);
       if (page) page.classList.add('active');
+      if (pageId === 'trophyPage') {
+        renderTrophyRoadUI();
+      }
+      if (pageId === 'checkinPage') {
+        renderCheckinUI();
+      }
+      if (pageId === 'taskPage') {
+        renderTasksUI();
+      }
+      if (pageId === 'shopPage') {
+        renderShopItemsUI();
+      }
     }
 
     function closePages() {

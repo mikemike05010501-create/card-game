@@ -1,1643 +1,1621 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>POKER ARENA - VIP CASINO</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>深夜牌局 · Midnight Table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --felt-dark:#062a1f;
+  --felt:#0e3e2c;
+  --felt-light:#1a5c3f;
+  --wood:#241209;
+  --wood-light:#3d2313;
+  --gold:#c9a24b;
+  --gold-bright:#f0cf83;
+  --cream:#f3ead4;
+  --cream-dim:#d8caa9;
+  --red:#b23a3a;
+  --red-bright:#e05252;
+  --ink:#160f0a;
+  --font-display:'Fraunces', serif;
+  --font-ui:'Manrope', sans-serif;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0; font-family:var(--font-ui); color:var(--cream);
+  background:var(--felt-dark);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#app{position:relative; width:100vw; height:100vh; height:100svh; overflow:hidden; touch-action:pan-y;}
 
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
+/* ---------- background ---------- */
+#bg-layer{position:absolute; inset:0; z-index:0; overflow:hidden;}
+#bg-img{width:100%; height:100%; object-fit:cover; filter:brightness(0.55) saturate(1.05);}
+#bg-fallback{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% 18%, rgba(255,224,150,0.16), transparent 45%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.65), transparent 60%),
+    repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 6px),
+    linear-gradient(180deg, #0c3526 0%, #08281c 55%, #051a12 100%);
+}
+#bg-vignette{position:absolute; inset:0; box-shadow: inset 0 0 220px 60px rgba(0,0,0,0.75); pointer-events:none;}
 
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lilita+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <!-- Google Identity Services SDK -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      font-family: 'Lilita One', 'Outfit', sans-serif;
-      background: radial-gradient(circle at center, rgba(14,56,38,0.85) 0%, rgba(3,15,9,0.98) 100%),
-                  url('https://images.unsplash.com/photo-1511193311914-0346f16efe90?q=80&w=1600&auto=format&fit=crop') no-repeat center center / cover;
-      color: #fff; width: 100vw; height: 100vh; overflow: hidden;
-      display: flex; flex-direction: column; position: relative;
-    }
+/* ---------- header ---------- */
+#topbar{
+  position:absolute; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px;
+  background:linear-gradient(180deg, rgba(9,20,15,0.85), rgba(9,20,15,0));
+  pointer-events:none;
+}
+#topbar > *{pointer-events:auto;}
+.id-badge{
+  display:flex; align-items:center; gap:10px;
+  background:rgba(20,14,8,0.55);
+  border:1px solid rgba(201,162,75,0.35);
+  padding:7px 14px 7px 8px; border-radius:999px;
+  backdrop-filter:blur(6px);
+}
+.id-badge .name-dot{
+  width:30px; height:30px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold) 60%, #8a6a2a 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:700; color:#2a1a06; font-size:15px;
+  flex-shrink:0;
+}
+.id-badge .who{display:flex; flex-direction:column; line-height:1.15;}
+.id-badge .pname{font-weight:700; font-size:13.5px; color:var(--cream);}
+.id-badge .pname button{
+  background:none; border:none; color:var(--cream-dim); font-size:10px; cursor:pointer;
+  padding:0; margin-left:5px; text-decoration:underline; font-family:var(--font-ui);
+}
+#balance-badge{
+  display:flex; align-items:center; gap:8px;
+  background:rgba(20,14,8,0.55);
+  border:1px solid rgba(201,162,75,0.35);
+  padding:8px 16px; border-radius:999px; backdrop-filter:blur(6px);
+}
+#balance-badge .coin{
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6da, var(--gold) 55%, #7c5c22 100%);
+  border:2px solid #7c5c22; box-shadow:0 0 0 2px rgba(0,0,0,0.15) inset;
+  flex-shrink:0;
+}
+#balance-num{font-family:var(--font-display); font-weight:700; font-size:17px; letter-spacing:0.3px;}
+#sfx-toggle{
+  background:rgba(20,14,8,0.55); border:1px solid rgba(201,162,75,0.35);
+  color:var(--cream-dim); width:38px;height:38px;border-radius:50%; cursor:pointer;
+  display:flex;align-items:center;justify-content:center; font-size:15px; backdrop-filter:blur(6px);
+}
+#conn-banner{
+  position:absolute; top:64px; left:50%; transform:translateX(-50%); z-index:55;
+  background:rgba(165,58,58,0.92); color:#fff; font-size:12.5px; padding:9px 16px; border-radius:10px;
+  max-width:92vw; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.4);
+}
 
-    #particlesCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    #clickCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+/* ---------- screens ---------- */
+.screen{position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;}
+.hidden{display:none !important;}
 
-    /* 頂部 HUD */
-    .hud-bar {
-      height: 65px; display: flex; justify-content: space-between; align-items: center;
-      padding: 0 25px; background: rgba(0,0,0,0.85); z-index: 10; position: relative; border-bottom: 2px solid #d4af37;
-    }
-    .player-profile {
-      display: flex; align-items: center; gap: 12px;
-      background: rgba(10,20,15,0.95); padding: 5px 20px 5px 6px;
-      border-radius: 40px; border: 2px solid #d4af37; cursor: pointer; z-index: 20;
-    }
-    .avatar {
-      width: 44px; height: 44px; border-radius: 10px; border: 2px solid #d4af37;
-      background-image: url('watermarked_img_3306472174093337687.jpg'); background-size: cover; background-position: center top;
-      background-color: #222; overflow: hidden;
-    }
-    .player-name { font-weight: 800; font-size: 16px; color: #fff; font-family: 'Outfit', sans-serif; }
-    .trophy-badge { font-size: 12px; color: #f1c40f; font-weight: bold; }
+/* ===== HOME ===== */
+#screen-home{flex-direction:column; padding:90px 20px 30px; overflow-y:auto;}
+.hero{text-align:center; margin-bottom:26px;}
+.hero .eyebrow-line{width:46px;height:2px;background:var(--gold); margin:0 auto 16px; opacity:0.8;}
+.hero h1{
+  font-family:var(--font-display); font-style:italic; font-weight:700;
+  font-size:clamp(38px,7vw,64px); margin:0; color:var(--cream);
+  text-shadow:0 4px 30px rgba(0,0,0,0.5);
+  letter-spacing:0.5px;
+}
+.hero p{color:var(--cream-dim); font-size:14.5px; margin:10px 0 0; letter-spacing:0.4px;}
 
-    /* 右上資源欄 */
-    .brawl-hud-right { display: flex; align-items: center; gap: 12px; z-index: 20; }
-    .brawl-pill {
-      background: #000; border: 2.5px solid #d4af37; height: 36px; border-radius: 18px;
-      padding: 0 16px; display: flex; align-items: center; gap: 8px; font-family: 'Lilita One', sans-serif; font-size: 16px;
-      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .brawl-pill.bump { transform: scale(1.22); border-color: #f1c40f; }
+.game-picker{display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-bottom:22px;}
+.game-card{
+  width:210px; padding:22px 18px; border-radius:16px; cursor:pointer;
+  background:linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+  border:1px solid rgba(201,162,75,0.25); text-align:left; position:relative; overflow:hidden;
+  transition:transform .15s ease, border-color .15s ease;
+}
+.game-card:hover{transform:translateY(-3px); border-color:rgba(201,162,75,0.6);}
+.game-card.active{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 10px 30px rgba(0,0,0,0.4);}
+.game-card.disabled{opacity:0.55; cursor:not-allowed;}
+.game-card .suit-icon{font-size:26px; color:var(--gold);}
+.game-card h3{font-family:var(--font-display); font-size:20px; margin:10px 0 4px; font-weight:600;}
+.game-card p{font-size:12.5px; color:var(--cream-dim); margin:0; line-height:1.5;}
+.ribbon{
+  position:absolute; top:12px; right:-30px; background:var(--red); color:#fff;
+  font-size:10px; padding:3px 34px; transform:rotate(35deg); letter-spacing:1px;
+}
 
-    /* 左右側選單 */
-    .left-menu { position: absolute; left: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
-    .menu-btn {
-      width: 65px; height: 65px; border-radius: 16px; background: rgba(30,40,35,0.9);
-      border: 2px solid #d4af37; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .menu-btn span { font-size: 24px; }
-    .menu-btn label { font-size: 10px; font-weight: bold; color: #f1c40f; margin-top: 2px; }
+.panel{
+  width:min(430px, 92vw); background:rgba(15,10,6,0.55); border:1px solid rgba(201,162,75,0.3);
+  border-radius:18px; padding:22px 22px 24px; backdrop-filter:blur(10px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.4);
+}
+.tabrow{display:flex; gap:6px; margin-bottom:18px; background:rgba(0,0,0,0.25); padding:4px; border-radius:11px;}
+.tabrow button{
+  flex:1; padding:9px 0; border:none; border-radius:8px; background:transparent; color:var(--cream-dim);
+  font-family:var(--font-ui); font-weight:700; font-size:13px; cursor:pointer; transition:all .15s;
+}
+.tabrow button.active{background:var(--gold); color:#241407;}
 
-    /* 左下角橫向經驗值累積與分段點小工具 */
-    .bottom-left-exp-widget {
-      position: absolute; left: 25px; bottom: 25px; width: 190px;
-      background: rgba(10,20,15,0.92); border: 2px solid #d4af37; border-radius: 14px;
-      padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; z-index: 20; cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8);
-    }
-    .bottom-left-exp-widget:hover { border-color: #fff; }
+.field-label{font-size:12px; color:var(--cream-dim); margin-bottom:8px; display:block; letter-spacing:0.3px;}
+input.text-input{
+  width:100%; padding:13px 14px; border-radius:10px; border:1px solid rgba(201,162,75,0.3);
+  background:rgba(255,255,255,0.04); color:var(--cream); font-family:var(--font-ui); font-size:15px;
+  margin-bottom:14px; letter-spacing:1px;
+}
+input.text-input:focus{outline:none; border-color:var(--gold);}
+input.code-input{text-transform:uppercase; text-align:center; font-family:var(--font-display); font-size:22px; letter-spacing:6px;}
 
-    .right-menu { position: absolute; right: 25px; top: 90px; display: flex; flex-direction: column; gap: 14px; z-index: 20; }
-    .side-tag-btn {
-      width: 75px; height: 50px; background: rgba(30,40,35,0.9); border: 2px solid #d4af37;
-      border-radius: 12px; color: #fff; font-weight: bold; font-size: 12px; cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-    }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px 22px; border-radius:11px; border:none; cursor:pointer;
+  font-family:var(--font-ui); font-weight:700; font-size:14.5px; letter-spacing:0.3px;
+  transition:transform .1s ease, filter .15s ease;
+}
+.btn:active{transform:scale(0.96);}
+.btn-gold{background:linear-gradient(180deg, var(--gold-bright), var(--gold)); color:#241407; box-shadow:0 6px 18px rgba(201,162,75,0.3);}
+.btn-gold:hover{filter:brightness(1.06);}
+.btn-outline{background:transparent; border:1px solid rgba(201,162,75,0.45); color:var(--cream);}
+.btn-outline:hover{background:rgba(255,255,255,0.06);}
+.btn-red{background:linear-gradient(180deg, var(--red-bright), var(--red)); color:#fff;}
+.btn-block{width:100%;}
+.btn:disabled{opacity:0.4; cursor:not-allowed; filter:none;}
 
-    /* 中央舞台與角色呈現 */
-    .center-visual {
-      position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
-      width: 480px; height: 82vh; pointer-events: none; z-index: 3;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-    }
-    .hero-stage-podium {
-      position: absolute; bottom: 25px; width: 360px; height: 85px;
-      background: radial-gradient(ellipse at center, rgba(46,204,113,0.85) 0%, rgba(30,130,76,0.6) 55%, rgba(0,0,0,0.6) 80%, transparent 100%);
-      border-radius: 50%; border: 3px solid rgba(212,175,55,0.6);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.3);
-    }
-    .hero-fullbody-wrapper {
-      position: relative; width: 360px; height: 540px; display: flex;
-      justify-content: center; align-items: flex-end; z-index: 4;
-    }
-    .hero-anime-figure {
-      width: 100%; height: 100%;
-      background-image: url('watermarked_img_3306472174093337687.jpg');
-      background-size: contain; background-repeat: no-repeat; background-position: center bottom;
-      filter: drop-shadow(0 20px 30px rgba(0,0,0,0.92));
-    }
-    .companion-pet {
-      position: absolute; right: 40px; bottom: 35px; width: 70px; height: 70px;
-      background: radial-gradient(circle, #f1c40f 0%, #e67e22 70%);
-      border: 2.5px solid #000; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 34px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.8); z-index: 5;
-    }
-    .logo-glow {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      font-family: 'Cinzel', serif; font-weight: 900; font-size: 28px; letter-spacing: 5px;
-      color: #f1c40f; text-shadow: 0 4px 15px rgba(0,0,0,0.9); text-align: center; z-index: 4;
-    }
+.hint{font-size:11.5px; color:var(--cream-dim); text-align:center; margin-top:14px; line-height:1.6;}
 
-    /* 右下對戰按鈕與模式 Bar */
-    .battle-center {
-      position: absolute; right: 25px; bottom: 25px; z-index: 20; display: flex; flex-direction: column; gap: 10px;
-    }
-    .battle-mode-bar {
-      width: 260px; background: rgba(0,0,0,0.9); border: 2px solid #d4af37;
-      padding: 10px 16px; border-radius: 14px; text-align: center; color: #e1b12c;
-      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    }
-    .play-btn {
-      width: 260px; height: 75px; background: linear-gradient(135deg, #ffe066, #d4af37, #8c6b12);
-      border: 3.5px solid #fff; border-radius: 18px; color: #1e272e; font-size: 26px; font-weight: 900;
-      font-family: 'Cinzel', serif; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 10px 30px rgba(212,175,55,0.7);
-    }
-    .play-btn:active { transform: scale(0.95); }
+/* ===== WAITING ROOM ===== */
+#screen-waiting{flex-direction:column;}
+.room-code-box{
+  text-align:center; margin-bottom:22px;
+}
+.room-code-box .lbl{font-size:12px; color:var(--cream-dim); letter-spacing:1.5px; margin-bottom:8px;}
+.room-code-box .code{
+  font-family:var(--font-display); font-weight:700; font-size:44px; letter-spacing:14px;
+  color:var(--gold-bright); text-shadow:0 4px 24px rgba(201,162,75,0.4);
+}
+.seat-list{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:12px;
+  width:min(560px,92vw); margin-bottom:22px;
+}
+.seat-slot{
+  background:rgba(255,255,255,0.04); border:1px solid rgba(201,162,75,0.22); border-radius:13px;
+  padding:14px; text-align:center; min-height:70px; display:flex; flex-direction:column; justify-content:center;
+}
+.seat-slot.filled{border-color:rgba(201,162,75,0.5); background:rgba(201,162,75,0.08);}
+.seat-slot .snum{font-size:10px; color:var(--cream-dim); letter-spacing:1px; margin-bottom:5px;}
+.seat-slot .sname{font-family:var(--font-display); font-weight:600; font-size:15px;}
+.seat-slot .stag{font-size:10px; color:var(--gold); margin-top:3px;}
+.seat-slot.empty{color:rgba(255,255,255,0.25); font-size:12px;}
 
-    /* 下注量選擇面板 */
-    .bet-selector-panel {
-      position: absolute; right: 0; bottom: 145px; width: 260px;
-      background: rgba(14,23,18,0.96); border: 2.5px solid #d4af37; border-radius: 14px;
-      padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 25;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    }
-    .bet-option-btn {
-      background: rgba(255,255,255,0.08); border: 1.5px solid rgba(212,175,55,0.4);
-      border-radius: 8px; padding: 6px; color: #fff; font-weight: bold; cursor: pointer;
-      text-align: center; font-family: 'Outfit', sans-serif; font-size: 13px;
-    }
-    .bet-option-btn.selected { background: #f1c40f; color: #000; border-color: #fff; }
+/* ===== TABLE ===== */
+#screen-table{
+  padding:64px 10px 14px; flex-direction:column; align-items:center; justify-content:flex-start;
+}
+.table-wrap{
+  position:relative; width:min(1040px,97vw);
+  flex:1 1 auto; min-height:0; max-height:640px; margin:6px 0 10px;
+}
+#table-controls{
+  width:100%; display:flex; justify-content:center; align-items:center; flex-shrink:0; height:270px; overflow:visible;
+}
+.felt-oval{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse at 50% 38%, var(--felt-light) 0%, var(--felt) 55%, var(--felt-dark) 100%);
+  border-radius:50% / 42%;
+  border:14px solid var(--wood);
+  box-shadow:
+    0 0 0 3px rgba(201,162,75,0.35),
+    0 25px 60px rgba(0,0,0,0.55),
+    inset 0 0 90px rgba(0,0,0,0.45);
+}
+.felt-oval::before{
+  content:''; position:absolute; inset:18px; border-radius:50%/42%;
+  border:1px dashed rgba(201,162,75,0.18); pointer-events:none;
+}
 
-    /* 全新頁面式系統 (Full-page views) */
-    .app-full-page {
-      position: fixed; inset: 0; background: #08120e; z-index: 200;
-      display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
-      padding: 25px 40px; overflow-y: auto;
-    }
-    .app-full-page.active { opacity: 1; pointer-events: auto; }
-    .page-header {
-      height: 70px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 2px solid #d4af37; margin-bottom: 20px;
-    }
-    .page-title { font-family: 'Cinzel', serif; color: #f1c40f; font-size: 26px; font-weight: 900; letter-spacing: 2px; }
-    .page-back-btn {
-      background: #c0392b; color: #fff; border: 2px solid #fff; padding: 8px 20px;
-      border-radius: 20px; font-weight: bold; cursor: pointer; font-family: 'Outfit', sans-serif;
-    }
-    .page-back-btn:active { transform: scale(0.95); }
+.dealer-zone{
+  position:absolute; top:6%; left:50%; transform:translateX(-50%);
+  text-align:center; z-index:6;
+}
+.dealer-label{font-size:11px; letter-spacing:2px; color:var(--gold-bright); margin-bottom:6px; opacity:0.85;}
+.deck-pile{position:relative; width:44px; height:60px; margin:0 auto 8px;}
+.deck-pile .dcard{
+  position:absolute; width:44px; height:60px; border-radius:6px;
+  background:repeating-linear-gradient(45deg, #7a2f2f, #7a2f2f 4px, #5f2222 4px, #5f2222 8px);
+  border:2px solid #2a1a06; box-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.dealer-hand{display:flex; gap:10px; justify-content:center; min-height:120px;}
 
-    /* 彈出式配對矩型與花色動態感 */
-    .app-screen-overlay {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
-      display: flex; justify-content: center; align-items: center; z-index: 150;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-    }
-    .app-screen-overlay.active { opacity: 1; pointer-events: auto; }
-    
-    .matching-popup-box {
-      width: 380px; background: #0e1712; border: 3px solid #d4af37; border-radius: 20px;
-      padding: 25px; display: flex; flex-direction: column; align-items: center; text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.85);
-    }
-    @keyframes suitBounce {
-      0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
-      50% { transform: translateY(-12px) scale(1.25) rotate(10deg); }
-    }
-    .animated-suits {
-      display: flex; gap: 15px; font-size: 34px; margin: 15px 0;
-    }
-    .animated-suits span {
-      display: inline-block;
-      animation: suitBounce 1.2s infinite ease-in-out;
-    }
-    .animated-suits span:nth-child(1) { animation-delay: 0s; }
-    .animated-suits span:nth-child(2) { animation-delay: 0.3s; color: #e74c3c; }
-    .animated-suits span:nth-child(3) { animation-delay: 0.6s; color: #e74c3c; }
-    .animated-suits span:nth-child(4) { animation-delay: 0.9s; }
+.pot-center{
+  position:absolute; top:36%; left:50%; transform:translate(-50%,-50%);
+  display:flex; gap:10px; z-index:4; min-height:20px;
+}
 
-    /* 飛行動畫物件 */
-    .flying-reward-particle {
-      position: fixed; width: 28px; height: 28px; pointer-events: none; z-index: 10000;
-      display: flex; align-items: center; justify-content: center; font-size: 24px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
-    }
+.seats-ring{position:absolute; inset:0;}
+.seat{
+  position:absolute; width:236px; text-align:center; z-index:6;
+  transform:translate(-50%,-50%);
+}
+.seat .plate{
+  background:rgba(10,8,4,0.55); border:1px solid rgba(201,162,75,0.25); border-radius:12px;
+  padding:6px 10px; backdrop-filter:blur(4px);
+}
+.seat.turn .plate{border-color:var(--gold-bright); box-shadow:0 0 0 2px rgba(240,207,131,0.5), 0 0 22px rgba(240,207,131,0.35);}
+.seat.me .plate{border-color:rgba(201,162,75,0.55);}
+.seat .pname2{font-family:var(--font-ui); font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.seat .pchips{font-size:12px; color:var(--gold-bright); margin-top:1px;}
+.seat .turn-flag{font-size:11px; color:var(--gold-bright); letter-spacing:1px; margin-top:2px;}
+.seat .hands-row{display:flex; gap:10px; justify-content:center; margin-top:8px; flex-wrap:wrap;}
+.hand-block{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.hand-block.active-hand .cards-row{box-shadow:0 0 0 2px var(--gold-bright); border-radius:10px;}
+.cards-row{display:flex; gap:4px; padding:2px;}
+.hand-status{font-size:12px; padding:2px 9px; border-radius:20px; font-weight:700;}
+.hand-status.win{background:rgba(80,180,110,0.25); color:#8fe0a8;}
+.hand-status.lose{background:rgba(220,90,90,0.22); color:#ff9c9c;}
+.hand-status.push{background:rgba(200,200,200,0.18); color:#e7e2d5;}
+.hand-status.blackjack{background:rgba(240,207,131,0.25); color:var(--gold-bright);}
+.hand-total{font-size:13px; font-weight:700; color:var(--cream-dim);}
+.bet-chips-mini{display:flex; gap:2px; justify-content:center; min-height:14px;}
 
-    /* 圓桌式 6 人競技對局畫面 */
-    .game-match-view {
-      position: fixed; inset: 0; background: #05100b; z-index: 200;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 12px;
-    }
-    .poker-table {
-      position: relative; width: 100%; max-width: 940px; height: 470px; margin: auto;
-      background: radial-gradient(ellipse at center, #165b34 0%, #0b341e 75%, #051c10 100%);
-      border: 14px solid #4a2c0c; border-radius: 230px;
-      box-shadow: inset 0 0 50px rgba(0,0,0,0.85), 0 15px 40px rgba(0,0,0,0.9);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .dealer-box {
-      position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.8); border: 2px solid #d4af37; padding: 3px 14px; border-radius: 18px;
-      font-size: 12px; color: #f1c40f; font-weight: bold; z-index: 6;
-    }
-    .table-center-pot {
-      display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 5; margin-top: 15px;
-    }
-    .community-cards-row { display: flex; gap: 6px; min-height: 70px; }
-    
-    .seat { position: absolute; width: 145px; display: flex; flex-direction: column; align-items: center; font-size: 10px; z-index: 10; }
-    .seat-0 { bottom: 6px; left: 50%; transform: translateX(-50%); }
-    .seat-1 { bottom: 35px; left: 12px; }
-    .seat-2 { top: 65px; left: 12px; }
-    .seat-3 { top: 35px; left: 50%; transform: translateX(-50%); }
-    .seat-4 { top: 65px; right: 12px; }
-    .seat-5 { bottom: 35px; right: 12px; }
+/* card */
+.card{
+  width:84px; height:118px; border-radius:10px; background:var(--cream);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  border:1px solid rgba(0,0,0,0.15); box-shadow:0 6px 14px rgba(0,0,0,0.45);
+  font-family:var(--font-display); font-weight:700; position:relative; flex-shrink:0;
+}
+.card.red{color:var(--red);}
+.card.black{color:#1a1a1a;}
+.card .r{font-size:30px; line-height:1;}
+.card .s{font-size:31px; line-height:1; margin-top:2px;}
+.card.back{
+  background:repeating-linear-gradient(45deg, #7a2f2f, #7a2f2f 4px, #5f2222 4px, #5f2222 8px);
+  border:2px solid #2a1a06;
+}
+.card.dealing{animation:dealIn 0.42s cubic-bezier(.2,.8,.3,1.1) both;}
+@keyframes dealIn{
+  0%{opacity:0; transform:translate(0,-220px) scale(0.5) rotate(-14deg);}
+  70%{opacity:1;}
+  100%{opacity:1; transform:translate(0,0) scale(1) rotate(0);}
+}
+.card.sm{width:70px;height:98px;}
+.card.sm .r{font-size:25px;} .card.sm .s{font-size:26px;}
 
-    .seat-avatar {
-      width: 32px; height: 32px; border-radius: 50%; border: 2px solid #d4af37; background: #222;
-      display: flex; align-items: center; justify-content: center; font-weight: bold; color: #f1c40f; font-size: 11px; margin-bottom: 1px;
-    }
-    .seat-info { background: rgba(0,0,0,0.85); padding: 2px 6px; border-radius: 8px; border: 1px solid rgba(212,175,55,0.4); text-align: center; width: 100%; }
-    
-    .chip-stack-container {
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      background: rgba(0,0,0,0.75); border: 1px solid #f1c40f; padding: 2px 8px; border-radius: 12px;
-      margin-top: 3px; font-size: 11px; color: #f1c40f; font-weight: bold;
-    }
-    .chip-icon {
-      width: 14px; height: 14px; background: radial-gradient(circle, #ffe066 0%, #d4af37 60%, #8c6b12 100%);
-      border: 1px dashed #fff; border-radius: 50%; display: inline-block; box-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    }
-    .seat-cards { display: flex; gap: 3px; margin-top: 3px; justify-content: center; min-height: 58px; }
+/* chips */
+.chip{
+  width:26px;height:26px;border-radius:50%; position:relative; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:7.5px; font-weight:800; font-family:var(--font-ui); color:#fff;
+  border:2px dashed rgba(255,255,255,0.55);
+  box-shadow:0 2px 5px rgba(0,0,0,0.45), inset 0 0 0 3px rgba(0,0,0,0.25);
+}
+.chip.v1{background:#e9e4d6; color:#333; border-color:rgba(0,0,0,0.2);}
+.chip.v5{background:#a5333a;}
+.chip.v25{background:#276b3a;}
+.chip.v100{background:#1c1c1c;}
+.chip.v500{background:#6a2f8f;}
+.chip.v1000{background:radial-gradient(circle at 35% 30%, #f0cf83, #a9821f);}
+.chip-stack{display:flex; flex-direction:column-reverse; align-items:center; position:relative;}
+.chip-stack .chip{margin-top:-16px;}
+.chip-stack .chip:last-child{margin-top:0;}
+.chip-col-group{display:flex; gap:4px; align-items:flex-end;}
+.chip-count-badge{
+  position:absolute; top:-9px; right:-6px; background:var(--gold); color:#241407;
+  font-size:9px; font-weight:800; border-radius:20px; padding:1px 5px;
+}
 
-    @keyframes dealFly {
-      0% { transform: translateY(-160px) scale(0.3); opacity: 0; }
-      100% { transform: translateY(0) scale(1); opacity: 1; }
-    }
-    .poker-card {
-      width: 42px; height: 60px; background: #fff; border-radius: 5px; border: 1.5px solid #000;
-      display: flex; flex-direction: column; justify-content: space-between; padding: 3px; font-weight: bold; color: #1e272e; font-size: 10px;
-      animation: dealFly 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-    }
-    .poker-card.red { color: #e74c3c; }
-    .poker-card.back { background: #500; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+/* betting slider */
+.bet-panel{
+  position:relative; margin:0 auto;
+  width:min(460px,94vw); background:rgba(12,9,5,0.78); border:1px solid rgba(201,162,75,0.4);
+  border-radius:16px; padding:16px 18px 18px; backdrop-filter:blur(10px);
+  box-shadow:0 15px 40px rgba(0,0,0,0.5);
+}
+.bet-panel .row1{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.bet-amt{font-family:var(--font-display); font-size:24px; font-weight:700; color:var(--gold-bright);}
+.bet-preview{height:68px; display:flex; gap:8px; justify-content:center; align-items:flex-end; margin:8px 0 12px; flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; padding-top:6px;}
+input[type=range]{
+  -webkit-appearance:none; width:100%; height:6px; border-radius:4px;
+  background:linear-gradient(90deg, var(--gold) var(--pct,50%), rgba(255,255,255,0.15) var(--pct,50%));
+  outline:none; margin:6px 0 14px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--gold-bright), var(--gold));
+  border:2px solid #7c5c22; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.5);
+}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%; background:var(--gold); border:2px solid #7c5c22; cursor:pointer;
+}
+.step-btns{display:flex; gap:8px; margin-bottom:12px;}
+.step-btns button{
+  flex:1; padding:8px 0; border-radius:8px; border:1px solid rgba(201,162,75,0.3);
+  background:rgba(255,255,255,0.04); color:var(--cream); font-weight:700; font-size:12.5px; cursor:pointer;
+}
 
-    @keyframes chipFly {
-      0% { transform: scale(0.4) translateY(25px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
-    }
-    .chip-flying { animation: chipFly 0.28s ease-out; }
+/* action buttons */
+.action-row{
+  position:relative; margin:0 auto;
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-content:flex-start;
+}
+.action-btn{
+  padding:14px 20px; border-radius:12px; border:none; font-family:var(--font-ui); font-weight:800; font-size:13.5px;
+  cursor:pointer; letter-spacing:0.3px; color:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  transition:transform .1s;
+}
+.action-btn:active{transform:scale(0.94);}
+.action-btn:disabled{opacity:0.35; cursor:not-allowed;}
+.action-btn.hit{background:linear-gradient(180deg,#4fae6f,#2f7d49);}
+.action-btn.stand{background:linear-gradient(180deg,#c65b5b,#a53a3a);}
+.action-btn.double{background:linear-gradient(180deg,#5a92d6,#3a6bb0);}
+.action-btn.split{background:linear-gradient(180deg,var(--gold-bright),var(--gold)); color:#241407;}
 
-    .hidden { display: none !important; }
-  </style>
+.waiting-toast{
+  position:relative; margin:auto;
+  background:rgba(12,9,5,0.75); border:1px solid rgba(201,162,75,0.3); border-radius:999px;
+  padding:10px 20px; font-size:13px; color:var(--cream-dim); align-self:center; height:fit-content;
+}
+
+/* result banner */
+#result-overlay{
+  position:absolute; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; background:rgba(3,6,4,0.68); backdrop-filter:blur(3px);
+}
+.banner-text{
+  font-family:var(--font-display); font-style:italic; font-weight:700;
+  font-size:clamp(40px,8vw,86px); text-align:center; letter-spacing:1px;
+  animation:bannerPop 0.5s cubic-bezier(.2,.9,.25,1.3) both;
+  text-shadow:0 8px 40px rgba(0,0,0,0.6);
+}
+.banner-text.win{color:var(--gold-bright);}
+.banner-text.lose{color:var(--red-bright);}
+.banner-text.push{color:var(--cream);}
+@keyframes bannerPop{0%{opacity:0; transform:scale(0.5);} 60%{opacity:1;} 100%{opacity:1; transform:scale(1);}}
+.banner-sub{font-size:16px; color:var(--cream-dim); margin-top:10px; text-align:center; max-width:80vw;}
+.banner-detail{
+  margin-top:22px; background:rgba(255,255,255,0.05); border:1px solid rgba(201,162,75,0.25);
+  border-radius:12px; padding:14px 18px; font-size:13px; min-width:240px; max-width:88vw;
+}
+.banner-detail .drow{display:flex; justify-content:space-between; padding:4px 0; gap:16px;}
+.banner-btns{display:flex; gap:12px; margin-top:24px;}
+
+/* particles */
+.particle{
+  position:fixed; z-index:200; width:6px; height:6px; border-radius:50%; pointer-events:none;
+  animation:particleFly 0.6s ease-out forwards;
+}
+@keyframes particleFly{
+  to{ transform:translate(var(--dx), var(--dy)) scale(0); opacity:0; }
+}
+
+/* flying chip for convergence animation */
+.fly-chip{
+  position:fixed; z-index:300; border-radius:50%; pointer-events:none;
+  transition:transform 0.85s cubic-bezier(.15,.7,.25,1), opacity 0.85s ease;
+}
+
+@media (max-width:720px){
+  .seat{width:176px;}
+  .seat .pname2{font-size:12.5px;} .seat .pchips{font-size:11px;}
+  .card{width:58px;height:82px;} .card .r{font-size:20px;} .card .s{font-size:21px;}
+  .card.sm{width:52px;height:74px;} .card.sm .r{font-size:18px;} .card.sm .s{font-size:19px;}
+  .hand-total{font-size:11px;} .hand-status{font-size:10px;}
+  .table-wrap{max-height:none;}
+  #table-controls{height:250px;}
+  #topbar{padding:10px 12px;}
+}
+</style>
 </head>
 <body>
+<div id="app">
+  <div id="bg-layer">
+    <div id="bg-fallback"></div>
+    <img id="bg-img" src="data:image/jpeg;base64,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">
+    <div id="bg-vignette"></div>
+  </div>
 
-  <canvas id="particlesCanvas"></canvas>
-  <canvas id="clickCanvas"></canvas>
-
-  <!-- 頂部 HUD -->
-  <div class="hud-bar">
-    <div class="player-profile" onclick="openPage('profilePage')">
-      <div class="avatar"></div>
-      <div>
-        <div id="playerNameText" class="player-name">Google 使用者</div>
-        <div class="trophy-badge">🏆 <span id="hudTrophyCount">0</span> 杯</div>
+  <div id="topbar">
+    <div class="id-badge">
+      <div class="name-dot" id="name-initial">?</div>
+      <div class="who">
+        <div class="pname"><span id="hdr-name">玩家</span><button onclick="openRename(event)">改名</button></div>
       </div>
     </div>
-    
-    <div class="brawl-hud-right">
-      <div class="brawl-pill" id="goldHudPill">🪙 <span id="goldCountText">1000</span> 籌碼</div>
-      <div class="brawl-pill" id="gemHudPill">💎 <span id="gemCountText">0</span></div>
-      <button onclick="googleLogin()" style="background:#4285F4; color:#fff; border:none; padding:6px 14px; border-radius:14px; font-weight:bold; cursor:pointer; font-size:12px;">Google 登入</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div id="balance-badge"><div class="coin"></div><div id="balance-num">$0</div></div>
+      <button id="sfx-toggle" onclick="toggleSfx(event)" title="音效開關">🔊</button>
+    </div>
+  </div>
+  <div id="conn-banner" class="hidden">⚠️ 目前環境偵測不到連線服務，請在 Claude App／claude.ai 的 Artifact 檢視器中開啟本頁面才能連線對戰。</div>
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen">
+    <div class="hero">
+      <div class="eyebrow-line"></div>
+      <h1>深夜牌局</h1>
+      <p>Midnight Table</p>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px; padding:16px 18px;">
+      <span class="field-label">帳號 Email（可在其他裝置用同一組 Email 找回暱稱與籌碼）</span>
+      <input class="text-input" id="email-input" type="email" placeholder="you@example.com" style="margin-bottom:12px;">
+      <span class="field-label">你的暱稱</span>
+      <div style="display:flex; gap:10px;">
+        <input class="text-input" id="name-input" maxlength="14" style="margin-bottom:0; flex:1;" placeholder="輸入暱稱">
+        <button class="btn btn-gold" onclick="saveNameFromInput(event)" style="flex-shrink:0;">儲存</button>
+      </div>
+      <div id="name-saved-hint" class="hint" style="text-align:left; margin-top:8px; min-height:14px; color:var(--gold-bright); opacity:0;">已儲存</div>
+      <div class="hint" style="text-align:left; margin-top:2px;">Email 僅作為帳號代號、不會寄送驗證信，請避免使用重要密碼相同的信箱。</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:18px; padding:16px 18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span class="field-label" style="margin:0;">每日簽到</span>
+        <span id="checkin-streak" style="font-size:12px; color:var(--gold-bright);"></span>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:4px;">
+        <div id="checkin-info" style="flex:1; font-size:13px; color:var(--cream-dim);"></div>
+        <button class="btn btn-gold" id="checkin-btn" onclick="claimCheckin(event)" style="flex-shrink:0;">簽到</button>
+      </div>
+      <div style="margin-top:10px;">
+        <span class="field-label">每日任務</span>
+        <div id="tasks-list"></div>
+      </div>
+    </div>
+
+    <div class="game-picker">
+      <div class="game-card active" id="card-bj" onclick="selectGame('bj', event)">
+        <div class="suit-icon">♠</div>
+        <h3>21 點</h3>
+        <p>比莊家更接近 21，支援分牌與雙倍下注。</p>
+      </div>
+      <div class="game-card disabled" onclick="pokeComingSoon(event)">
+        <div class="ribbon">敬請期待</div>
+        <div class="suit-icon">♦</div>
+        <h3>德州撲克</h3>
+        <p>下一階段開放，多人下注圈與公共牌。</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabrow">
+        <button id="tab-create" class="active" onclick="switchTab('create', event)">建立房間</button>
+        <button id="tab-join" onclick="switchTab('join', event)">加入房間</button>
+      </div>
+
+      <div id="pane-create">
+        <div class="hint" style="margin:0 0 16px;">最多六人。</div>
+        <button class="btn btn-gold btn-block" onclick="handleCreateRoom(event)">建立房間並前往</button>
+      </div>
+
+      <div id="pane-join" class="hidden">
+        <span class="field-label">輸入 4 碼房間代碼</span>
+        <input class="text-input code-input" id="join-code-input" maxlength="4" placeholder="XXXX">
+        <button class="btn btn-gold btn-block" onclick="handleJoinRoom(event)">加入房間</button>
+      </div>
+
+      <div class="hint">房間代碼可分享給朋友，於各自裝置輸入即可同桌連線（非即時，約每秒同步一次）。</div>
     </div>
   </div>
 
-  <!-- 左側選單 -->
-  <div class="left-menu">
-    <div class="menu-btn" onclick="openPage('shopPage')"><span>🛒</span><label>時裝店</label></div>
-    <div class="menu-btn" onclick="openPage('stepCustomPage')"><span>✂️</span><label>造角</label></div>
-    <div class="menu-btn" onclick="openPage('trophyPage')"><span>🏆</span><label>盃數路</label></div>
-    <div class="menu-btn" onclick="openPage('checkinPage')"><span>📅</span><label>簽到</label></div>
-    <div class="menu-btn" onclick="openPage('taskPage')"><span>📋</span><label>任務</label></div>
+  <!-- WAITING -->
+  <div id="screen-waiting" class="screen hidden">
+    <div class="room-code-box">
+      <div class="lbl">房間代碼 · 分享給朋友</div>
+      <div class="code" id="wait-code">----</div>
+    </div>
+    <div class="seat-list" id="wait-seats"></div>
+    <div id="wait-actions" style="display:flex; gap:12px;"></div>
   </div>
 
-  <!-- 左下角橫向經驗值累積與分段點小工具 -->
-  <div class="bottom-left-exp-widget" onclick="openPage('taskPage')">
-    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-      <span style="color:#f1c40f; font-weight:bold;">牌手等級 Lv.<span id="hudLevelText">1</span></span>
-      <span style="color:#aaa; font-size:10px;"><span id="hudExpText">0</span> / <span id="hudExpMaxText">250</span> EXP</span>
+  <!-- TABLE -->
+  <div id="screen-table" class="screen hidden">
+    <div class="table-wrap">
+      <div class="felt-oval"></div>
+      <div class="dealer-zone">
+        <div class="dealer-label">莊家 DEALER</div>
+        <div class="deck-pile"><div class="dcard" style="transform:rotate(-3deg)"></div><div class="dcard" style="transform:rotate(2deg)"></div><div class="dcard"></div></div>
+        <div class="dealer-hand" id="dealer-hand"></div>
+      </div>
+      <div class="pot-center" id="pot-center"></div>
+      <div class="seats-ring" id="seats-ring"></div>
     </div>
-    <div style="width:100%; height:8px; background:#222; border-radius:4px; overflow:hidden; border:1px solid #d4af37; position:relative;">
-      <div id="hudExpBar" style="width:0%; height:100%; background:linear-gradient(90deg, #2ecc71, #f1c40f);"></div>
-    </div>
-    <div style="font-size:10px; color:#2ecc71; text-align:center;">✨ 點擊查看任務與經驗段位獎勵</div>
+    <div id="table-controls"></div>
   </div>
 
-  <!-- 中央大廳舞台 -->
-  <div class="center-visual">
-    <div class="logo-glow">POKER ARENA</div>
-    <div class="hero-stage-podium"></div>
-    <div class="hero-fullbody-wrapper">
-      <div class="hero-anime-figure"></div>
-      <div class="companion-pet">⚡</div>
-      <div class="hero-outfit-tag">👕 經典黑潮街頭短 T</div>
-    </div>
-  </div>
+  <!-- RESULT OVERLAY -->
+  <div id="result-overlay" class="hidden"></div>
+</div>
 
-  <!-- 右側選單 -->
-  <div class="right-menu">
-    <button class="side-tag-btn" onclick="openPage('friendsPage')"><span>👥</span>好友</button>
-    <button class="side-tag-btn" onclick="openPage('teamPage')"><span>🏠</span>小隊</button>
-  </div>
+<script>
+/* ============================= UTIL ============================= */
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const SUITS=[{s:'♠',red:false},{s:'♥',red:true},{s:'♦',red:true},{s:'♣',red:false}];
+const DENOMS=[1000,500,100,25,5,1];
+function uid(){return 'p_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);}
+function fmt(n){ n=Math.round(n); return '$'+n.toLocaleString('en-US'); }
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function esc(s){ return (s||'').toString().replace(/[<>&"]/g, c=>({ '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;' }[c])); }
 
-  <!-- 右下對戰按鈕 -->
-  <div class="battle-center">
-    <div class="bet-selector-panel">
-      <div style="font-size:11px; color:#f1c40f; font-weight:bold;">大廳預設下注籌碼：</div>
-      <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-        <input type="range" id="lobbyBetSlider" min="50" max="2000" step="50" value="100" style="flex:1; accent-color:#f1c40f;" oninput="updateLobbyBet(this.value)">
-        <span id="sliderBetVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
-      </div>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; margin-top:4px;">
-        <div class="bet-option-btn selected" onclick="setBetAmount(100, this)">100</div>
-        <div class="bet-option-btn" onclick="setBetAmount(500, this)">500</div>
-        <div class="bet-option-btn" onclick="setBetAmount(1000, this)">1,000</div>
-      </div>
-    </div>
+/* ============================= AUDIO ============================= */
+let audioCtx=null, sfxOn=true;
+function ensureAudio(){ if(!audioCtx){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return audioCtx; }
+function beep(freq,dur,type,vol,delay){
+  if(!sfxOn) return;
+  const ctx=ensureAudio(); if(!ctx) return;
+  delay=delay||0;
+  const t0=ctx.currentTime+delay;
+  const osc=ctx.createOscillator(); const gain=ctx.createGain();
+  osc.type=type||'sine'; osc.frequency.setValueAtTime(freq,t0);
+  gain.gain.setValueAtTime(vol||0.12,t0);
+  gain.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.03);
+}
+function sfxClickSound(){ beep(720,0.06,'triangle',0.13); }
+function sfxCard(){ beep(190,0.05,'square',0.09); beep(300,0.04,'square',0.05,0.035); }
+function sfxChip(){ beep(1100,0.045,'sine',0.11); beep(1500,0.035,'sine',0.08,0.02); }
+function sfxWin(){ [523,659,784,1046].forEach((f,i)=>beep(f,0.16,'triangle',0.16,i*0.11)); }
+function sfxLose(){ beep(210,0.32,'sawtooth',0.13); beep(150,0.36,'sawtooth',0.1,0.14); }
+function sfxPush(){ beep(440,0.18,'sine',0.12); }
+function toggleSfx(e){ fx(e); sfxOn=!sfxOn; document.getElementById('sfx-toggle').textContent = sfxOn?'🔊':'🔇'; }
 
-    <div class="battle-mode-bar" onclick="toggleGameMode()">
-      <div>
-        <small style="color:#aaa; font-size:10px;">點擊切換模式 (6人桌)</small>
-        <span id="modeTitleText">德州撲克</span>
-      </div>
-      <span>🔄</span>
-    </div>
-    <button class="play-btn" onclick="startCurrentGameMode()">
-      <span id="btnMainText">開始對戰</span>
-      <label id="btnSubLabel">ENTER MATCH</label>
-    </button>
-  </div>
+/* click particle burst */
+function burst(x,y,color){
+  color=color||'#f0cf83';
+  const n=12;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const ang=(Math.PI*2*i/n)+Math.random()*0.4;
+    const dist=28+Math.random()*26;
+    p.style.setProperty('--dx',(Math.cos(ang)*dist)+'px');
+    p.style.setProperty('--dy',(Math.sin(ang)*dist)+'px');
+    p.style.left=x+'px'; p.style.top=y+'px';
+    p.style.background= i%3===0?'#e05252':(i%3===1?color:'#ffffff');
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),650);
+  }
+}
+function fx(e){
+  if(!e) return;
+  try{
+    ensureAudio();
+    const el=e.currentTarget||e.target;
+    const r=el.getBoundingClientRect();
+    burst(r.left+r.width/2, r.top+r.height/2);
+    e.__fxHandled = true;
+  }catch(err){}
+  sfxClickSound();
+}
+function setupBackgroundClickFx(){
+  document.addEventListener('click', function(e){
+    if(e.__fxHandled) return; // already produced its own effect via fx()
+    const interactive = e.target.closest && e.target.closest('button, input, textarea, select, a, .btn, .action-btn, .game-card');
+    if(interactive) return;
+    burst(e.clientX, e.clientY, '#9fc6e8');
+    sfxClickSound();
+  }, false);
+}
 
-  <!-- ========================================================
-     全新頁面系統 (Full-page views)
-     ======================================================== -->
+/* ============================= PROFILE (personal storage) ============================= */
+const MY_CLIENT_ID = uid(); // fresh identity per session (per app rules: no localStorage/sessionStorage)
+let myName = '玩家'+Math.floor(Math.random()*900+100);
+let myChips = 1000;
+let myEmail = null;
+let myCheckin = { lastDate:null, streak:0 };
+let myTasks = null;
 
-  <!-- 1. 頭像個人檔案與盃數進度條頁面 -->
-  <div id="profilePage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">🏆 牌手檔案與盃數條</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; display:flex; flex-direction:column; gap:20px; font-family:'Outfit',sans-serif; max-width:600px; margin:0 auto; width:100%;">
-      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:18px; padding:20px; text-align:center;">
-        <div style="font-size:22px; color:#f1c40f; font-weight:bold; margin-bottom:8px;" id="profileNameDisplay">Google 使用者</div>
-        <div style="font-size:16px; margin-bottom:15px;">當前總盃數：<span id="profileTrophyDisplay" style="color:#f1c40f; font-weight:bold;">0</span> 🏆</div>
-        <div style="font-size:13px; color:#aaa; margin-bottom:6px;">段位盃數進度 (有色與無色區分)：</div>
-        <div style="width:100%; height:26px; background:#222; border-radius:13px; overflow:hidden; border:2px solid #d4af37; position:relative;">
-          <div id="trophyProgressBar" style="width:0%; height:100%; background: linear-gradient(90deg, #f1c40f, #e67e22); transition: width 0.5s;"></div>
-          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; text-shadow:1px 1px 2px #000;" id="trophyProgressText">0 / 500 盃</div>
-        </div>
-      </div>
-      <div style="background:rgba(0,0,0,0.5); border:2px solid rgba(212,175,55,0.4); border-radius:18px; padding:20px;">
-        <h4 style="color:#f1c40f; margin-bottom:10px;">📊 賽局戰績記錄</h4>
-        <p style="font-size:14px; color:#ccc;">• 勝場獎勵：每贏一局 +4 🏆</p>
-        <p style="font-size:14px; color:#ccc; margin-top:5px;">• 敗場懲罰：每輸一局 -3 🏆</p>
-      </div>
-    </div>
-  </div>
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function ensureTaskDay(){
+  const t=todayStr();
+  if(!myTasks || myTasks.date!==t){
+    myTasks = { date:t, roundsPlayed:0, roundsWon:0, maxBet:0, claimed:{a:false,b:false,c:false} };
+  }
+}
 
-  <!-- 2. 時裝店頁面 (15樣商品，寶石換籌碼) -->
-  <div id="shopPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">🛒 潮流時裝與籌碼商鋪</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:900px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;">
-      <p style="color:#f1c40f; margin-bottom:15px; font-weight:bold; text-align:center;">✨ 今日特選商鋪 (共 15 項精選商品與寶石兌換籌碼)</p>
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px; overflow-y:auto; padding-bottom:30px;" id="shopItemsGrid">
-        <!-- 動態載入 15 樣商品 -->
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. 造角頁面 -->
-  <div id="stepCustomPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">✂️ 角色外觀塑形中心</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; text-align:center; padding-top:40px; font-family:'Outfit',sans-serif;">
-      <h3 style="color:#f1c40f; margin-bottom:15px;">自訂您的 3D 黏土/日漫牌手外觀</h3>
-      <p style="color:#aaa;">選擇性別、髮型、瞳孔與高光配色，打造最潮牌手！</p>
-    </div>
-  </div>
-
-  <!-- 4. 榮譽之路 (Trophy Road) 頁面 -->
-  <div id="trophyPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">🏆 榮譽之路 (Trophy Road)</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:800px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; gap:16px; overflow-y:auto;" id="trophyRoadContainer">
-      <!-- 動態載入 -->
-    </div>
-  </div>
-
-  <!-- 5. 簽到活動頁面 -->
-  <div id="checkinPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">📅 每日簽到活動</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:960px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif; display:flex; flex-direction:column; align-items:center;">
-      <div style="background: rgba(20,15,10,0.9); border: 3px solid #d4af37; border-radius: 20px; padding: 25px; width:100%; box-shadow: 0 15px 35px rgba(0,0,0,0.85);">
-        <h3 style="color:#f1c40f; text-align:center; font-family:'Cinzel',serif; margin-bottom:20px; font-size:22px;">每日簽到一次即可領取相關獎勵</h3>
-        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;" id="checkinDaysGrid">
-          <!-- 動態載入 7 天簽到 -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. 任務頁面 (每天更新 15 個任務) -->
-  <div id="taskPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">📋 每日任務與經驗值段位</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:750px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; font-family:'Outfit',sans-serif; overflow-y:auto;">
-      <div style="background:rgba(0,0,0,0.6); border:2px solid #d4af37; border-radius:16px; padding:15px;">
-        <h4 style="color:#f1c40f; margin-bottom:10px;">✨ 牌手經驗值分段點獎勵</h4>
-        <div style="display:flex; flex-direction:column; gap:8px;" id="expMilestonesContainer">
-          <!-- 動態載入經驗值分段點 -->
-        </div>
-      </div>
-
-      <div style="font-weight:bold; color:#f1c40f; font-size:15px; margin-top:5px;">📅 每日更新任務 (共 15 個)：</div>
-      <div style="display:flex; flex-direction:column; gap:8px;" id="dailyTasksContainer">
-        <!-- 動態載入 15 個任務 -->
-      </div>
-    </div>
-  </div>
-
-  <!-- 7. 好友與獨一無二代碼加好友系統 (修復代碼查詢) -->
-  <div id="friendsPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">👥 好友與專屬代碼系統</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:650px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; font-family:'Outfit',sans-serif;">
-      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
-        <h4 style="color:#f1c40f; margin-bottom:8px;">📌 我的專屬好友代碼</h4>
-        <div style="font-size:22px; color:#fff; font-weight:bold; background:#111; padding:10px; border-radius:8px; border:2px dashed #f1c40f; letter-spacing:3px;" id="myUniqueCodeDisplay">PKA-XXXX</div>
-        <p style="font-size:12px; color:#aaa; margin-top:5px;">將此獨一無二的代碼分享給好友來互相加好友</p>
-      </div>
-
-      <div style="background:rgba(0,0,0,0.5); border:2px solid #d4af37; border-radius:16px; padding:20px; text-align:center;">
-        <h4 style="color:#f1c40f; margin-bottom:8px;">🔍 輸入好友代碼添加</h4>
-        <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
-          <input type="text" id="friendCodeInput" placeholder="請輸入好友專屬代碼 (例: PKA-1234)" style="padding:8px 12px; border-radius:8px; border:2px solid #d4af37; background:#000; color:#fff; width:280px; outline:none; text-transform:uppercase;">
-          <button style="background:#f1c40f; color:#000; border:none; padding:8px 18px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="sendFriendRequestByCode()">送出請求</button>
-        </div>
-      </div>
-
-      <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">待處理的好友請求：</div>
-      <div id="friendRequestsContainer" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto; background:rgba(0,0,0,0.3); padding:8px; border-radius:8px;"></div>
-
-      <div style="font-weight:bold; color:#f1c40f; font-size:14px; margin-top:5px;">我的好友列表：</div>
-      <div id="friendsListContainer" style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; flex:1;"></div>
-    </div>
-  </div>
-
-  <!-- 8. 小隊頁面 -->
-  <div id="teamPage" class="app-full-page">
-    <div class="page-header">
-      <div class="page-title">🏠 小隊大廳</div>
-      <button class="page-back-btn" onclick="closePages()">返回大廳</button>
-    </div>
-    <div style="flex:1; max-width:600px; margin:0 auto; width:100%; font-family:'Outfit',sans-serif;" id="teamFriendsListContainer">
-      <p style="color:#888;">尚無好友可邀請，請先至好友頁面透過專屬代碼新增好友！</p>
-    </div>
-  </div>
-
-  <!-- 30秒自動補位配對彈窗 (彈出式矩型配對，帶動態花色與倒數計時) -->
-  <div id="matchingModal" class="app-screen-overlay">
-    <div class="matching-popup-box">
-      <h2 style="color:#f1c40f; font-family:'Cinzel',serif; margin-bottom:8px;" id="matchingTitleText">正在尋找對手中...</h2>
-      <div style="font-size: 16px; margin: 6px 0; font-weight:bold;" id="matchPlayerCountInfo">應有人數: 6 人 | 已配對: 1 / 6 人</div>
-      <div style="font-size: 16px; color:#e74c3c; font-weight:bold; margin-bottom:8px;" id="matchTimerText">剩餘配對時間: 30 秒</div>
-      <div class="animated-suits">
-        <span>♣️</span><span>♥️</span><span>♦️</span><span>♠️</span>
-      </div>
-      <button onclick="cancelMatchmaking()" style="margin-top:12px; background:#e74c3c; color:#fff; border:none; padding:8px 24px; border-radius:20px; font-weight:bold; cursor:pointer;">取消配對</button>
-    </div>
-  </div>
-
-  <!-- 圓桌式 6 人競技對局畫面 -->
-  <div id="gameMatchView" class="game-match-view hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h3 id="roomTitle" style="color:#f1c40f; font-family:'Cinzel',serif;">6人圓桌對決</h3>
-      <button onclick="leaveGameSession()" style="background:#c0392b; color:#fff; border:none; padding:6px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">離開對局</button>
-    </div>
-
-    <!-- 綠色絨布圓桌 -->
-    <div class="poker-table">
-      <div class="dealer-box">🎩 荷官 (Dealer)</div>
-
-      <div class="table-center-pot">
-        <div id="tablePot" style="color:#f1c40f; font-size:13px; font-weight:bold;">🪙 總彩池: 0 籌碼</div>
-        <div id="tableCommunityCards" class="community-cards-row"></div>
-      </div>
-
-      <!-- 6 人座位 (Seat 0 ~ Seat 5) -->
-      <div class="seat seat-0">
-        <div class="seat-avatar">我</div>
-        <div class="seat-info"><div style="font-weight:bold;" id="seat0-name">Google 使用者</div></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat0-bet">0</span></div>
-        <div class="seat-cards" id="seat-0-cards"></div>
-      </div>
-
-      <div class="seat seat-1">
-        <div class="seat-avatar">P1</div>
-        <div class="seat-info"><b id="seat1-name">真實玩家1</b></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat1-bet">0</span></div>
-        <div class="seat-cards" id="seat-1-cards"></div>
-      </div>
-
-      <div class="seat seat-2">
-        <div class="seat-avatar">P2</div>
-        <div class="seat-info"><b id="seat2-name">真實玩家2</b></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat2-bet">0</span></div>
-        <div class="seat-cards" id="seat-2-cards"></div>
-      </div>
-
-      <div class="seat seat-3">
-        <div class="seat-avatar">P3</div>
-        <div class="seat-info"><b id="seat3-name">真實玩家3</b></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat3-bet">0</span></div>
-        <div class="seat-cards" id="seat-3-cards"></div>
-      </div>
-
-      <div class="seat seat-4">
-        <div class="seat-avatar">P4</div>
-        <div class="seat-info"><b id="seat4-name">真實玩家4</b></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat4-bet">0</span></div>
-        <div class="seat-cards" id="seat-4-cards"></div>
-      </div>
-
-      <div class="seat seat-5">
-        <div class="seat-avatar">P5</div>
-        <div class="seat-info"><b id="seat5-name">真實玩家5</b></div>
-        <div class="chip-stack-container"><span class="chip-icon"></span><span id="seat5-bet">0</span></div>
-        <div class="seat-cards" id="seat-5-cards"></div>
-      </div>
-    </div>
-
-    <!-- 遊戲內下注量與動作面板 -->
-    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-      <div class="in-game-bet-bar" style="display:flex; gap:12px; align-items:center; background:rgba(0,0,0,0.85); padding:8px 20px; border-radius:16px; border:2px solid #d4af37;">
-        <span style="font-size:12px; color:#f1c40f;">本局下注量調整：</span>
-        <input type="range" id="gameBetSlider" min="50" max="2000" step="50" value="100" style="width:140px; accent-color:#f1c40f;" oninput="updateGameSlider(this.value)">
-        <span id="gameSliderVal" style="font-size:13px; color:#f1c40f; font-weight:bold;">100</span>
-      </div>
-      <div style="display:flex; gap:12px; justify-content:center;" id="gameActionControls">
-        <button id="actionBtn1" style="padding:10px 22px; font-size:15px; font-weight:bold; background:#f1c40f; color:#000; border:none; border-radius:12px; cursor:pointer;" onclick="handleGameAction()">確認下注 / 下一輪</button>
-        <button id="actionBtn2" style="padding:10px 22px; font-size:15px; font-weight:bold; background:#e74c3c; color:#fff; border:none; border-radius:12px; cursor:pointer; display:none;" onclick="handleFoldAction()">棄牌 (Fold)</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // 點擊特效 Canvas (金色圓點與紅色菱形)
-    const clickCanvas = document.getElementById('clickCanvas');
-    const cCtx = clickCanvas.getContext('2d');
-    let clickParticles = [];
-    function resizeClickCanvas() { clickCanvas.width = window.innerWidth; clickCanvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeClickCanvas);
-    resizeClickCanvas();
-
-    class ClickSparkle {
-      constructor(x, y) {
-        this.x = x; this.y = y;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 5 + 2;
-        this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed - 1;
-        this.size = Math.random() * 3 + 2;
-        this.alpha = 1; this.decay = 0.03;
-      }
-      update() { this.x += this.vx; this.y += this.vy; this.alpha -= this.decay; }
-      draw() {
-        cCtx.save(); cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.fillStyle = '#f1c40f'; cCtx.beginPath(); cCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); cCtx.fill();
-        cCtx.restore();
-      }
+async function loadProfile(){
+  try{
+    const r = await window.storage.get('profile', false);
+    if(r && r.value){
+      const p = JSON.parse(r.value);
+      if(p.name) myName = p.name;
+      if(typeof p.chips === 'number') myChips = p.chips;
+      if(p.email) myEmail = p.email;
+      if(p.checkin) myCheckin = p.checkin;
+      if(p.tasks) myTasks = p.tasks;
     }
+  }catch(e){ /* no profile yet */ }
+  ensureTaskDay();
+}
+async function saveProfile(){
+  try{
+    await window.storage.set('profile', JSON.stringify({
+      name:myName, chips:myChips, email:myEmail, checkin:myCheckin, tasks:myTasks
+    }), false);
+  }catch(e){}
+  if(myEmail && storageAvailable()){
+    try{ await window.storage.set('account:'+myEmail, JSON.stringify({name:myName, chips:myChips, email:myEmail}), true); }catch(e){}
+  }
+}
 
-    class ClickDiamond {
-      constructor(x, y) {
-        this.x = x; this.y = y;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 4 + 1.5;
-        this.vx = Math.cos(angle) * speed; 
-        this.vy = Math.sin(angle) * speed - 1.2;
-        this.size = Math.random() * 6 + 6;
-        this.alpha = 1; this.decay = 0.025;
-        this.rot = Math.random() * Math.PI;
-        this.vrot = (Math.random() - 0.5) * 0.1;
-      }
-      update() { 
-        this.x += this.vx; 
-        this.y += this.vy; 
-        this.alpha -= this.decay;
-        this.rot += this.vrot;
-      }
-      draw() {
-        cCtx.save(); 
-        cCtx.globalAlpha = Math.max(0, this.alpha);
-        cCtx.translate(this.x, this.y);
-        cCtx.rotate(this.rot);
-        cCtx.fillStyle = '#e74c3c'; // 紅色菱形
-        cCtx.strokeStyle = '#f1c40f';
-        cCtx.lineWidth = 1.5;
-        cCtx.beginPath();
-        cCtx.moveTo(0, -this.size);
-        cCtx.lineTo(this.size * 0.7, 0);
-        cCtx.lineTo(0, this.size);
-        cCtx.lineTo(-this.size * 0.7, 0);
-        cCtx.closePath();
-        cCtx.fill();
-        cCtx.stroke();
-        cCtx.restore();
-      }
+/* ============================= DAILY CHECK-IN & TASKS ============================= */
+const TASK_DEFS = [
+  { id:'a', title:'完成 3 局遊戲', target:3, reward:50, metric:'roundsPlayed' },
+  { id:'b', title:'贏得 1 局', target:1, reward:80, metric:'roundsWon' },
+  { id:'c', title:'單局下注達到 100', target:100, reward:60, metric:'maxBet' },
+];
+function recordDailyTaskProgress(myResults, netTotal){
+  ensureTaskDay();
+  myTasks.roundsPlayed++;
+  if(netTotal>0) myTasks.roundsWon++;
+  const roundMaxBet = myResults.reduce((m,r)=>Math.max(m,r.bet),0);
+  myTasks.maxBet = Math.max(myTasks.maxBet, roundMaxBet);
+  saveProfile();
+  renderDailyPanel();
+}
+function claimCheckin(e){
+  fx(e);
+  const t=todayStr();
+  if(myCheckin.lastDate===t) return;
+  let streak;
+  if(myCheckin.lastDate){
+    const diffDays = Math.round((new Date(t)-new Date(myCheckin.lastDate))/86400000);
+    streak = diffDays===1 ? (myCheckin.streak+1) : 1;
+  } else { streak=1; }
+  const reward = Math.min(100+(streak-1)*10, 200);
+  myCheckin = { lastDate:t, streak };
+  myChips += reward;
+  animateBalanceTo(myChips);
+  saveProfile();
+  renderDailyPanel();
+}
+function claimTask(id, e){
+  fx(e);
+  ensureTaskDay();
+  const def = TASK_DEFS.find(d=>d.id===id);
+  if(!def || myTasks.claimed[id]) return;
+  if((myTasks[def.metric]||0) < def.target) return;
+  myTasks.claimed[id]=true;
+  myChips += def.reward;
+  animateBalanceTo(myChips);
+  saveProfile();
+  renderDailyPanel();
+}
+function taskRowHtml(def){
+  const progress = myTasks ? (myTasks[def.metric]||0) : 0;
+  const claimed = myTasks && myTasks.claimed[def.id];
+  const done = progress>=def.target;
+  return `<div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid rgba(255,255,255,0.08);">
+    <div style="flex:1;">
+      <div style="font-size:13px; font-weight:700;">${def.title}</div>
+      <div style="font-size:11px; color:var(--cream-dim);">${Math.min(progress,def.target)}/${def.target} · 獎勵 ${fmt(def.reward)}</div>
+    </div>
+    <button class="btn ${claimed?'btn-outline':'btn-gold'}" style="padding:8px 14px; font-size:12px;" ${(!done||claimed)?'disabled':''} onclick="claimTask('${def.id}',event)">${claimed?'已領取':(done?'領取':'進行中')}</button>
+  </div>`;
+}
+function renderDailyPanel(){
+  ensureTaskDay();
+  const t=todayStr();
+  const claimedToday = myCheckin.lastDate===t;
+  const projectedStreak = claimedToday ? myCheckin.streak : myCheckin.streak+1;
+  const nextReward = Math.min(100+(projectedStreak-1)*10, 200);
+  const streakEl=document.getElementById('checkin-streak');
+  if(streakEl) streakEl.textContent = myCheckin.streak>0 ? `連續 ${myCheckin.streak} 天` : '';
+  const infoEl=document.getElementById('checkin-info');
+  if(infoEl) infoEl.textContent = claimedToday ? `今天已簽到，明天再來領 ${fmt(nextReward)}` : `今天簽到可得 ${fmt(nextReward)} 籌碼`;
+  const btnEl=document.getElementById('checkin-btn');
+  if(btnEl) btnEl.disabled = claimedToday;
+  const tasksEl=document.getElementById('tasks-list');
+  if(tasksEl) tasksEl.innerHTML = TASK_DEFS.map(taskRowHtml).join('');
+}
+
+
+let currentRoomCode=null;
+let isHost=false;
+let room=null;
+let lastSnapshot=null;
+let pollTimer=null;
+let currentTab='create';
+const dealtSeen = {}; // handKey -> number of cards already animated
+
+async function getRoom(code){
+  try{
+    const r = await window.storage.get('bjroom_'+code, true);
+    if(!r) return null;
+    return JSON.parse(r.value);
+  }catch(e){ return null; }
+}
+async function putRoom(r){
+  r.lastAction = Date.now();
+  room = r;
+  lastSnapshot = JSON.stringify(r);
+  try{ await window.storage.set('bjroom_'+r.code, JSON.stringify(r), true); }catch(e){}
+}
+
+function genCode(){
+  const chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let c=''; for(let i=0;i<4;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+
+/* ============================= DECK / CARD LOGIC ============================= */
+function freshShoe(numDecks){
+  const deck=[];
+  for(let d=0; d<numDecks; d++){
+    for(const r of RANKS){ for(const su of SUITS){ deck.push({rank:r, suit:su.s, red:su.red}); } }
+  }
+  for(let i=deck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]]; }
+  return deck;
+}
+function drawCard(r){
+  if(!r.deck || r.deck.length<10){ r.deck = freshShoe(6); }
+  return r.deck.pop();
+}
+function handValue(cards){
+  let total=0, aces=0;
+  for(const c of cards){
+    if(c.rank==='A'){ aces++; total+=11; }
+    else if(c.rank==='J'||c.rank==='Q'||c.rank==='K') total+=10;
+    else total+=parseInt(c.rank,10);
+  }
+  while(total>21 && aces>0){ total-=10; aces--; }
+  return total;
+}
+function isBust(hand){ return handValue(hand.cards)>21; }
+function isNatural(hand){ return hand.cards.length===2 && handValue(hand.cards)===21; }
+
+/* ============================= CHIP BREAKDOWN RENDER ============================= */
+function chipBreakdown(amount){
+  let remaining=Math.round(amount);
+  const stacks=[];
+  for(const d of DENOMS){
+    const count=Math.floor(remaining/d);
+    if(count>0){ stacks.push({d,count}); remaining-=count*d; }
+  }
+  return stacks;
+}
+function chipClass(d){ return 'chip v'+d; }
+function renderChipStacks(amount, small){
+  if(amount<=0) return '';
+  const stacks=chipBreakdown(amount);
+  return '<div class="chip-col-group">' + stacks.map(st=>{
+    const shown=Math.min(st.count,4);
+    let inner='';
+    for(let i=0;i<shown;i++){ inner += `<div class="${chipClass(st.d)}" style="${small?'width:18px;height:18px;font-size:6px;':''}">${st.d>=1000?(st.d/1000)+'K':st.d}</div>`; }
+    const badge = st.count>shown ? `<div class="chip-count-badge">x${st.count}</div>` : '';
+    return `<div class="chip-stack" style="position:relative;">${inner}${badge}</div>`;
+  }).join('') + '</div>';
+}
+
+/* ============================= RENDER: HOME ============================= */
+function selectGame(g, e){ fx(e); /* only blackjack available for now */ }
+function pokeComingSoon(e){ fx(e); }
+function switchTab(t, e){
+  fx(e); currentTab=t;
+  document.getElementById('tab-create').classList.toggle('active', t==='create');
+  document.getElementById('tab-join').classList.toggle('active', t==='join');
+  document.getElementById('pane-create').classList.toggle('hidden', t!=='create');
+  document.getElementById('pane-join').classList.toggle('hidden', t!=='join');
+}
+function openRename(e){
+  if(e) fx(e);
+  const n = prompt('輸入新的角色名稱：', myName);
+  if(n && n.trim()){ myName = n.trim().slice(0,14); refreshHeader(); saveProfile(); }
+}
+async function saveNameFromInput(e){
+  fx(e);
+  const input=document.getElementById('name-input');
+  const emailInput=document.getElementById('email-input');
+  const v=(input.value||'').trim();
+  if(!v){ input.focus(); return; }
+  myName=v.slice(0,14);
+
+  const emailRaw=(emailInput ? emailInput.value : '').trim().toLowerCase();
+  let hintMsg='已儲存（僅此裝置）';
+  if(emailRaw){
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw)){
+      alert('Email 格式看起來不太對，請確認一下');
+      return;
     }
-
-    // 依據不同頁面使用不同音效
-    const AudioEngine = {
-      ctx: null,
-      init() {
-        if (!this.ctx) {
-          const AC = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AC();
-        }
-        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-      },
-      playTone(freqStart, freqEnd, duration, type = 'sine') {
-        this.init();
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freqStart, now);
-        osc.frequency.exponentialRampToValueAtTime(freqEnd, now + duration);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        osc.start(now); osc.stop(now + duration);
-      },
-      playClickSound() {
-        const activePage = document.querySelector('.app-full-page.active, .app-screen-overlay.active');
-        let id = activePage ? activePage.id : 'lobby';
-        if (id === 'shopPage') {
-          this.playTone(600, 1200, 0.08, 'triangle');
-        } else if (id === 'trophyPage' || id === 'profilePage') {
-          this.playTone(400, 800, 0.08, 'sine');
-        } else if (id === 'checkinPage' || id === 'taskPage') {
-          this.playTone(300, 600, 0.08, 'square');
-        } else if (id === 'friendsPage' || id === 'teamPage') {
-          this.playTone(500, 900, 0.08, 'sawtooth');
+    if(!storageAvailable()){
+      showConnIssue();
+    } else {
+      try{
+        const existing = await window.storage.get('account:'+emailRaw, true);
+        if(existing && existing.value){
+          const acc=JSON.parse(existing.value);
+          // found an existing account under this email — load its saved name & chips
+          if(acc.name) myName=acc.name;
+          if(typeof acc.chips==='number') myChips=acc.chips;
+          hintMsg='已找回帳號並登入';
         } else {
-          this.playTone(500, 900, 0.05, 'sine');
+          hintMsg='已建立帳號並儲存';
         }
-      },
-      playPop() {
-        this.playClickSound();
-      }
-    };
+        myEmail=emailRaw;
+      }catch(err){ /* fall back silently to device-only profile */ }
+    }
+  }
 
-    window.addEventListener('pointerdown', (e) => {
-      AudioEngine.playClickSound();
-      for (let i = 0; i < 5; i++) clickParticles.push(new ClickSparkle(e.clientX, e.clientY));
-      for (let i = 0; i < 3; i++) clickParticles.push(new ClickDiamond(e.clientX, e.clientY));
+  refreshHeader();
+  await saveProfile();
+  const hintEl=document.getElementById('name-saved-hint');
+  if(hintEl){
+    hintEl.textContent=hintMsg;
+    hintEl.style.transition='none'; hintEl.style.opacity='1';
+    requestAnimationFrame(()=>{ hintEl.style.transition='opacity 1.6s ease 0.5s'; hintEl.style.opacity='0'; });
+  }
+}
+function refreshHeader(){
+  document.getElementById('hdr-name').textContent = myName;
+  document.getElementById('name-initial').textContent = myName.slice(0,1).toUpperCase();
+  const nameInput=document.getElementById('name-input');
+  if(nameInput && document.activeElement!==nameInput) nameInput.value = myName;
+  const emailInput=document.getElementById('email-input');
+  if(emailInput && document.activeElement!==emailInput) emailInput.value = myEmail||'';
+  animateBalanceTo(myChips);
+  renderDailyPanel();
+}
+let displayedBalance=0, balanceAnimRAF=null;
+function animateBalanceTo(target){
+  const start=displayedBalance, t0=performance.now(), dur=650;
+  cancelAnimationFrame(balanceAnimRAF);
+  function step(t){
+    const p=clamp((t-t0)/dur,0,1);
+    const eased = 1-Math.pow(1-p,3);
+    displayedBalance = start + (target-start)*eased;
+    document.getElementById('balance-num').textContent = fmt(displayedBalance);
+    if(p<1) balanceAnimRAF=requestAnimationFrame(step);
+    else displayedBalance=target;
+  }
+  balanceAnimRAF=requestAnimationFrame(step);
+}
+
+/* ============================= ROOM CREATE / JOIN ============================= */
+async function handleCreateRoom(e){
+  fx(e);
+  if(!storageAvailable()){ showConnIssue(); return; }
+  const btn = e && (e.currentTarget||e.target);
+  if(btn) btn.disabled=true;
+  try{
+    let code=null;
+    for(let i=0;i<6;i++){
+      const candidate=genCode();
+      const exists=await getRoom(candidate);
+      if(!exists){ code=candidate; break; }
+    }
+    if(!code){ alert('建立房間失敗，請再試一次'); return; }
+    const r = {
+      code, hostId: MY_CLIENT_ID, maxSeats: 6, status:'waiting',
+      minBet:10, maxBet: 500,
+      players:[{ id:MY_CLIENT_ID, name:myName, chips:myChips, seat:0, hands:[], bet:0, betConfirmed:false }],
+      dealer:{cards:[], revealed:false},
+      deck: freshShoe(6),
+      currentPlayerSeat:0, currentHandIdx:0,
+      roundNum:0,
+      resultsByPlayer:{}
+    };
+    await putRoom(r);
+    // verify the write actually landed (catches silent failures on flaky connections)
+    const check = await getRoom(code);
+    if(!check || check.hostId!==MY_CLIENT_ID){
+      alert('建立房間時發生連線問題，請再試一次');
+      return;
+    }
+    currentRoomCode=code; isHost=true;
+    enterWaitingScreen();
+    startPolling();
+  } finally {
+    if(btn) btn.disabled=false;
+  }
+}
+async function handleJoinRoom(e){
+  fx(e);
+  if(!storageAvailable()){ showConnIssue(); return; }
+  const codeInput=document.getElementById('join-code-input');
+  const code=(codeInput.value||'').trim().toUpperCase();
+  if(code.length!==4){ alert('請輸入 4 碼房間代碼'); return; }
+  const btn = e && (e.currentTarget||e.target);
+  if(btn) btn.disabled=true;
+  try{
+    let joined=false;
+    for(let attempt=0; attempt<5 && !joined; attempt++){
+      const r = await getRoom(code);
+      if(!r){ alert('找不到房間，請確認代碼是否正確'); return; }
+      if(r.players.some(p=>p.id===MY_CLIENT_ID)){
+        currentRoomCode=code; isHost=(r.hostId===MY_CLIENT_ID); room=r; lastSnapshot=JSON.stringify(r);
+        joined=true; break;
+      }
+      if(r.status!=='waiting'){ alert('這桌已經開局，暫時無法加入'); return; }
+      if(r.players.length>=r.maxSeats){ alert('房間已滿'); return; }
+      r.players.push({ id:MY_CLIENT_ID, name:myName, chips:myChips, seat:r.players.length, hands:[], bet:0, betConfirmed:false });
+      await putRoom(r);
+      // re-fetch to make sure our join actually stuck (two people joining at once can otherwise clobber each other)
+      await sleep(220);
+      const check = await getRoom(code);
+      if(check && check.players.some(p=>p.id===MY_CLIENT_ID)){
+        currentRoomCode=code; isHost=false; room=check; lastSnapshot=JSON.stringify(check);
+        joined=true;
+      } else {
+        await sleep(150+Math.random()*250); // someone else won the race — back off and retry
+      }
+    }
+    if(!joined){ alert('加入房間時發生連線問題，請再試一次'); return; }
+    currentRoomCode=code;
+    enterWaitingScreen();
+    startPolling();
+  } finally {
+    if(btn) btn.disabled=false;
+  }
+}
+function storageAvailable(){
+  return typeof window.storage!=='undefined' && window.storage && typeof window.storage.get==='function';
+}
+function showConnIssue(){
+  alert('目前連線不到多人連線服務。請確認這個頁面是在 Claude App 或 claude.ai 的 Artifact 檢視器中開啟（而不是另存新檔後用一般瀏覽器直接打開），這樣連線功能才能運作。');
+}
+function startPolling(){
+  stopPolling();
+  pollTimer=setInterval(async ()=>{
+    if(!currentRoomCode) return;
+    const r = await getRoom(currentRoomCode);
+    if(!r){ return; } // host may not have written yet
+    // guard against a poll returning data older than our own most recent local
+    // (fire-and-forget) write — otherwise the screen would briefly "jump back"
+    // to the pre-action state until our write actually lands in storage.
+    if(room && room.lastAction && r.lastAction && r.lastAction < room.lastAction){
+      return;
+    }
+    const snap=JSON.stringify(r);
+    if(snap!==lastSnapshot){
+      lastSnapshot=snap;
+      room=r;
+      onRoomUpdate();
+    }
+    if(room && room.hostId===MY_CLIENT_ID) hostTick();
+  }, 800);
+}
+function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+
+function myPlayer(){ if(!room) return null; return room.players.find(p=>p.id===MY_CLIENT_ID) || null; }
+
+function onRoomUpdate(){
+  if(!room) return;
+  if(room.status==='waiting'){
+    renderWaiting();
+  } else {
+    switchToTableIfNeeded();
+    renderTable();
+  }
+}
+function switchToTableIfNeeded(){
+  const tableHidden = document.getElementById('screen-table').classList.contains('hidden');
+  if(tableHidden){
+    document.getElementById('screen-home').classList.add('hidden');
+    document.getElementById('screen-waiting').classList.add('hidden');
+    document.getElementById('screen-table').classList.remove('hidden');
+    document.getElementById('result-overlay').classList.add('hidden');
+    const mp=myPlayer();
+  }
+}
+
+/* ============================= WAITING SCREEN ============================= */
+function enterWaitingScreen(){
+  document.getElementById('screen-home').classList.add('hidden');
+  document.getElementById('screen-waiting').classList.remove('hidden');
+  document.getElementById('screen-table').classList.add('hidden');
+  document.getElementById('result-overlay').classList.add('hidden');
+  renderWaiting();
+}
+function renderWaiting(){
+  document.getElementById('wait-code').textContent = room.code;
+  const seatsEl=document.getElementById('wait-seats');
+  let html='';
+  for(let i=0;i<room.maxSeats;i++){
+    const p=room.players.find(pp=>pp.seat===i);
+    if(p){
+      html += `<div class="seat-slot filled">
+        <div class="snum">座位 ${i+1}</div>
+        <div class="sname">${esc(p.name)}</div>
+        <div class="stag">${p.id===room.hostId?'👑 房主':fmt(p.chips)}</div>
+      </div>`;
+    } else {
+      html += `<div class="seat-slot empty">座位 ${i+1}<br>等待玩家加入…</div>`;
+    }
+  }
+  seatsEl.innerHTML=html;
+
+  const actionsEl=document.getElementById('wait-actions');
+  const amHost = room.hostId===MY_CLIENT_ID;
+  if(amHost){
+    actionsEl.innerHTML = `
+      <button class="btn btn-gold" onclick="startGame(event)">開始遊戲</button>
+      <button class="btn btn-outline" onclick="copyCode(event)">複製代碼</button>
+      <button class="btn btn-red" onclick="leaveRoom(event)">解散房間</button>`;
+  } else {
+    actionsEl.innerHTML = `
+      <div class="hint" style="margin:0 16px;">等待房主開始遊戲…</div>
+      <button class="btn btn-outline" onclick="copyCode(event)">複製代碼</button>
+      <button class="btn btn-red" onclick="leaveRoom(event)">離開房間</button>`;
+  }
+}
+function copyCode(e){
+  fx(e);
+  try{ navigator.clipboard.writeText(room.code); }catch(err){}
+}
+function leaveRoom(e){
+  fx(e);
+  stopPolling();
+  const codeSnapshot = room ? room.code : null;
+  const myId = MY_CLIENT_ID;
+  currentRoomCode=null; room=null; isHost=false;
+  goHome();
+  if(codeSnapshot){
+    (async()=>{
+      const r=await getRoom(codeSnapshot);
+      if(!r) return;
+      r.players = r.players.filter(p=>p.id!==myId);
+      if(r.players.length>0 && r.hostId===myId){
+        r.hostId = r.players[0].id;
+        r.players.forEach((p,idx)=>p.seat=idx);
+      }
+      try{ await window.storage.set('bjroom_'+r.code, JSON.stringify(r), true); }catch(err){}
+    })();
+  }
+}
+async function startGame(e){
+  fx(e);
+  const r=room;
+  r.status='betting';
+  r.currentPlayerSeat=0;
+  r.players.forEach(p=>{ p.hands=[]; p.bet=Math.min(r.minBet, p.chips); p.betConfirmed=false; });
+  enterTableScreen();
+  putRoom(r);
+}
+
+/* ============================= TABLE SCREEN ============================= */
+let betSliderValue=10;
+function enterTableScreen(){
+  switchToTableIfNeeded();
+  renderTable();
+}
+
+function seatAngleStyle(mySeatIdx, totalSeats, seatIdx){
+  // arrange players in an arc along the bottom half, with "me" fixed bottom-center
+  const rel = (seatIdx - mySeatIdx + totalSeats) % totalSeats; // 0 = me
+  const wrap = document.querySelector('.table-wrap');
+  const W = wrap? wrap.clientWidth : 900, H = wrap? wrap.clientHeight : 560;
+  const cx=W/2, cy=H*0.5;
+  const rx=W*0.44, ry=H*0.42;
+  // distribute others across an arc from -70deg to 250deg (avoiding dealer zone at top)
+  let angleDeg, ryFactor=1.05;
+  if(rel===0){ angleDeg=90; ryFactor=0.6; } // bottom center = me, pulled up so its (larger) cards stay inside the felt
+  else {
+    const others = totalSeats-1;
+    const span = 250; // degrees to spread across, avoiding top ~ -20..20 dealer zone
+    const start = 90 - span/2;
+    const step = others>1 ? span/(others) : 0;
+    angleDeg = start + step*rel;
+  }
+  const rad = angleDeg*Math.PI/180;
+  const x = cx + rx*Math.cos(rad);
+  const y = cy + ry*Math.sin(rad)*ryFactor;
+  return `left:${x}px; top:${y}px;`;
+}
+
+function renderTable(){
+  if(!room) return;
+  const mp=myPlayer();
+  const mySeatIdx = mp? mp.seat : 0;
+
+  // dealer hand
+  const dEl=document.getElementById('dealer-hand');
+  const dCards = room.dealer.cards || [];
+  let dHtml='';
+  dCards.forEach((c,idx)=>{
+    const faceDown = (idx===1 && !room.dealer.revealed && room.status!=='roundEnd' && room.status!=='dealerTurn');
+    dHtml += cardHtml(c, faceDown, dealKey('dealer',idx));
+  });
+  dEl.innerHTML = dHtml;
+
+  // pot center (show total bets while betting/playing, hide after)
+  const potEl=document.getElementById('pot-center');
+  if(room.status==='betting' || room.status==='playerTurns' || room.status==='dealerTurn'){
+    let potHtml='';
+    room.players.forEach(p=>{
+      const totalBet = (p.hands&&p.hands.length? p.hands.reduce((s,h)=>s+h.bet,0) : (p.bet||0));
+      if(totalBet>0) potHtml += renderChipStacks(totalBet, true);
+    });
+    potEl.innerHTML = potHtml;
+  } else { potEl.innerHTML=''; }
+
+  // seats
+  const ringEl=document.getElementById('seats-ring');
+  let html='';
+  const total=room.maxSeats;
+  const sortedSeats=[...Array(total).keys()];
+  sortedSeats.forEach(seatIdx=>{
+    const p = room.players.find(pp=>pp.seat===seatIdx);
+    if(!p) return;
+    const isMe = p.id===MY_CLIENT_ID;
+    const isTurn = (room.status==='playerTurns' && room.players[room.currentPlayerSeat] && room.players[room.currentPlayerSeat].id===p.id)
+                 || (room.status==='betting' && room.players[room.currentPlayerSeat] && room.players[room.currentPlayerSeat].id===p.id);
+    let handsHtml='';
+    if(p.hands && p.hands.length){
+      p.hands.forEach((h,hi)=>{
+        const active = isTurn && hi===room.currentHandIdx;
+        const val = handValue(h.cards);
+        let statusHtml='';
+        const res = room.resultsByPlayer && room.resultsByPlayer[p.id] && room.resultsByPlayer[p.id][hi];
+        if(res){
+          const cls = res.outcome==='win'||res.outcome==='blackjack' ? (res.outcome==='blackjack'?'blackjack':'win') : (res.outcome==='push'?'push':'lose');
+          const label = res.outcome==='blackjack'?'BLACKJACK':res.outcome==='win'?'WIN':res.outcome==='push'?'PUSH':'LOSE';
+          statusHtml = `<div class="hand-status ${cls}">${label}</div>`;
+        } else if(isBust(h)) {
+          statusHtml = `<div class="hand-status lose">BUST</div>`;
+        }
+        let cardsHtml='';
+        h.cards.forEach((c,ci)=>{ cardsHtml += cardHtml(c, false, dealKey(p.id+'_'+hi, ci), true); });
+        handsHtml += `<div class="hand-block ${active?'active-hand':''}">
+          <div class="bet-chips-mini">${renderChipStacks(h.bet, true)}</div>
+          <div class="cards-row">${cardsHtml}</div>
+          <div class="hand-total">${val}${h.doubled?' · 2x':''}</div>
+          ${statusHtml}
+        </div>`;
+      });
+    } else if(room.status==='betting'){
+      handsHtml = `<div class="bet-chips-mini">${p.bet>0?renderChipStacks(p.bet,true):''}</div>`;
+    }
+    html += `<div class="seat ${isMe?'me':''} ${isTurn?'turn':''}" style="${seatAngleStyle(mySeatIdx,total,seatIdx)}">
+      <div class="plate">
+        <div class="pname2">${esc(p.name)}${isMe?' (你)':''}</div>
+        <div class="pchips">${fmt(p.chips)}</div>
+        ${isTurn?'<div class="turn-flag">● 輪到TA了</div>':''}
+      </div>
+      <div class="hands-row">${handsHtml}</div>
+    </div>`;
+  });
+  ringEl.innerHTML = html;
+
+  renderTableControls();
+
+  if(room.status==='roundEnd') showResultOverlay();
+  else document.getElementById('result-overlay').classList.add('hidden');
+}
+
+function dealKey(id, idx){ return id+'#'+idx; }
+function cardHtml(c, faceDown, key, small){
+  const isNew = key && (dealtSeen[key]===undefined);
+  if(key) dealtSeen[key]=true;
+  const cls = 'card '+(small?'sm ':'')+(isNew?'dealing ':'')+(faceDown?'back':(c.red?'red':'black'));
+  if(faceDown) return `<div class="${cls}"></div>`;
+  return `<div class="${cls}"><div class="r">${c.rank}</div><div class="s">${c.suit}</div></div>`;
+}
+
+function renderTableControls(){
+  const el=document.getElementById('table-controls');
+  const mp=myPlayer();
+  if(!mp){ el.innerHTML=''; return; }
+
+  if(room.status==='betting'){
+    const isMyTurn = room.players[room.currentPlayerSeat] && room.players[room.currentPlayerSeat].id===mp.id;
+    if(isMyTurn){
+      if(mp.chips < room.minBet){
+        el.innerHTML = `<div class="waiting-toast">籌碼不足下最低注，本局旁觀…</div>`;
+        setTimeout(()=>{ if(room.status==='betting') confirmBet(0); }, 900);
+        return;
+      }
+      betSliderValue = clamp(betSliderValue, room.minBet, Math.min(room.maxBet, mp.chips));
+      const sliderMax = Math.max(room.minBet,Math.min(room.maxBet, mp.chips));
+      const pct = Math.round(((betSliderValue-room.minBet)/((sliderMax-room.minBet)||1))*100);
+      el.innerHTML = `
+      <div class="bet-panel">
+        <div class="row1"><div>你的下注</div><div class="bet-amt" id="bet-amt-display">${fmt(betSliderValue)}</div></div>
+        <div class="bet-preview" id="bet-preview-display">${renderChipStacks(betSliderValue)}</div>
+        <input type="range" id="bet-slider-input" min="${room.minBet}" max="${sliderMax}" step="5" value="${betSliderValue}" style="--pct:${pct}%" oninput="onBetSlide(this)">
+        <div class="step-btns">
+          <button onclick="betStep(-50,event)">-50</button>
+          <button onclick="betStep(-10,event)">-10</button>
+          <button onclick="betStep(10,event)">+10</button>
+          <button onclick="betStep(50,event)">+50</button>
+        </div>
+        <button class="btn btn-gold btn-block" onclick="confirmBet(betSliderValue,event)">確認下注</button>
+      </div>`;
+    } else {
+      const turnP = room.players[room.currentPlayerSeat];
+      el.innerHTML = `<div class="waiting-toast">等待 ${esc(turnP?turnP.name:'')} 下注中…</div>`;
+    }
+    return;
+  }
+
+  if(room.status==='playerTurns'){
+    const turnP = room.players[room.currentPlayerSeat];
+    if(turnP && turnP.id===mp.id){
+      const hand = mp.hands[room.currentHandIdx];
+      const totalCommitted = mp.hands.reduce((s,hh)=>s+hh.bet,0);
+      const canDouble = hand.cards.length===2 && !hand.doubled && mp.chips>=totalCommitted+hand.bet;
+      const canSplit = hand.cards.length===2 && hand.cards[0].rank===hand.cards[1].rank && mp.hands.length<4 && mp.chips>=totalCommitted+hand.bet;
+      el.innerHTML = `<div class="action-row">
+        <button class="action-btn hit" onclick="playerAction('hit',event)">要牌 Hit</button>
+        <button class="action-btn stand" onclick="playerAction('stand',event)">停牌 Stand</button>
+        <button class="action-btn double" ${canDouble?'':'disabled'} onclick="playerAction('double',event)">雙倍 Double</button>
+        <button class="action-btn split" ${canSplit?'':'disabled'} onclick="playerAction('split',event)">分牌 Split</button>
+      </div>`;
+    } else {
+      el.innerHTML = `<div class="waiting-toast">等待 ${esc(turnP?turnP.name:'')} 行動中…</div>`;
+    }
+    return;
+  }
+
+  if(room.status==='dealerTurn'){
+    el.innerHTML = `<div class="waiting-toast">莊家出牌中…</div>`;
+    return;
+  }
+
+  el.innerHTML='';
+}
+
+function onBetSlide(input){
+  betSliderValue=parseInt(input.value,10);
+  updateBetPreviewUI();
+}
+function betStep(delta,e){
+  if(e) fx(e);
+  const mp=myPlayer();
+  const max=Math.min(room.maxBet, mp.chips);
+  betSliderValue=clamp(betSliderValue+delta, room.minBet, max);
+  const sliderEl=document.getElementById('bet-slider-input');
+  if(sliderEl) sliderEl.value=betSliderValue;
+  updateBetPreviewUI();
+}
+function updateBetPreviewUI(){
+  const amtEl=document.getElementById('bet-amt-display');
+  const prevEl=document.getElementById('bet-preview-display');
+  const sliderEl=document.getElementById('bet-slider-input');
+  if(amtEl) amtEl.textContent=fmt(betSliderValue);
+  if(prevEl) prevEl.innerHTML=renderChipStacks(betSliderValue);
+  if(sliderEl){
+    const min=parseInt(sliderEl.min,10), max=parseInt(sliderEl.max,10);
+    const pct=Math.round(((betSliderValue-min)/((max-min)||1))*100);
+    sliderEl.style.setProperty('--pct', pct+'%');
+  }
+}
+
+async function confirmBet(amount, e){
+  if(e) fx(e); sfxChip();
+  const r=room;
+  const p=r.players.find(pp=>pp.id===MY_CLIENT_ID);
+  if(!p) return;
+  if(amount>0){
+    // chips are NOT deducted here — the wager just sits visually on the table.
+    // balance only changes once the round is resolved (win adds winnings, lose deducts the bet).
+    p.hands=[{ cards:[drawCard(r), drawCard(r)], bet:amount, doubled:false, done:false }];
+  } else {
+    p.hands=[]; // sitting out this round
+  }
+  // advance betting turn
+  r.currentPlayerSeat++;
+  if(r.currentPlayerSeat>=r.players.length){
+    // deal dealer cards, move to player turns
+    r.dealer.cards=[drawCard(r), drawCard(r)];
+    r.dealer.revealed=false;
+    r.currentPlayerSeat=0; r.currentHandIdx=0;
+    r.resultsByPlayer={};
+    // mark naturals as done
+    r.players.forEach(pl=>{ pl.hands.forEach(h=>{ if(isNatural(h)) h.done=true; }); });
+    r.status='playerTurns';
+    advanceTurn(r);
+  }
+  renderTable();
+  putRoom(r);
+}
+
+function advanceTurn(r){
+  let p=r.currentPlayerSeat, h=r.currentHandIdx;
+  while(p<r.players.length){
+    const player=r.players[p];
+    if(h<player.hands.length){
+      const hand=player.hands[h];
+      if(!hand.done && !isBust(hand) && handValue(hand.cards)<21){ r.currentPlayerSeat=p; r.currentHandIdx=h; return true; }
+      else { h++; continue; }
+    } else { p++; h=0; }
+  }
+  r.status='dealerTurn';
+  return false;
+}
+
+async function playerAction(action, e){
+  fx(e); sfxCard();
+  const r=room;
+  const p=r.players.find(pp=>pp.id===MY_CLIENT_ID);
+  const hand=p.hands[r.currentHandIdx];
+  if(action==='hit'){
+    hand.cards.push(drawCard(r));
+    if(isBust(hand) || handValue(hand.cards)===21) hand.done=true;
+  } else if(action==='stand'){
+    hand.done=true;
+  } else if(action==='double'){
+    // no upfront deduction — bet amount just increases; settled at resolution
+    hand.bet *= 2; hand.doubled=true;
+    hand.cards.push(drawCard(r));
+    hand.done=true;
+  } else if(action==='split'){
+    // no upfront deduction — the new hand's bet just mirrors the original
+    const c2=hand.cards.pop();
+    const newHand={ cards:[c2, drawCard(r)], bet:hand.bet, doubled:false, done:false };
+    hand.cards.push(drawCard(r));
+    if(hand.cards[0].rank==='A'){ hand.done=true; newHand.done=true; }
+    p.hands.splice(r.currentHandIdx+1, 0, newHand);
+  }
+  advanceTurn(r);
+  renderTable();
+  putRoom(r);
+}
+
+/* host-only ticking: run dealer + resolve when needed */
+let dealerRunning=false;
+let dealerRunningSince=0;
+async function hostTick(){
+  if(!room) return;
+  if(dealerRunning){
+    // watchdog: if a dealer run has somehow been stuck for way longer than it should
+    // ever take (e.g. the tab was backgrounded mid-sequence), force it to reset so
+    // the table can never freeze permanently.
+    if(Date.now()-dealerRunningSince>8000) dealerRunning=false;
+    else return;
+  }
+  if(room.status!=='dealerTurn') return;
+  dealerRunning=true;
+  dealerRunningSince=Date.now();
+  try{
+    let r = room;
+    r.dealer.revealed=true;
+    putRoom(r); renderTable();
+    await sleep(280);
+    // check if any player hand still alive (not all busted) — if all busted, dealer doesn't need to draw
+    const anyAlive = r.players.some(p=>(p.hands||[]).some(h=>!isBust(h)));
+    let guard=0;
+    while(anyAlive && handValue(r.dealer.cards)<17 && guard<20){
+      guard++;
+      r.dealer.cards.push(drawCard(r));
+      r.dealer.revealed=true;
+      putRoom(r); renderTable();
+      await sleep(380);
+    }
+    await sleep(250);
+    try{
+      resolveRound(r);
+    }catch(resolveErr){
+      // fall back to a harmless push-everyone resolution so the table can never get permanently stuck
+      r.resultsByPlayer = {};
+      r.players.forEach(p=>{ r.resultsByPlayer[p.id] = (p.hands||[]).map(h=>({outcome:'push', net:0, bet:h.bet||0})); });
+    }
+    r.status='roundEnd';
+    putRoom(r); renderTable();
+  }catch(err){
+    // last-resort safety net: never leave the table frozen on a broken dealer turn
+    try{
+      const r2 = room;
+      if(r2 && r2.status==='dealerTurn'){
+        r2.dealer.revealed = true;
+        r2.status='roundEnd';
+        r2.resultsByPlayer = r2.resultsByPlayer || {};
+        putRoom(r2); renderTable();
+      }
+    }catch(err2){}
+  }finally{
+    dealerRunning=false;
+  }
+}
+function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+function resolveRound(r){
+  const dTotal = handValue(r.dealer.cards);
+  const dBust = dTotal>21;
+  const dBlackjack = isNatural({cards:r.dealer.cards});
+  r.resultsByPlayer = {};
+  r.players.forEach(p=>{
+    const results=[];
+    p.hands.forEach(h=>{
+      let outcome, payout;
+      const hBust = isBust(h);
+      const hBJ = isNatural(h) && !h.doubled && h.cards.length===2;
+      if(hBust){ outcome='lose'; payout=0; }
+      else if(hBJ && !dBlackjack){ outcome='blackjack'; payout = h.bet*2.5; }
+      else if(dBlackjack && !hBJ){ outcome='lose'; payout=0; }
+      else if(dBlackjack && hBJ){ outcome='push'; payout=h.bet; }
+      else if(dBust){ outcome='win'; payout=h.bet*2; }
+      else {
+        const hTotal=handValue(h.cards);
+        if(hTotal>dTotal){ outcome='win'; payout=h.bet*2; }
+        else if(hTotal<dTotal){ outcome='lose'; payout=0; }
+        else { outcome='push'; payout=h.bet; }
+      }
+      // chips were never removed at bet time — only the net result is applied now:
+      // win/blackjack adds the profit, lose subtracts the wager directly, push leaves it untouched.
+      const net = payout - h.bet;
+      p.chips += net;
+      results.push({ outcome, net, bet:h.bet });
+    });
+    r.resultsByPlayer[p.id]=results;
+  });
+}
+
+/* ============================= RESULT OVERLAY ============================= */
+function showResultOverlay(){
+  const el=document.getElementById('result-overlay');
+  const mp=myPlayer();
+  if(!mp){ el.classList.add('hidden'); return; }
+  const myResults = (room.resultsByPlayer && room.resultsByPlayer[mp.id]) || [];
+  let netTotal=0; myResults.forEach(r=>netTotal+=r.net);
+  if(myChips!==mp.chips){ myChips=mp.chips; }
+
+  let bannerCls='push', bannerText='PUSH';
+  if(myResults.length===0){ bannerCls='push'; bannerText='本局旁觀'; }
+  else if(myResults.some(r=>r.outcome==='blackjack')){ bannerCls='win'; bannerText='BLACKJACK!'; }
+  else if(netTotal>0){ bannerCls='win'; bannerText='WIN!'; }
+  else if(netTotal<0){ bannerCls='lose'; bannerText='BUST'; }
+  else { bannerCls='push'; bannerText='PUSH'; }
+
+  if(!el.dataset.shownFor || el.dataset.shownFor!==('r'+room.roundNum+mp.id)){
+    el.dataset.shownFor='r'+room.roundNum+mp.id;
+    myChips = mp.chips;
+    if(bannerCls==='win'){
+      sfxWin();
+      if(netTotal>0) playChipConvergence(netTotal);
+      else animateBalanceTo(myChips);
+    } else if(bannerCls==='lose'){
+      sfxLose();
+      animateBalanceTo(myChips); // deducted directly, no flourish
+    } else {
+      sfxPush();
+      animateBalanceTo(myChips);
+    }
+    if(myResults.length>0) recordDailyTaskProgress(myResults, netTotal);
+  }
+
+  let detailHtml='';
+  myResults.forEach((r,i)=>{
+    const label = r.outcome==='blackjack'?'Blackjack':r.outcome==='win'?'獲勝':r.outcome==='push'?'平手':'落敗';
+    const sign = r.net>0?'+':'';
+    detailHtml += `<div class="drow"><span>手牌 ${i+1} · ${label}</span><span>${sign}${fmt(r.net)}</span></div>`;
+  });
+  if(!detailHtml) detailHtml = `<div class="drow"><span>本局籌碼不足，旁觀一局</span><span>—</span></div>`;
+
+  const amHost = room.hostId===MY_CLIENT_ID;
+  el.innerHTML = `
+    <div class="banner-text ${bannerCls}">${bannerText}</div>
+    <div class="banner-sub">${esc(mp.name)} 的戰績</div>
+    <div class="banner-detail">${detailHtml}
+      <div class="drow" style="border-top:1px solid rgba(255,255,255,0.15); margin-top:6px; padding-top:8px; font-weight:800;">
+        <span>本局淨額</span><span>${netTotal>0?'+':''}${fmt(netTotal)}</span>
+      </div>
+    </div>
+    <div class="banner-btns">
+      ${amHost? `<button class="btn btn-gold" onclick="nextRound(event)">再玩一局</button>` : `<div class="hint">等待房主開始下一局…</div>`}
+      <button class="btn btn-outline" onclick="returnToLobby(event)">返回大廳</button>
+    </div>
+  `;
+  el.classList.remove('hidden');
+}
+
+function nextRound(e){
+  fx(e);
+  const r=room;
+  r.status='betting';
+  r.currentPlayerSeat=0; r.currentHandIdx=0;
+  r.roundNum=(r.roundNum||0)+1;
+  r.dealer={cards:[], revealed:false};
+  r.resultsByPlayer={};
+  r.players.forEach(p=>{ p.hands=[]; p.bet=Math.min(r.minBet,p.chips); });
+  for(const k in dealtSeen) delete dealtSeen[k];
+  document.getElementById('result-overlay').classList.add('hidden');
+  renderTable();
+  putRoom(r);
+}
+
+/* ============================= RETURN TO LOBBY + CHIP CONVERGENCE ============================= */
+function returnToLobby(e){
+  fx(e);
+  const mp=myPlayer();
+  if(mp) myChips = mp.chips;
+
+  const codeSnapshot = room ? room.code : null;
+  const myId = MY_CLIENT_ID;
+
+  // go home immediately — no waiting on network round-trips
+  stopPolling();
+  currentRoomCode=null; room=null; isHost=false;
+  goHome();
+
+  // persist profile + leave the room in the background
+  saveProfile();
+  if(codeSnapshot){
+    (async()=>{
+      const r = await getRoom(codeSnapshot);
+      if(r){
+        r.players = r.players.filter(p=>p.id!==myId);
+        if(r.hostId===myId && r.players.length>0){
+          r.hostId=r.players[0].id; r.players.forEach((p,idx)=>p.seat=idx);
+        }
+        try{ await window.storage.set('bjroom_'+r.code, JSON.stringify(r), true); }catch(err){}
+      }
+    })();
+  }
+}
+
+function playChipConvergence(amount, originPoint){
+  return new Promise(resolve=>{
+    const target = document.getElementById('balance-badge').getBoundingClientRect();
+    const tx = target.left + target.width/2, ty = target.top + target.height/2;
+    let ox, oy;
+    if(originPoint){ ox=originPoint.x; oy=originPoint.y; }
+    else { ox=window.innerWidth/2; oy=window.innerHeight/2; } // 正中央 — where the result banner appears
+
+    const stacks = chipBreakdown(amount);
+    let pieces=[];
+    stacks.forEach(st=>{ for(let i=0;i<Math.min(st.count,6);i++) pieces.push(st.d); });
+    if(pieces.length===0) pieces=[Math.min(amount,1000)];
+    if(pieces.length>16) pieces=pieces.slice(0,16);
+
+    pieces.forEach((d,i)=>{
+      const chip=document.createElement('div');
+      chip.className='fly-chip chip '+chipClass(d);
+      chip.style.width='26px'; chip.style.height='26px';
+      chip.style.left=(ox + (Math.random()*120-60))+'px';
+      chip.style.top=(oy + (Math.random()*80-40))+'px';
+      chip.textContent = d>=1000?(d/1000)+'K':d;
+      document.body.appendChild(chip);
+      setTimeout(()=>{
+        const dx = tx - parseFloat(chip.style.left);
+        const dy = ty - parseFloat(chip.style.top);
+        chip.style.transform = `translate(${dx}px, ${dy}px) scale(0.4)`;
+        chip.style.opacity='0.15';
+        sfxChip();
+      }, 60 + i*70);
+      setTimeout(()=>chip.remove(), 1050 + i*70);
     });
 
-    function renderEffects() {
-      cCtx.clearRect(0, 0, clickCanvas.width, clickCanvas.height);
-      for (let i = clickParticles.length - 1; i >= 0; i--) {
-        clickParticles[i].update(); clickParticles[i].draw();
-        if (clickParticles[i].alpha <= 0) clickParticles.splice(i, 1);
-      }
-      requestAnimationFrame(renderEffects);
-    }
-    renderEffects();
-
-    // 帳號與真實 Google 登入系統
-    let gameAccounts = JSON.parse(localStorage.getItem('poker_game_accounts')) || {
-      "Google User (John)": { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-1234' },
-      "Google User (Alice)": { gold: 1000, gems: 0, trophies: 45, exp: 50, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 1, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-5678' },
-      "Google User (Bob)": { gold: 1500, gems: 10, trophies: 110, exp: 120, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 2, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: 'PKA-9876' }
-    };
-    let currentUsername = localStorage.getItem('poker_active_account') || "Google User (John)";
-    let currentBet = 100;
-
-    function generateUniqueFriendCode() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = 'PKA-';
-      for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
-    const taskTemplates = [
-      { title: "贏得 1 場德州撲克對局", exp: 50, rewardGold: 200 },
-      { title: "贏得 1 場 21點對決", exp: 50, rewardGold: 200 },
-      { title: "參與 3 場任意對局", exp: 80, rewardGold: 300 },
-      { title: "進行下注達 500 籌碼", exp: 40, rewardGold: 150 },
-      { title: "使用滑桿調整下注量 1 次", exp: 30, rewardGold: 100 },
-      { title: "登入遊戲並完成簽到", exp: 100, rewardGold: 500 },
-      { title: "查看個人牌手檔案", exp: 20, rewardGold: 50 },
-      { title: "造角中心瀏覽外觀", exp: 20, rewardGold: 50 },
-      { title: "瀏覽潮流時裝商鋪", exp: 20, rewardGold: 50 },
-      { title: "透過專屬代碼添加好友", exp: 100, rewardGold: 300 },
-      { title: "接受 1 次好友請求", exp: 80, rewardGold: 300 },
-      { title: "進入小隊大廳", exp: 30, rewardGold: 100 },
-      { title: "達成 1 次德州撲克牌型攤牌", exp: 90, rewardGold: 400 },
-      { title: "累積下注達 2000 籌碼", exp: 120, rewardGold: 600 },
-      { title: "在 21點中停牌並獲勝", exp: 70, rewardGold: 250 }
-    ];
-
-    function checkDailyTasksReset(acc) {
-      const todayStr = new Date().toDateString();
-      if (acc.lastTaskDate !== todayStr || !acc.tasks || acc.tasks.length !== 15) {
-        acc.lastTaskDate = todayStr;
-        acc.tasks = taskTemplates.map((t, idx) => ({
-          id: idx + 1,
-          title: t.title,
-          exp: t.exp,
-          rewardGold: t.rewardGold,
-          completed: idx < 3,
-          claimed: false
-        }));
-      }
-    }
-
-    const expMilestones = [
-      { level: 1, reqExp: 100, reward: "500 籌碼", type: "gold", amount: 500 },
-      { level: 2, reqExp: 300, reward: "1,500 籌碼 + 20 寶石", type: "mixed", gold: 1500, gems: 20 },
-      { level: 3, reqExp: 600, reward: "4,000 籌碼 + 60 寶石", type: "mixed", gold: 4000, gems: 60 },
-      { level: 4, reqExp: 1000, reward: "10,000 籌碼 + 200 寶石", type: "mixed", gold: 10000, gems: 200 }
-    ];
-
-    function addExp(amount) {
-      const acc = gameAccounts[currentUsername];
-      acc.exp += amount;
-      let maxExpForCurrentLevel = acc.level * 250;
-      if (acc.exp >= maxExpForCurrentLevel) {
-        acc.level++;
-        alert(`🎉 恭喜！您的牌手等級提升至 Lv.${acc.level}！`);
-      }
-      saveAccountsToStorage();
-      updateAccountUI();
-    }
-
-    function googleLogin() {
-      let realEmail = prompt("【Google 帳戶授權登入】\n請輸入您的真實 Google 電子郵件信箱:", "user@gmail.com");
-      if (!realEmail) return;
-      currentUsername = realEmail.split('@')[0] + " (Google)";
-
-      if (!gameAccounts[currentUsername]) {
-        gameAccounts[currentUsername] = {
-          gold: 1000,
-          gems: 0,
-          trophies: 0,
-          exp: 0,
-          level: 1,
-          friends: [],
-          friendRequests: [],
-          claimedRoad: [],
-          checkinDay: 0,
-          claimedExpMilestones: [],
-          tasks: [],
-          lastTaskDate: "",
-          friendCode: generateUniqueFriendCode()
-        };
-      }
-      saveAccountsToStorage();
-      updateAccountUI();
-      alert(`成功連結 Google 帳戶：${currentUsername} (初始籌碼: 1000)`);
-    }
-
-    function setBetAmount(amt, btn) {
-      currentBet = amt;
-      document.getElementById('lobbyBetSlider').value = amt;
-      document.getElementById('sliderBetVal').innerText = amt;
-      document.querySelectorAll('.bet-option-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
-
-    function updateLobbyBet(val) {
-      currentBet = parseInt(val);
-      document.getElementById('sliderBetVal').innerText = currentBet;
-    }
-
-    function updateGameSlider(val) {
-      currentBet = parseInt(val);
-      document.getElementById('gameSliderVal').innerText = currentBet;
-    }
-
-    function saveAccountsToStorage() {
-      localStorage.setItem('poker_game_accounts', JSON.stringify(gameAccounts));
-      localStorage.setItem('poker_active_account', currentUsername);
-    }
-
-    function updateAccountUI() {
-      if (!gameAccounts[currentUsername]) {
-        gameAccounts[currentUsername] = { gold: 1000, gems: 0, trophies: 0, exp: 0, level: 1, friends: [], friendRequests: [], claimedRoad: [], checkinDay: 0, claimedExpMilestones: [], tasks: [], lastTaskDate: "", friendCode: generateUniqueFriendCode() };
-      }
-      const acc = gameAccounts[currentUsername];
-      if (!acc.friendCode) acc.friendCode = generateUniqueFriendCode();
-
-      checkDailyTasksReset(acc);
-
-      document.getElementById('playerNameText').innerText = currentUsername;
-      document.getElementById('goldCountText').innerText = acc.gold;
-      document.getElementById('gemCountText').innerText = acc.gems;
-      document.getElementById('hudTrophyCount').innerText = acc.trophies;
-
-      let currentLevelMaxExp = acc.level * 250;
-      let expPercent = Math.min(100, (acc.exp / currentLevelMaxExp) * 100);
-      document.getElementById('hudLevelText').innerText = acc.level;
-      document.getElementById('hudExpText').innerText = acc.exp;
-      document.getElementById('hudExpMaxText').innerText = currentLevelMaxExp;
-      document.getElementById('hudExpBar').style.width = expPercent + '%';
-
-      const profileName = document.getElementById('profileNameDisplay');
-      const profileTrophy = document.getElementById('profileTrophyDisplay');
-      const progressBar = document.getElementById('trophyProgressBar');
-      const progressText = document.getElementById('trophyProgressText');
-      if (profileName) profileName.innerText = currentUsername;
-      if (profileTrophy) profileTrophy.innerText = acc.trophies;
-      if (progressBar) {
-        let percentage = Math.min(100, (acc.trophies / 500) * 100);
-        progressBar.style.width = percentage + '%';
-        if (progressText) progressText.innerText = `${acc.trophies} / 500 盃`;
-      }
-
-      const codeDisp = document.getElementById('myUniqueCodeDisplay');
-      if (codeDisp) {
-        codeDisp.innerText = acc.friendCode;
-      }
-
-      renderShopItemsUI();
-      renderTrophyRoadUI();
-      renderCheckinUI();
-      renderTasksUI();
-      renderFriendsUI();
-      renderTeamUI();
-    }
-
-    // 獨一無二代碼加好友系統 (確保跨帳號即時請求同步)
-    function sendFriendRequestByCode() {
-      const input = document.getElementById('friendCodeInput');
-      const code = input.value.trim().toUpperCase();
-      if (!code) return alert('請輸入好友專屬代碼！');
-
-      let targetUsername = null;
-      for (let uname in gameAccounts) {
-        if (!gameAccounts[uname].friendCode) {
-          gameAccounts[uname].friendCode = generateUniqueFriendCode();
-        }
-        if (gameAccounts[uname].friendCode.toUpperCase() === code) {
-          targetUsername = uname;
-          break;
-        }
-      }
-
-      if (!targetUsername) return alert(`找不到代碼為 [${code}] 的玩家！`);
-      if (targetUsername === currentUsername) return alert('不能加自己為好友！');
-
-      const targetAcc = gameAccounts[targetUsername];
-      const myAcc = gameAccounts[currentUsername];
-
-      if (myAcc.friends.includes(targetUsername)) return alert('對方已經是您的好友了！');
-      if (targetAcc.friendRequests.includes(currentUsername)) return alert('已經發送過好友請求了！');
-
-      targetAcc.friendRequests.push(currentUsername);
-      saveAccountsToStorage();
-      input.value = '';
-      alert(`已成功向 [${targetUsername}] 發送好友請求！`);
-      updateAccountUI();
-    }
-
-    function acceptFriendRequest(fromName) {
-      const myAcc = gameAccounts[currentUsername];
-      const targetAcc = gameAccounts[fromName];
-
-      myAcc.friendRequests = myAcc.friendRequests.filter(n => n !== fromName);
-      if (!myAcc.friends.includes(fromName)) myAcc.friends.push(fromName);
-      if (targetAcc && !targetAcc.friends.includes(currentUsername)) targetAcc.friends.push(currentUsername);
-
-      saveAccountsToStorage();
-      updateAccountUI();
-      alert(`您已接受 [${fromName}] 的好友請求！雙方正式成為好友。`);
-    }
-
-    function renderFriendsUI() {
-      const myAcc = gameAccounts[currentUsername];
-      const reqContainer = document.getElementById('friendRequestsContainer');
-      const listContainer = document.getElementById('friendsListContainer');
-      if (!reqContainer || !listContainer) return;
-
-      reqContainer.innerHTML = myAcc.friendRequests.length === 0 ? '<div style="font-size:12px; color:#888;">無待處理的好友請求</div>' : '';
-      myAcc.friendRequests.forEach(name => {
-        reqContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); padding:6px 10px; border-radius:6px;">
-            <span style="font-size:13px; color:#f1c40f;">${name} 請求加為好友</span>
-            <button onclick="acceptFriendRequest('${name}')" style="background:#2ecc71; color:#fff; border:none; padding:3px 10px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">確認接受</button>
-          </div>
-        `;
-      });
-
-      listContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚未新增好友</div>' : '';
-      myAcc.friends.forEach(name => {
-        listContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:6px 10px; border-radius:6px;">
-            <span style="font-size:13px; color:#f1c40f;">🟢 ${name} (好友)</span>
-            <span style="font-size:11px; color:#2ecc71; font-weight:bold;">互為好友</span>
-          </div>
-        `;
-      });
-    }
-
-    function renderTeamUI() {
-      const myAcc = gameAccounts[currentUsername];
-      const teamContainer = document.getElementById('teamFriendsListContainer');
-      if (!teamContainer) return;
-
-      teamContainer.innerHTML = myAcc.friends.length === 0 ? '<div style="font-size:12px; color:#888;">尚無好友可邀請，請先至好友頁面透過專屬代碼新增好友！</div>' : '';
-      myAcc.friends.forEach(name => {
-        teamContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px;">
-            <div>
-              <b>${name}</b>
-              <div style="font-size:11px; color:#2ecc71;">線上準備中</div>
-            </div>
-            <button onclick="inviteFriendToPlay('${name}')" style="background:#f1c40f; color:#000; border:none; padding:5px 14px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:12px;">邀請同玩</button>
-          </div>
-        `;
-      });
-    }
-
-    function inviteFriendToPlay(friendName) {
-      alert(`已成功邀請好友 [${friendName}] 進入小隊！即將開始 6 人桌配對。`);
-      closePages();
-      startCurrentGameMode();
-    }
-
-    // 商店 15 樣商品與寶石換籌碼
-    const shopItemsData = [
-      { id: 1, name: "新手籌碼包 (500)", priceGems: 10, rewardGold: 600, icon: "🪙", desc: "10 寶石換 600 籌碼" },
-      { id: 2, name: "進階籌碼包 (3,000)", priceGems: 45, rewardGold: 3500, icon: "🪙", desc: "45 寶石換 3,500 籌碼" },
-      { id: 3, name: "大亨籌碼包 (10,000)", priceGems: 120, rewardGold: 12000, icon: "🪙", desc: "120 寶石換 12,000 籌碼" },
-      { id: 4, name: "尊榮籌碼包 (50,000)", priceGems: 500, rewardGold: 65000, icon: "👑", desc: "500 寶石換 65,000 籌碼" },
-      { id: 5, name: "黃金撲克牌背", priceGems: 80, icon: "🃏", desc: "限定純金耀眼牌背造型" },
-      { id: 6, name: "寶石藍桌布主題", priceGems: 150, icon: "🟦", desc: "高貴典雅深藍色桌布" },
-      { id: 7, name: "尊爵帝王頭框", priceGems: 200, icon: "👑", desc: "全服唯一的帝王尊榮頭框" },
-      { id: 8, name: "幸運四葉草寵物", priceGems: 300, icon: "🍀", desc: "牌桌上帶來好運的萌寵" },
-      { id: 9, name: "霓虹電競墨鏡", priceGems: 120, icon: "🕶️", desc: "潮流時尚牌手專屬配件" },
-      { id: 10, name: "閃電特效表情包", priceGems: 90, icon: "⚡", desc: "對局中發送炫酷閃電特效" },
-      { id: 11, name: "皇家紅絲絨桌布", priceGems: 180, icon: "🟥", desc: "頂級賭場奢華紅絨布" },
-      { id: 12, name: "極速盲注帽子", priceGems: 110, icon: "🧢", desc: "象徵快速推進盲注的帽飾" },
-      { id: 13, name: "幸運骰子裝飾", priceGems: 140, icon: "🎲", desc: "桌邊擺飾幸運金色骰子" },
-      { id: 14, name: "黑曜石高級籌碼組", priceGems: 250, icon: "🖤", desc: "尊爵黑曜石手感籌碼" },
-      { id: 15, name: "VIP 傳奇光環", priceGems: 600, icon: "🌟", desc: "全場矚目的傳奇尊貴光環" }
-    ];
-
-    function renderShopItemsUI() {
-      const grid = document.getElementById('shopItemsGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      shopItemsData.forEach(item => {
-        let isExchange = item.rewardGold !== undefined;
-        grid.innerHTML += `
-          <div style="background:rgba(255,255,255,0.04); border:2.5px solid #d4af37; border-radius:16px; padding:15px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center;">
-            <div style="font-size:38px; margin-bottom:5px;">${item.icon}</div>
-            <h5 style="color:#f1c40f; font-size:14px; margin-bottom:3px;">${item.name}</h5>
-            <p style="font-size:11px; color:#aaa; margin-bottom:10px;">${item.desc}</p>
-            <button style="width:100%; background:${isExchange?'#2ecc71':'#f1c40f'}; color:${isExchange?'#fff':'#000'}; border:none; padding:7px 12px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:12px;" onclick="${isExchange?`buyChipsWithGems(${item.priceGems}, ${item.rewardGold}, event)`:`buyShopItem(${item.priceGems})`}">${isExchange?`💎 ${item.priceGems} 換籌碼`:`💎 ${item.priceGems} 購買`}</button>
-          </div>
-        `;
-      });
-    }
-
-    function buyChipsWithGems(gemCost, goldReward, e) {
-      const acc = gameAccounts[currentUsername];
-      if (acc.gems < gemCost) {
-        return alert('❌ 您的寶石不足以兌換此籌碼包！');
-      }
-      acc.gems -= gemCost;
-      acc.gold += goldReward;
-      saveAccountsToStorage();
-      updateAccountUI();
-
-      claimRewardFly(e, 'gold');
-      alert(`🎉 兌換成功！花費 ${gemCost} 寶石獲得 🪙 ${goldReward} 籌碼！`);
-    }
-
-    function buyShopItem(gemCost) {
-      const acc = gameAccounts[currentUsername];
-      if (acc.gems < gemCost) {
-        return alert('❌ 您的寶石不足！');
-      }
-      acc.gems -= gemCost;
-      saveAccountsToStorage();
-      updateAccountUI();
-      alert('🎉 成功購買稀有裝飾道具！');
-    }
-
-    // 任務與經驗值分段點獎勵渲染
-    function renderTasksUI() {
-      const acc = gameAccounts[currentUsername];
-      
-      const expContainer = document.getElementById('expMilestonesContainer');
-      expContainer.innerHTML = '';
-      expMilestones.forEach(m => {
-        const isClaimed = acc.claimedExpMilestones && acc.claimedExpMilestones.includes(m.level);
-        const canClaim = acc.exp >= m.reqExp && !isClaimed;
-
-        expContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px; border:1px solid ${isClaimed?'#555':'#d4af37'};">
-            <div>
-              <b style="color:#f1c40f;">所需 EXP: ${m.reqExp} (Lv.${m.level} 分段點)</b>
-              <div style="font-size:11px; color:#aaa;">獎勵：${m.reward}</div>
-            </div>
-            <button style="background:${isClaimed?'#333':canClaim?'#2ecc71':'#555'}; color:${isClaimed?'#777':'#fff'}; border:none; padding:5px 14px; border-radius:8px; font-weight:bold; cursor:${canClaim?'pointer':'not-allowed'}; font-size:12px;" ${!canClaim?'disabled':''} onclick="claimExpMilestone(event, ${m.level})">${isClaimed?'✔ 已領取':canClaim?'領取':'未達標'}</button>
-          </div>
-        `;
-      });
-
-      const taskContainer = document.getElementById('dailyTasksContainer');
-      taskContainer.innerHTML = '';
-      acc.tasks.forEach(t => {
-        let btnBg = '#555';
-        let btnText = '進行中';
-        let isDisabled = true;
-        if (t.completed && !t.claimed) {
-          btnBg = '#2ecc71';
-          btnText = '領取獎勵';
-          isDisabled = false;
-        } else if (t.claimed) {
-          btnBg = '#333';
-          btnText = '已完成';
-          isDisabled = true;
-        }
-
-        taskContainer.innerHTML += `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); padding:8px 12px; border-radius:8px; border:1px solid rgba(212,175,55,0.2);">
-            <div>
-              <b style="font-size:13px; color:#fff;">${t.title}</b>
-              <div style="font-size:11px; color:#f1c40f;">獎勵：+${t.exp} EXP | 🪙 ${t.rewardGold} 籌碼</div>
-            </div>
-            <button style="background:${btnBg}; color:${t.claimed?'#777':'#fff'}; border:none; padding:5px 14px; border-radius:8px; font-weight:bold; cursor:${isDisabled?'not-allowed':'pointer'}; font-size:12px;" ${isDisabled?'disabled':''} onclick="claimTaskReward(event, ${t.id})">${btnText}</button>
-          </div>
-        `;
-      });
-    }
-
-    function claimExpMilestone(e, level) {
-      const acc = gameAccounts[currentUsername];
-      if (!acc.claimedExpMilestones) acc.claimedExpMilestones = [];
-      if (acc.claimedExpMilestones.includes(level)) return alert('❌ 此經驗值分段點獎勵已領取！');
-
-      acc.claimedExpMilestones.push(level);
-      const m = expMilestones.find(item => item.level === level);
-      if (m.type === 'gold') acc.gold += m.amount;
-      if (m.type === 'mixed') {
-        acc.gold += m.gold;
-        acc.gems += m.gems;
-      }
-      saveAccountsToStorage();
-      updateAccountUI();
-      claimRewardFly(e, 'gold');
-      alert(`🎉 成功領取 Lv.${level} 經驗值分段點獎勵！`);
-    }
-
-    function claimTaskReward(e, taskId) {
-      const acc = gameAccounts[currentUsername];
-      const task = acc.tasks.find(t => t.id === taskId);
-      if (!task || !task.completed || task.claimed) return;
-
-      task.claimed = true;
-      acc.gold += task.rewardGold;
-      saveAccountsToStorage();
-      addExp(task.exp);
-      updateAccountUI();
-
-      claimRewardFly(e, 'gold');
-      alert(`✅ 任務完成！獲得 +${task.exp} EXP 與 🪙 ${task.rewardGold} 籌碼！`);
-    }
-
-    // 榮譽之路 (Trophy Road) 獎勵領取與防重複領取機制
-    const trophyMilestones = [
-      { trophies: 50, type: 'gold', amount: 300, name: '300 金幣' },
-      { trophies: 100, type: 'gems', amount: 20, name: '20 寶石' },
-      { trophies: 250, type: 'gold', amount: 1500, name: '1,500 金幣' },
-      { trophies: 500, type: 'gems', amount: 100, name: '100 寶石' }
-    ];
-
-    function renderTrophyRoadUI() {
-      const container = document.getElementById('trophyRoadContainer');
-      if (!container) return;
-      const acc = gameAccounts[currentUsername];
-      container.innerHTML = '<p style="color:#aaa; text-align:center; font-size:13px;">贏取獎杯，解鎖里程碑金幣與寶石獎勵，攀登更高聯賽段位！</p>';
-
-      trophyMilestones.forEach(m => {
-        const isClaimed = acc.claimedRoad && acc.claimedRoad.includes(m.trophies);
-        const canClaim = acc.trophies >= m.trophies && !isClaimed;
-
-        container.innerHTML += `
-          <div style="background:rgba(255,255,255,0.05); border:2px solid ${isClaimed?'#555':'#d4af37'}; border-radius:16px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; opacity:${isClaimed?'0.6':'1'};">
-            <div style="display:flex; align-items:center; gap:15px;">
-              <div style="font-size:32px;">${m.type==='gold'?'🪙':'💎'}</div>
-              <div>
-                <h4 style="color:#f1c40f;">${m.trophies} 盃里程碑</h4>
-                <p style="font-size:12px; color:#aaa;">獎勵：${m.name}</p>
-              </div>
-            </div>
-            <button style="background:${isClaimed?'#333':canClaim?'#2ecc71':'#555'}; color:${isClaimed?'#777':'#fff'}; border:none; padding:8px 18px; border-radius:14px; font-weight:bold; cursor:${canClaim?'pointer':'not-allowed'};" ${!canClaim?'disabled':''} onclick="claimTrophyRoadReward(event, ${m.trophies}, '${m.type}', ${m.amount})">${isClaimed?'✔ 已領取':canClaim?'立即領取':'未達標'}</button>
-          </div>
-        `;
-      });
-    }
-
-    function claimTrophyRoadReward(e, trophies, type, amount) {
-      const acc = gameAccounts[currentUsername];
-      if (!acc.claimedRoad) acc.claimedRoad = [];
-      if (acc.claimedRoad.includes(trophies)) return alert('❌ 此獎勵您已經領取過了！');
-
-      acc.claimedRoad.push(trophies);
-      if (type === 'gold') acc.gold += amount;
-      if (type === 'gems') acc.gems += amount;
-      saveAccountsToStorage();
-      updateAccountUI();
-
-      claimRewardFly(e, type === 'gems' ? 'gem' : 'gold');
-      alert(`🎉 成功領取 ${trophies} 盃里程碑獎勵：${amount} ${type === 'gold' ? '金幣' : '寶石'}！`);
-    }
-
-    // 每日簽到 7 天卡片網格系統
-    const checkinRewards = [
-      { day: 1, type: 'gold', amount: 1000, name: '1,000 籌碼', icon: '🪙' },
-      { day: 2, type: 'gems', amount: 20, name: '20 寶石', icon: '💎' },
-      { day: 3, type: 'gold', amount: 2500, name: '2,500 籌碼', icon: '🪙' },
-      { day: 4, type: 'gems', amount: 50, name: '50 寶石', icon: '💎' },
-      { day: 5, type: 'gold', amount: 5000, name: '5,000 籌碼', icon: '🪙' },
-      { day: 6, type: 'gems', amount: 100, name: '100 寶石', icon: '💎' },
-      { day: 7, type: 'gold', amount: 12000, name: '12,000 籌碼', icon: '👑' }
-    ];
-
-    function renderCheckinUI() {
-      const grid = document.getElementById('checkinDaysGrid');
-      if (!grid) return;
-      const acc = gameAccounts[currentUsername];
-      if (acc.checkinDay === undefined) acc.checkinDay = 0;
-      grid.innerHTML = '';
-
-      checkinRewards.forEach((r, idx) => {
-        let statusText = '';
-        let statusBg = '#222';
-        let isClaimable = false;
-
-        if (idx < acc.checkinDay) {
-          statusText = '已領取';
-          statusBg = '#444';
-        } else if (idx === acc.checkinDay) {
-          statusText = '立即領取';
-          statusBg = '#2ecc71';
-          isClaimable = true;
-        } else {
-          statusText = '未達成';
-          statusBg = '#8b0000';
-        }
-
-        grid.innerHTML += `
-          <div style="background: linear-gradient(135deg, #2b1f14, #18110b); border: 2.5px solid ${isClaimable?'#f1c40f':'#8c6b12'}; border-radius: 12px; padding: 12px 6px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; height: 175px;">
-            <div style="font-size: 12px; font-weight: bold; color: #f1c40f;">第 ${r.day} 天</div>
-            <div style="width: 48px; height: 48px; background: rgba(0,0,0,0.6); border: 2px solid #d4af37; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
-              ${r.icon}
-            </div>
-            <div style="font-size: 11px; font-weight: bold; color: #fff;">${r.name}</div>
-            <button style="width: 100%; background: ${statusBg}; color: #fff; border: none; padding: 5px 2px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: ${isClaimable?'pointer':'not-allowed'};" ${!isClaimable?'disabled':''} onclick="claimDailyCheckin(event, ${idx}, '${r.type}', ${r.amount})">${statusText}</button>
-          </div>
-        `;
-      });
-    }
-
-    function claimDailyCheckin(e, dayIndex, type, amount) {
-      const acc = gameAccounts[currentUsername];
-      if (acc.checkinDay !== dayIndex) return alert('❌ 目前無法領取此天的獎勵！');
-
-      acc.checkinDay++;
-      if (type === 'gold') acc.gold += amount;
-      if (type === 'gems') acc.gems += amount;
-      saveAccountsToStorage();
-      updateAccountUI();
-
-      claimRewardFly(e, type === 'gems' ? 'gem' : 'gold');
-      alert(`📅 第 ${dayIndex + 1} 天簽到成功！獲得 ${amount} ${type === 'gold' ? '籌碼' : '寶石'}！`);
-    }
-
-    // 飛行動畫：分散再匯集 (Scatter & Gather Animation)
-    function claimRewardFly(e, type) {
-      if (!e || !e.target) return;
-      const rect = e.target.getBoundingClientRect();
-      const startX = rect.left + rect.width / 2;
-      const startY = rect.top + rect.height / 2;
-
-      const destTarget = type === 'gem' ? document.getElementById('gemHudPill') : document.getElementById('goldHudPill');
-      if (!destTarget) return;
-      const destRect = destTarget.getBoundingClientRect();
-      const destX = destRect.left + destRect.width / 2;
-      const destY = destRect.top + destRect.height / 2;
-
-      const particleCount = 12;
-      const symbol = type === 'gem' ? '💎' : '🪙';
-
-      for (let i = 0; i < particleCount; i++) {
-        createFlyParticle(startX, startY, destX, destY, symbol, destTarget, i, particleCount);
-      }
-    }
-
-    function createFlyParticle(startX, startY, destX, destY, symbol, targetHudPill, index, total) {
-      const el = document.createElement('div');
-      el.className = 'flying-reward-particle';
-      el.innerText = symbol;
-      document.body.appendChild(el);
-
-      const angle = (Math.PI * 2 / total) * index + (Math.random() * 0.5 - 0.25);
-      const scatterDist = Math.random() * 60 + 40;
-      const scatterX = startX + Math.cos(angle) * scatterDist;
-      const scatterY = startY + Math.sin(angle) * scatterDist;
-
-      el.style.transform = `translate(${startX - 14}px, ${startY - 14}px) scale(1.4)`;
-      el.style.opacity = '1';
-
-      setTimeout(() => {
-        el.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1)';
-        el.style.transform = `translate(${scatterX - 14}px, ${scatterY - 14}px) scale(1.1)`;
-
-        setTimeout(() => {
-          el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease';
-          el.style.transform = `translate(${destX - 14}px, ${destY - 14}px) scale(0.4)`;
-          el.style.opacity = '0.7';
-
-          setTimeout(() => {
-            el.remove();
-            AudioEngine.playPop();
-            targetHudPill.classList.remove('bump');
-            void targetHudPill.offsetWidth;
-            targetHudPill.classList.add('bump');
-            setTimeout(() => targetHudPill.classList.remove('bump'), 180);
-          }, 480);
-        }, 180 + index * 20);
-      }, 20);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      updateAccountUI();
-    });
-
-    // 遊戲模式與 30秒倒數計時匹配系統 (彈出式矩型配對，帶動態花色)
-    let currentGameMode = 'poker';
-    let matchTimer = null;
-    let matchSecondsLeft = 30;
-
-    function toggleGameMode() {
-      if (currentGameMode === 'poker') {
-        currentGameMode = 'blackjack';
-        document.getElementById('modeTitleText').innerText = '21點 (Blackjack)';
-        document.getElementById('btnMainText').innerText = '21點對決';
-        document.getElementById('btnSubLabel').innerText = '6人匹配 / 30秒人機';
-      } else {
-        currentGameMode = 'poker';
-        document.getElementById('modeTitleText').innerText = '德州撲克';
-        document.getElementById('btnMainText').innerText = '開始對戰';
-        document.getElementById('btnSubLabel').innerText = 'ENTER MATCH';
-      }
-    }
-
-    function startCurrentGameMode() {
-      if (gameAccounts[currentUsername].gold < currentBet) {
-        return alert('❌ 您的籌碼不足以支付本局下注量！');
-      }
-
-      matchSecondsLeft = 30;
-      document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
-      
-      const modeName = currentGameMode === 'poker' ? '德州撲克' : '21點';
-      document.getElementById('matchingTitleText').innerText = `尋找 6 人 ${modeName} 對戰玩家...`;
-      document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 1 / 6 人';
-      openScreen('matchingModal');
-
-      if (matchTimer) clearInterval(matchTimer);
-      matchTimer = setInterval(() => {
-        matchSecondsLeft--;
-        document.getElementById('matchTimerText').innerText = `剩餘配對時間: ${matchSecondsLeft} 秒`;
-
-        if (matchSecondsLeft === 20) {
-          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 3 / 6 人';
-        } else if (matchSecondsLeft === 10) {
-          document.getElementById('matchPlayerCountInfo').innerText = '應有人數: 6 人 | 已配對: 5 / 6 人';
-        }
-
-        if (matchSecondsLeft <= 0) {
-          clearInterval(matchTimer);
-          closeScreens();
-          if (currentGameMode === 'poker') startTexasHoldemMatch();
-          else startBlackjackMatch();
-        }
-      }, 1000);
-    }
-
-    function cancelMatchmaking() {
-      if (matchTimer) clearInterval(matchTimer);
-      closeScreens();
-    }
-
-    // ==========================================
-    // 德州撲克標準規則 (盲注、底牌、Showdown 盃數 ±4/±3)
-    // ==========================================
-    let thPlayerCards = [];
-    let thOppCardsList = [[], [], [], [], []];
-    let thCommunityCards = [];
-    let thStage = 0; // 0: Pre-flop, 1: Flop, 2: Turn, 3: River, 4: Showdown
-    let tableBets = [0, 0, 0, 0, 0, 0];
-    let isPlayerFolded = false;
-    const botNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'];
-    const handRankings = ['高牌 (High Card)', '一對 (One Pair)', '兩對 (Two Pair)', '三條 (Three of a Kind)', '順子 (Straight)', '同花 (Flush)', '葫蘆 (Full House)', '四條 (Four of a Kind)'];
-
-    function startTexasHoldemMatch() {
-      closeScreens();
-      document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = '🏆 德州撲克 (標準賭場6人桌)';
-      document.getElementById('actionBtn1').innerText = '跟注 / 過牌 (Call/Check)';
-      document.getElementById('actionBtn2').style.display = 'inline-block';
-
-      thStage = 0;
-      isPlayerFolded = false;
-
-      const sb = Math.floor(currentBet / 2);
-      const bb = currentBet;
-      tableBets = [bb, sb, bb, bb, bb, bb];
-
-      gameAccounts[currentUsername].gold -= bb;
-      saveAccountsToStorage();
-      updateAccountUI();
-
-      const deck = createDeck();
-      thPlayerCards = [deck.pop(), deck.pop()];
-      for (let i = 0; i < 5; i++) {
-        thOppCardsList[i] = [deck.pop(), deck.pop()];
-      }
-      thCommunityCards = [deck.pop(), deck.pop(), deck.pop(), deck.pop(), deck.pop()];
-
-      renderRoundTablePoker();
-    }
-
-    function createDeck() {
-      const suits = ['♠️', '♥️', '♦️', '♣️'];
-      const values = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-      let d = [];
-      suits.forEach(s => values.forEach(v => d.push({v, s})));
-      return d.sort(() => Math.random() - 0.5);
-    }
-
-    function renderRoundTablePoker() {
-      const seatNames = [currentUsername, ...botNames];
-      for (let i = 0; i < 6; i++) {
-        document.getElementById(`seat${i}-name`).innerText = seatNames[i];
-        document.getElementById(`seat${i}-bet`).innerText = tableBets[i];
-        const cardsArea = document.getElementById(`seat-${i}-cards`);
-        cardsArea.innerHTML = '';
-
-        if (i === 0) {
-          if (!isPlayerFolded) {
-            thPlayerCards.forEach(c => {
-              const isRed = c.s === '♥️' || c.s === '♦️';
-              cardsArea.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}"><span>${c.v}</span><span style="font-size:16px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
-            });
-          } else {
-            cardsArea.innerHTML = `<span style="color:#e74c3c; font-weight:bold; font-size:11px;">[已棄牌]</span>`;
-          }
-        } else {
-          if (thStage === 4) {
-            const oppC = thOppCardsList[i - 1];
-            oppC.forEach(c => {
-              const isRed = c.s === '♥️' || c.s === '♦️';
-              cardsArea.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}" style="width:36px; height:50px; font-size:9px;"><span>${c.v}</span><span style="font-size:12px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
-            });
-          } else {
-            cardsArea.innerHTML = `<div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div><div class="poker-card back chip-flying" style="width:38px; height:54px; font-size:10px;">🂠</div>`;
-          }
-        }
-      }
-
-      // 公共牌區一致性渲染
-      const commRow = document.getElementById('tableCommunityCards');
-      commRow.innerHTML = '';
-      const visibleCount = thStage === 0 ? 0 : thStage === 1 ? 3 : thStage === 2 ? 4 : 5;
-      for (let i = 0; i < 5; i++) {
-        if (i < visibleCount) {
-          const c = thCommunityCards[i];
-          const isRed = c.s === '♥️' || c.s === '♦️';
-          commRow.innerHTML += `<div class="poker-card chip-flying ${isRed?'red':''}" style="width:44px; height:62px; font-size:10px; padding:3px;"><span>${c.v}</span><span style="font-size:14px; align-self:center;">${c.s}</span><span style="transform:rotate(180deg);">${c.v}</span></div>`;
-        } else {
-          commRow.innerHTML += `<div class="poker-card back" style="width:44px; height:62px; background:#111; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px;">?</div>`;
-        }
-      }
-
-      const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      const stages = ['Pre-Flop (翻牌前下注)', 'Flop (翻牌圈 3張公牌)', 'Turn (轉牌圈 第4張)', 'River (河牌圈 第5張)', 'Showdown (標準賭場攤牌比牌)'];
-      document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 階段: ${stages[thStage]}`;
-    }
-
-    function handleFoldAction() {
-      AudioEngine.playPop();
-      isPlayerFolded = true;
-      gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3); // 輸一局扣3杯
-      saveAccountsToStorage();
-      updateAccountUI();
-      alert('❌ 您已選擇蓋牌 (Fold)，輸掉本局！ (-3 盃)');
-      concludeHoldemRound();
-    }
-
-    // ==========================================
-    // 21點 6人圓桌玩法
-    // ==========================================
-    let bjPlayersHands = [[], [], [], [], [], []];
-    let bjDealerHand = [];
-    let bjRoundActive = false;
-
-    function startBlackjackMatch() {
-      closeScreens();
-      document.getElementById('gameMatchView').classList.remove('hidden');
-      document.getElementById('roomTitle').innerText = '♠️ 21點 (6人圓桌 - 順序發牌與可見其他玩家)';
-      document.getElementById('actionBtn1').innerText = '要牌 (Hit)';
-      document.getElementById('actionBtn2').style.display = 'inline-block';
-      document.getElementById('actionBtn2').innerText = '停牌 (Stand)';
-      document.getElementById('actionBtn2').onclick = handleBlackjackStand;
-
-      bjRoundActive = true;
-      tableBets = [currentBet, currentBet, currentBet, currentBet, currentBet, currentBet];
-      bjPlayersHands = [[getBJCard(), getBJCard()], [getBJCard(), getBJCard()], [getBJCard(), getBJCard()], [getBJCard(), getBJCard()], [getBJCard(), getBJCard()], [getBJCard(), getBJCard()]];
-      bjDealerHand = [getBJCard(), getBJCard()];
-
-      renderRoundTableBJ(true);
-    }
-
-    function getBJCard() {
-      const v = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-      return v[Math.floor(Math.random() * v.length)];
-    }
-
-    function calcBJ(cards) {
-      let sum = 0, aces = 0;
-      cards.forEach(c => {
-        if (c === 'A') { aces++; sum += 11; }
-        else if (['K','Q','J','10'].includes(c)) sum += 10;
-        else sum += parseInt(c);
-      });
-      while (sum > 21 && aces > 0) { sum -= 10; aces--; }
-      return sum;
-    }
-
-    function renderRoundTableBJ(hidden) {
-      const seatNames = [currentUsername, ...botNames];
-      for (let i = 0; i < 6; i++) {
-        document.getElementById(`seat${i}-name`).innerText = seatNames[i];
-        document.getElementById(`seat${i}-bet`).innerText = calcBJ(bjPlayersHands[i]);
-        const cardsArea = document.getElementById(`seat-${i}-cards`);
-        cardsArea.innerHTML = '';
-
-        bjPlayersHands[i].forEach(v => {
-          cardsArea.innerHTML += `<div class="poker-card chip-flying" style="width:36px; height:50px; font-size:9px; padding:2px;"><span>${v}</span><span style="font-size:11px; align-self:center;">♥️</span><span style="transform:rotate(180deg);">${v}</span></div>`;
-        });
-      }
-
-      const commRow = document.getElementById('tableCommunityCards');
-      commRow.innerHTML = `<div style="font-size:12px; color:#f1c40f; margin-bottom:2px;">莊家區</div>`;
-      const dCard = bjDealer[0];
-      commRow.innerHTML += `<div class="poker-card" style="width:44px; height:60px; font-size:10px;"><span>${dCard}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard}</span></div>`;
-      if (hidden) {
-        commRow.innerHTML += `<div class="poker-card back" style="width:44px; height:60px; background:#222; color:#fff; display:flex; align-items:center; justify-content:center;">?</div>`;
-      } else {
-        const dCard2 = bjDealer[1];
-        commRow.innerHTML += `<div class="poker-card" style="width:44px; height:60px; font-size:10px;"><span>${dCard2}</span><span style="font-size:14px; align-self:center;">♦️</span><span style="transform:rotate(180deg);">${dCard2}</span></div>`;
-      }
-
-      const totalPot = tableBets.reduce((a, b) => a + b, 0);
-      document.getElementById('tablePot').innerText = `🪙 總彩池: ${totalPot} 籌碼 | 順序叫牌中`;
-    }
-
-    // 統一遊戲動作分流
-    function handleGameAction() {
-      AudioEngine.playPop();
-      if (currentGameMode === 'blackjack') {
-        if (!bjRoundActive) return;
-        bjPlayersHands[0].push(getBJCard());
-        renderRoundTableBJ(true);
-        const pSum = calcBJ(bjPlayersHands[0]);
-        if (pSum > 21) {
-          alert('💥 21點爆牌 (Bust)！ (-3 盃)');
-          gameAccounts[currentUsername].gold -= currentBet;
-          gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3);
-          saveAccountsToStorage();
-          updateAccountUI();
-          concludeBJRound();
-        }
-      } else {
-        // 德州撲克階段推進
-        thStage++;
-        if (thStage >= 4) {
-          const rank = handRankings[Math.floor(Math.random() * handRankings.length)];
-          alert(`🏆 德州撲克攤牌比牌 (Showdown) 結束！最大牌型為【${rank}】，您贏得了底池全部籌碼！ (+4 盃)`);
-          gameAccounts[currentUsername].gold += currentBet * 3;
-          gameAccounts[currentUsername].trophies += 4; // 贏一局加4杯
-          saveAccountsToStorage();
-          updateAccountUI();
-          concludeHoldemRound();
-        } else {
-          renderRoundTablePoker();
-        }
-      }
-    }
-
-    function handleBlackjackStand() {
-      if (!bjRoundActive) return;
-      AudioEngine.playPop();
-      let dSum = calcBJ(bjDealer);
-      while (dSum < 17) {
-        bjDealer.push(getBJCard());
-        dSum = calcBJ(bjDealer);
-      }
-      renderRoundTableBJ(false);
-      const pSum = calcBJ(bjPlayersHands[0]);
-      setTimeout(() => {
-        if (dSum > 21 || pSum > dSum) {
-          alert(`🎉 21點獲勝！您的點數 (${pSum}) 大於莊家 (${dSum})，贏得 ${currentBet} 籌碼！ (+4 盃)`);
-          gameAccounts[currentUsername].gold += currentBet;
-          gameAccounts[currentUsername].trophies += 4;
-        } else if (pSum === dSum) {
-          alert(`🤝 21點平手 (Push)！`);
-        } else {
-          alert(`😢 莊家獲勝 (${dSum}點)，輸掉 ${currentBet} 籌碼。 (-3 盃)`);
-          gameAccounts[currentUsername].gold -= currentBet;
-          gameAccounts[currentUsername].trophies = Math.max(0, gameAccounts[currentUsername].trophies - 3);
-        }
-        saveAccountsToStorage();
-        updateAccountUI();
-        concludeBJRound();
-      }, 300);
-    }
-
-    function concludeHoldemRound() {
-      thStage = 4;
-      renderRoundTablePoker();
-      setTimeout(() => {
-        if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 檯面清空，依序重新發牌開啟新一局德州撲克！');
-          startTexasHoldemMatch();
-        }
-      }, 2000);
-    }
-
-    function concludeBJRound() {
-      bjRoundActive = false;
-      setTimeout(() => {
-        if (!document.getElementById('gameMatchView').classList.contains('hidden')) {
-          alert('🔄 檯面清空，依序重新發牌開啟新一局 21點！');
-          startBlackjackMatch();
-        }
-      }, 2000);
-    }
-
-    function leaveGameSession() {
-      document.getElementById('gameMatchView').classList.add('hidden');
-      document.getElementById('actionBtn2').style.display = 'none';
-      document.getElementById('actionBtn1').innerText = '確認下注 / 動作';
-      document.getElementById('actionBtn1').onclick = handleGameAction;
-      const comm = document.getElementById('tableCommunityCards');
-      if (comm) comm.innerHTML = '';
-    }
-
-    // 全新頁面導航管理 (Full-page views)
-    function openPage(pageId) {
-      closePages();
-      const page = document.getElementById(pageId);
-      if (page) page.classList.add('active');
-      if (pageId === 'trophyPage') {
-        renderTrophyRoadUI();
-      }
-      if (pageId === 'checkinPage') {
-        renderCheckinUI();
-      }
-      if (pageId === 'taskPage') {
-        renderTasksUI();
-      }
-      if (pageId === 'shopPage') {
-        renderShopItemsUI();
-      }
-    }
-
-    function closePages() {
-      document.querySelectorAll('.app-full-page').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.app-screen-overlay').forEach(el => el.classList.remove('active'));
-    }
-
-    function openScreen(id) {
-      const screen = document.getElementById(id);
-      if (screen) screen.classList.add('active');
-    }
-  </script>
+    const totalTime = 1000 + pieces.length*70;
+    setTimeout(()=>{ animateBalanceTo(myChips); }, totalTime-500);
+    setTimeout(resolve, totalTime);
+  });
+}
+
+/* ============================= SCREEN NAV ============================= */
+function goHome(){
+  document.getElementById('screen-table').classList.add('hidden');
+  document.getElementById('screen-waiting').classList.add('hidden');
+  document.getElementById('screen-home').classList.remove('hidden');
+  document.getElementById('result-overlay').classList.add('hidden');
+  refreshHeader();
+}
+
+/* ============================= INIT ============================= */
+async function init(){
+  await loadProfile();
+  refreshHeader();
+  setupBackgroundClickFx();
+  if(!storageAvailable()){
+    const banner=document.getElementById('conn-banner');
+    if(banner) banner.classList.remove('hidden');
+  }
+  document.getElementById('join-code-input').addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
+  window.addEventListener('resize', ()=>{ if(room && !document.getElementById('screen-table').classList.contains('hidden')) renderTable(); });
+}
+init();
+</script>
 </body>
 </html>
